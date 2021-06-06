@@ -1,15 +1,15 @@
 <?php
 
-namespace App\OpenApiGenerator;
+namespace OpenApiGenerator;
 
-use App\OpenApiGenerator\Attributes\Property;
-use App\OpenApiGenerator\Attributes\PropertyItems;
-use App\OpenApiGenerator\Attributes\RequestBody;
-use App\OpenApiGenerator\Attributes\Response;
-use App\OpenApiGenerator\Attributes\Route;
-use App\OpenApiGenerator\Attributes\Schema;
-use App\OpenApiGenerator\Types\PropertyType;
-use App\OpenApiGenerator\Types\SchemaType;
+use OpenApiGenerator\Attributes\Property;
+use OpenApiGenerator\Attributes\PropertyItems;
+use OpenApiGenerator\Attributes\RequestBody;
+use OpenApiGenerator\Attributes\Response;
+use OpenApiGenerator\Attributes\Route;
+use OpenApiGenerator\Attributes\Schema;
+use OpenApiGenerator\Types\PropertyType;
+use OpenApiGenerator\Types\SchemaType;
 
 /**
  * This represents an OpenAPI path which has a route with only ONE method (GET, POST, PUT or PATCH)
@@ -40,7 +40,7 @@ class PathMethodBuilder
      *
      * @param RequestBody $requestBody
      */
-    public function addRequestBody(RequestBody $requestBody): void
+    public function setRequestBody(RequestBody $requestBody): void
     {
         $this->currentSchemaHolder = $requestBody;
     }
@@ -94,9 +94,9 @@ class PathMethodBuilder
      *
      * @param Response $response
      */
-    public function addResponse(Response $response): void
+    public function setResponse(Response $response): void
     {
-        $this->savePropertyHolder();
+        $this->saveSchemaHolder();
 
         $this->currentSchemaHolder = $response;
     }
@@ -104,7 +104,7 @@ class PathMethodBuilder
     /**
      * Save the schema holder by setting the current schema to the schema holder and adding it to the current route
      */
-    private function savePropertyHolder(): void
+    private function saveSchemaHolder(): void
     {
         if ($this->currentSchemaHolder) {
             if ($this->currentSchema) {
@@ -128,7 +128,7 @@ class PathMethodBuilder
      *
      * @param PropertyItems $propertyItems
      */
-    public function addPropertyItems(PropertyItems $propertyItems)
+    public function setPropertyItems(PropertyItems $propertyItems)
     {
         $this->currentProperty->setPropertyItems($propertyItems);
         $this->saveProperty();
@@ -143,7 +143,7 @@ class PathMethodBuilder
      */
     public function getRoute(): ?Route
     {
-        $this->savePropertyHolder();
+        $this->saveSchemaHolder();
 
         return $this->currentRoute;
     }

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\OpenApiGenerator\Attributes;
+namespace OpenApiGenerator\Attributes;
 
-use App\OpenApiGenerator\Types\ItemsType;
-use App\OpenApiGenerator\Types\PropertyType;
-use App\OpenApiGenerator\Types\SchemaType;
+use OpenApiGenerator\Types\ItemsType;
+use OpenApiGenerator\Types\PropertyType;
+use OpenApiGenerator\Types\SchemaType;
 use JsonSerializable;
 
 /**

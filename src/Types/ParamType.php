@@ -1,6 +1,6 @@
 <?php
 
-namespace App\OpenApiGenerator\Types;
+namespace OpenApiGenerator\Types;
 
 class ParamType
 {

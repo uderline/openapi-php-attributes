@@ -1,13 +1,13 @@
 <?php
 
-namespace App\OpenApiGenerator;
+namespace OpenApiGenerator;
 
-use App\OpenApiGenerator\Attributes\Parameter;
-use App\OpenApiGenerator\Attributes\Property;
-use App\OpenApiGenerator\Attributes\PropertyItems;
-use App\OpenApiGenerator\Attributes\RequestBody;
-use App\OpenApiGenerator\Attributes\Response;
-use App\OpenApiGenerator\Attributes\Route;
+use OpenApiGenerator\Attributes\Parameter;
+use OpenApiGenerator\Attributes\Property;
+use OpenApiGenerator\Attributes\PropertyItems;
+use OpenApiGenerator\Attributes\RequestBody;
+use OpenApiGenerator\Attributes\Response;
+use OpenApiGenerator\Attributes\Route;
 use Illuminate\Http\Request;
 use ReflectionAttribute;
 use ReflectionClass;
@@ -64,15 +64,15 @@ class GenerateHttp
 
                 // If so, use it. Otherwise, set a default one
                 if (count($requestBodyAttr) === 1) {
-                    $pathBuilder->addRequestBody(reset($requestBodyAttr)->newInstance());
+                    $pathBuilder->setRequestBody(reset($requestBodyAttr)->newInstance());
                     break;
                 }
 
-                $pathBuilder->addRequestBody(new RequestBody());
+                $pathBuilder->setRequestBody(new RequestBody());
                 break;
             }
 
-            // Add method attributes to the builder
+            // Add method Attributes to the builder
             foreach ($methodAttributes as $attribute) {
                 $name = $attribute->getName();
                 $instance = $attribute->newInstance();
@@ -80,8 +80,8 @@ class GenerateHttp
                 match ($name) {
                     Route::class => $pathBuilder->setRoute($instance, $parameters),
                     Property::class => $pathBuilder->addProperty($instance),
-                    Response::class => $pathBuilder->addResponse($instance),
-                    PropertyItems::class => $pathBuilder->addPropertyItems($instance),
+                    Response::class => $pathBuilder->setResponse($instance),
+                    PropertyItems::class => $pathBuilder->setPropertyItems($instance),
                     default => true
                 };
             }

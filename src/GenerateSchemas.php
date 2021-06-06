@@ -1,10 +1,10 @@
 <?php
 
-namespace App\OpenApiGenerator;
+namespace OpenApiGenerator;
 
-use App\OpenApiGenerator\Attributes\Property;
-use App\OpenApiGenerator\Attributes\PropertyItems;
-use App\OpenApiGenerator\Attributes\Schema;
+use OpenApiGenerator\Attributes\Property;
+use OpenApiGenerator\Attributes\PropertyItems;
+use OpenApiGenerator\Attributes\Schema;
 use ReflectionClass;
 
 class GenerateSchemas

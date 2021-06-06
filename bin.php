@@ -10,7 +10,7 @@ foreach ($files as $file) {
     include_once $file->getPathName();
 }
 
-$generator = (new \App\OpenApiGenerator\Generator())->generate();
+$generator = (new \OpenApiGenerator\Generator())->generate();
 
 $schema = stripslashes(json_encode($generator, JSON_PRETTY_PRINT));
 

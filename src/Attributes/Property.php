@@ -1,8 +1,8 @@
 <?php
 
-namespace App\OpenApiGenerator\Attributes;
+namespace OpenApiGenerator\Attributes;
 
-use App\OpenApiGenerator\Types\PropertyType;
+use OpenApiGenerator\Types\PropertyType;
 use JsonSerializable;
 
 /**

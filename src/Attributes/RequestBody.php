@@ -1,8 +1,8 @@
 <?php
 
-namespace App\OpenApiGenerator\Attributes;
+namespace OpenApiGenerator\Attributes;
 
-use App\OpenApiGenerator\Types\RequestBodyType;
+use OpenApiGenerator\Types\RequestBodyType;
 use JsonSerializable;
 
 /**
@@ -29,7 +29,7 @@ class RequestBody implements JsonSerializable
             return [];
         }
 
-        // TODO: deal with media content or any other types (cf. $this->type)
+        // TODO: deal with media content or any other Types (cf. $this->type)
         return [
             "content" => [
                 "application/json" => [

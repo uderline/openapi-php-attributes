@@ -1,5 +1,5 @@
 {
-    "name": "josephmartell/openapi-php8",
+    "name": "uderline/openapi-php-attributes",
     "description": "description",
     "minimum-stability": "stable",
     "license": "proprietary",
@@ -15,7 +15,15 @@
     },
     "autoload": {
         "psr-4": {
-            "Custom\\Space\\": "src"
+            "OpenApiGenerator\\": "src"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "OpenApiGenerator\\Tests\\": "tests"
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5"
     }
 }

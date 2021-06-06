@@ -1,10 +1,10 @@
 <?php
 
-namespace App\OpenApiGenerator;
+namespace OpenApiGenerator;
 
-use App\OpenApiGenerator\Attributes\Controller;
-use App\OpenApiGenerator\Attributes\Info;
-use App\OpenApiGenerator\Attributes\Schema;
+use OpenApiGenerator\Attributes\Controller;
+use OpenApiGenerator\Attributes\Info;
+use OpenApiGenerator\Attributes\Schema;
 use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionException;
@@ -20,7 +20,7 @@ class Generator
     /**
      * Start point of the Open Api generator
      *
-     * Execution plan: get classes from directory, find controllers, schemas, get attributes,
+     * Execution plan: get classes from directory, find controllers, schemas, get Attributes,
      * add each attribute to some sort of tree then transform it to a json file
      *
      * Et voilà !

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\OpenApiGenerator\Attributes;
+namespace OpenApiGenerator\Attributes;
 
 use JsonSerializable;
 
