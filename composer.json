@@ -1,0 +1,21 @@
+{
+    "name": "josephmartell/openapi-php8",
+    "description": "description",
+    "minimum-stability": "stable",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Joseph Martell",
+            "email": "contact@josephmartell.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "symfony/finder": "^5.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Custom\\Space\\": "src"
+        }
+    }
+}
