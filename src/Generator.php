@@ -29,8 +29,11 @@ class Generator
     {
         $generate_http = new GenerateHttp();
         $generate_schemas = new GenerateSchemas();
-        $info = null;
-        $apiDefinition = [];
+        $apiDefinition = [
+            "info" => [],
+            "paths" => [],
+            "components" => []
+        ];
 
         $classes = get_declared_classes();
         foreach ($classes as $class) {

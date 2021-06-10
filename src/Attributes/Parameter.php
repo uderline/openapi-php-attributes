@@ -3,6 +3,8 @@
 namespace OpenApiGenerator\Attributes;
 
 use JsonSerializable;
+use OpenApiGenerator\Types\PropertyType;
+use OpenApiGenerator\Types\SchemaType;
 
 /**
  * Represents a parameter (e.g. /route/{id} where id is the parameter)
@@ -13,7 +15,6 @@ use JsonSerializable;
 class Parameter implements JsonSerializable
 {
     private string $name;
-    private ?Schema $schema = null;
     private string $paramType;
 
     public function __construct(
@@ -22,11 +23,6 @@ class Parameter implements JsonSerializable
         private string $in = "path",
         private mixed $example = ""
     ) {
-    }
-
-    public function setSchema(Schema $schema): void
-    {
-        $this->schema = $schema;
     }
 
     public function setName(string $name): void
@@ -45,19 +41,12 @@ class Parameter implements JsonSerializable
 
     public function jsonSerialize(): array
     {
-        if (!$this->schema) {
-            $this->schema = new Schema(schemaType: $this->paramType, name: $this->name);
-        }
-
-        $array = [
+        return [
             "name" => $this->name,
             "in" => $this->in,
             "description" => $this->description,
             "required" => $this->required,
+            "schema" => ["type" => $this->paramType]
         ];
-
-        $array["schema"] = $this->schema;
-
-        return $array;
     }
 }

@@ -2,6 +2,7 @@
 
 namespace OpenApiGenerator;
 
+use OpenApiGenerator\Attributes\MediaProperty;
 use OpenApiGenerator\Attributes\Property;
 use OpenApiGenerator\Attributes\PropertyItems;
 use OpenApiGenerator\Attributes\RequestBody;
@@ -12,7 +13,7 @@ use OpenApiGenerator\Types\PropertyType;
 use OpenApiGenerator\Types\SchemaType;
 
 /**
- * This represents an OpenAPI path which has a route with only ONE method (GET, POST, PUT or PATCH)
+ * This represents an OpenAPI path which has a route with only ONE m    ethod (GET, POST, PUT or PATCH)
  * Paths are merged in the generator
  */
 class PathMethodBuilder
@@ -20,7 +21,7 @@ class PathMethodBuilder
     private ?Route $currentRoute = null;
     private ?Schema $currentSchema = null;
     private Response|RequestBody|null $currentSchemaHolder = null;
-    private ?Property $currentProperty = null;
+    private Property|MediaProperty|null $currentProperty = null;
 
     /**
      * Set the current route with GET parameters
@@ -65,9 +66,13 @@ class PathMethodBuilder
     private function saveProperty(): void
     {
         if (!$this->currentSchema) {
-            if ($this->currentProperty->getType() === PropertyType::ARRAY) {
-                $this->addSchema(new Schema(SchemaType::ARRAY));
-            } else {
+            if ($this->currentProperty instanceof Property) {
+                if ($this->currentProperty->getType() === PropertyType::ARRAY) {
+                    $this->addSchema(new Schema(SchemaType::ARRAY));
+                } else {
+                    $this->addSchema(new Schema(SchemaType::OBJECT));
+                }
+            } elseif ($this->currentProperty instanceof MediaProperty) {
                 $this->addSchema(new Schema(SchemaType::OBJECT));
             }
         }
@@ -146,5 +151,11 @@ class PathMethodBuilder
         $this->saveSchemaHolder();
 
         return $this->currentRoute;
+    }
+
+    public function setMediaProperty(MediaProperty $property): void
+    {
+        $this->currentProperty = $property;
+        $this->saveProperty();
     }
 }

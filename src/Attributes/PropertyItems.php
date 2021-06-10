@@ -10,7 +10,7 @@ use JsonSerializable;
  * If the array is an array of components, the ref argument can be set along with the type being an object
  */
 #[\Attribute(\Attribute::IS_REPEATABLE|\Attribute::TARGET_ALL)]
-class PropertyItems implements JsonSerializable
+class PropertyItems implements PropertyInterface, JsonSerializable
 {
     private mixed $example = "";
 

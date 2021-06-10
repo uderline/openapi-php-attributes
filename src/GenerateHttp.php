@@ -2,6 +2,7 @@
 
 namespace OpenApiGenerator;
 
+use OpenApiGenerator\Attributes\MediaProperty;
 use OpenApiGenerator\Attributes\Parameter;
 use OpenApiGenerator\Attributes\Property;
 use OpenApiGenerator\Attributes\PropertyItems;
@@ -80,8 +81,9 @@ class GenerateHttp
                 match ($name) {
                     Route::class => $pathBuilder->setRoute($instance, $parameters),
                     Property::class => $pathBuilder->addProperty($instance),
-                    Response::class => $pathBuilder->setResponse($instance),
                     PropertyItems::class => $pathBuilder->setPropertyItems($instance),
+                    MediaProperty::class => $pathBuilder->setMediaProperty($instance),
+                    Response::class => $pathBuilder->setResponse($instance),
                     default => true
                 };
             }

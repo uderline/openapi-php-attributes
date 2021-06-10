@@ -4,6 +4,7 @@ namespace OpenApiGenerator\Types;
 
 class SchemaType
 {
-    const OBJECT = 'object';
-    const ARRAY = 'array';
+    public const OBJECT = 'object';
+    public const ARRAY = 'array';
+    public const STRING = "string";
 }

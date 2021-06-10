@@ -1,0 +1,42 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "title",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/path/{prop1}": {
+            "get": {
+                "tags": [
+                    "Dummy"
+                ],
+                "summary": "Dummy path",
+                "parameters": [
+                    {
+                        "name": "prop1",
+                        "in": "path",
+                        "description": "prop1",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "image/png": {
+                                "schema": {
+                                    "type": "string",
+                                    "format": "base64"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": []
+}

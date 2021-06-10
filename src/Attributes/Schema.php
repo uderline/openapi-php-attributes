@@ -11,12 +11,14 @@ use JsonSerializable;
 #[\Attribute(\Attribute::TARGET_CLASS)] class Schema implements JsonSerializable
 {
     private array $properties = [];
+    private bool $noMedia = false;
 
     public function __construct(
         private string $schemaType,
         private ?array $required = null,
         private ?string $name = null
-    ) {
+    )
+    {
     }
 
     public function getName(): ?string
@@ -24,31 +26,66 @@ use JsonSerializable;
         return $this->name;
     }
 
-    public function jsonSerialize(): array
+    private function getMediaType(): string
     {
-        $array = [
-            "type" => $this->schemaType,
-        ];
+        $hasMediaProp = array_filter(
+            $this->properties,
+            fn(?PropertyInterface $property): bool => $property instanceof MediaProperty
+        );
 
-        if ($this->required) {
-            $array["required"] = $this->required;
+        // Has a MediaProperty object, get the first - and normally only on - property
+        if (count($hasMediaProp) > 0) {
+            $property = reset($this->properties);
+            return $property->getContentMediaType();
         }
 
-        foreach ($this->properties as $property) {
-            if ($this->schemaType === SchemaType::OBJECT) {
-                $array["properties"][$property->getProperty()] = $property;
-            }
-            if ($this->schemaType === SchemaType::ARRAY) {
-                $array = [
-                    "items" => reset($this->properties)
-                ];
-            }
-        }
-
-        return $array;
+        // By default, return json type
+        return "application/json";
     }
 
-    public function addProperty(Property|PropertyItems $property): void
+    public function jsonSerialize(): array
+    {
+        $schema = [];
+
+        if ($this->schemaType === SchemaType::ARRAY) {
+            $schema["items"] = reset($this->properties);
+        } elseif ($this->schemaType === SchemaType::OBJECT) {
+            $firstProperty = reset($this->properties);
+
+            if ($firstProperty instanceof RefProperty || $firstProperty instanceof MediaProperty) {
+                var_dump($firstProperty);
+                $schema = $firstProperty;
+            } else {
+                $array = [];
+
+                if ($this->required) {
+                    $array["required"] = $this->required;
+                }
+
+                foreach ($this->properties as $property) {
+                    if ($property instanceof Property) {
+                        $array["type"] = $this->schemaType;
+                        $array["properties"][$property->getProperty()] = $property;
+                    }
+                }
+
+                $schema += $array;
+            }
+        }
+
+        // This is especially used for parameters which don't have media
+        if ($this->noMedia) {
+            return $schema;
+        }
+
+        return [
+            $this->getMediaType() => [
+                "schema" => $schema
+            ]
+        ];
+    }
+
+    public function addProperty(PropertyInterface $property): void
     {
         $this->properties[] = $property;
     }
@@ -56,5 +93,10 @@ use JsonSerializable;
     public function setName(string $name): void
     {
         $this->name = $name;
+    }
+
+    public function setNoMedia(bool $noMedia): void
+    {
+        $this->noMedia = $noMedia;
     }
 }

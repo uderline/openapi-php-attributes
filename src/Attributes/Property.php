@@ -10,7 +10,7 @@ use JsonSerializable;
  * The property must have a type and a property name and can have a description and an example
  * If the property is an array, a PropertyItems must be set
  */
-#[\Attribute(\Attribute::IS_REPEATABLE | \Attribute::TARGET_ALL)] class Property implements JsonSerializable
+#[\Attribute(\Attribute::IS_REPEATABLE | \Attribute::TARGET_ALL)] class Property implements PropertyInterface, JsonSerializable
 {
     private ?PropertyItems $propertyItems = null;
 

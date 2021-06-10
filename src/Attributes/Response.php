@@ -4,6 +4,7 @@ namespace OpenApiGenerator\Attributes;
 
 use OpenApiGenerator\Types\ItemsType;
 use OpenApiGenerator\Types\PropertyType;
+use OpenApiGenerator\Types\ResponseType;
 use OpenApiGenerator\Types\SchemaType;
 use JsonSerializable;
 
@@ -23,6 +24,21 @@ use JsonSerializable;
         private ?string $schemaType = null,
         private ?string $ref = null
     ) {
+        if ($ref) {
+            $this->schemaType = SchemaType::OBJECT;
+            if ($this->ref) {
+                $ref = explode('\\', $this->ref);
+                $ref = end($ref);
+
+                if ($this->schemaType === SchemaType::OBJECT) {
+                    $schema = new Schema($this->schemaType);
+                    $schema->addProperty(new RefProperty($ref));
+                } elseif ($this->schemaType === SchemaType::ARRAY) {
+                    $schema = new Schema(SchemaType::ARRAY);
+                    $schema->addProperty(new PropertyItems(ItemsType::REF, $this->ref));
+                }
+            }
+        }
     }
 
     public function getResponseType(): ?string
@@ -37,30 +53,12 @@ use JsonSerializable;
 
     public function jsonSerialize(): array
     {
-        $array = [
+        return [
             $this->code => [
-                "description" => $this->description
+                "description" => $this->description,
+                "content" => $this->schema
             ]
         ];
-
-        if ($this->ref) {
-            $ref = explode('\\', $this->ref);
-            $ref = last($ref);
-
-            if (!$this->schemaType) {
-                $array[$this->code]["content"]["application/json"]["schema"]['$ref'] = "#/components/schemas/$ref";
-            }
-            if ($this->schemaType === PropertyType::ARRAY) {
-                $schema = new Schema(SchemaType::ARRAY);
-                $schema->addProperty(new PropertyItems(ItemsType::REF, $this->ref));
-
-                $array[$this->code]["content"]["application/json"]["schema"] = $schema;
-            }
-        } elseif ($this->schema) {
-            $array[$this->code]["content"]["application/json"]["schema"] = $this->schema;
-        }
-
-        return $array;
     }
 
     public function setSchema(Schema $schema): void

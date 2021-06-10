@@ -2,7 +2,7 @@
 
 use Symfony\Component\Finder\Finder;
 
-include __DIR__ . '/../../vendor/autoload.php';
+include __DIR__ . '/vendor/autoload.php';
 
 $files = Finder::create()->files()->name('*.php')->in($argv[1]);
 
