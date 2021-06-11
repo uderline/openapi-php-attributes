@@ -3,7 +3,7 @@
 CLI Tool able to generate an Open API JSON file according to PHP attributes.
 
 ### Generate
-Generate JSON file: `php ./vendor/uderline/openapi-php-attributes/bin.php /path/to/your/src/files/project`.
+Generate JSON file: `php ./vendor/uderline/openapi-php-attributes/opa /path/to/your/src/files/project`.
 
 ### Describe your API
 #### Controller

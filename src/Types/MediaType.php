@@ -4,7 +4,7 @@ namespace OpenApiGenerator\Types;
 
 class MediaType
 {
-    // Media types
+    // Media Types
     public const MEDIA_IMAGE_PNG = "image/png";
 
     // Encoding

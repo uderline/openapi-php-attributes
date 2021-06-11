@@ -18,7 +18,7 @@ class Route implements JsonSerializable
     public const DELETE = 'delete';
 
     private array $getParams = [];
-    private Response $response;
+    private ?Response $response = null;
     private ?RequestBody $requestBody = null;
 
     public function __construct(
@@ -83,7 +83,9 @@ class Route implements JsonSerializable
             $array[$this->route][$this->method]["requestBody"] = $this->requestBody;
         }
 
-        $array[$this->route][$this->method]["responses"] = $this->response;
+        if ($this->response) {
+            $array[$this->route][$this->method]["responses"] = $this->response;
+        }
 
         return $array;
     }

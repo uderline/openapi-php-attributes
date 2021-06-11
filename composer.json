@@ -16,7 +16,7 @@
     },
     "autoload": {
         "psr-4": {
-            "OpenApiGenerator\\": "src"
+            "OpenApiGenerator\\": "src/"
         }
     },
     "autoload-dev": {

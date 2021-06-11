@@ -5,6 +5,57 @@
         "version": "1.0.0"
     },
     "paths": {
+        "/path/{id}": {
+            "get": {
+                "tags": [
+                    "Dummy"
+                ],
+                "summary": "Dummy path",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Dummy"
+                ],
+                "summary": "Dummy put",
+                "responses": {
+                    "204": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "prop1": {
+                                            "type": "string",
+                                            "description": ""
+                                        },
+                                        "prop2": {
+                                            "type": "integer",
+                                            "description": ""
+                                        },
+                                        "prop3": {
+                                            "type": "boolean",
+                                            "description": ""
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/path": {
             "get": {
                 "tags": [
@@ -112,7 +163,6 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "array",
                                     "items": {
                                         "$ref": "#/components/schemas/DummyComponent"
                                     }
@@ -154,40 +204,6 @@
                     }
                 }
             }
-        },
-        "/path/{id}": {
-            "put": {
-                "tags": [
-                    "Dummy"
-                ],
-                "summary": "Dummy put",
-                "responses": {
-                    "204": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "prop1": {
-                                            "type": "string",
-                                            "description": ""
-                                        },
-                                        "prop2": {
-                                            "type": "integer",
-                                            "description": ""
-                                        },
-                                        "prop3": {
-                                            "type": "boolean",
-                                            "description": ""
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
         }
     },
     "components": {
@@ -214,6 +230,24 @@
                             "val1",
                             "val2"
                         ]
+                    },
+                    "propArray": {
+                        "items": {
+                            "$ref": "#/components/schemas/DummyRefComponent"
+                        }
+                    }
+                }
+            },
+            "DummyRefComponent": {
+                "type": "object",
+                "properties": {
+                    "prop1": {
+                        "type": "string",
+                        "description": "Prop1 description"
+                    },
+                    "prop2": {
+                        "type": "integer",
+                        "description": ""
                     }
                 }
             }

@@ -26,17 +26,12 @@ use JsonSerializable;
     )
     {
         if ($ref) {
-            if ($this->ref) {
-                $ref = explode('\\', $this->ref);
-                $ref = end($ref);
+            $this->schema = new Schema($schemaType);
 
-                if ($this->schemaType === SchemaType::OBJECT) {
-                    $this->schema = new Schema($this->schemaType);
-                    $this->schema->addProperty(new RefProperty($ref));
-                } elseif ($this->schemaType === SchemaType::ARRAY) {
-                    $this->schema = new Schema(SchemaType::ARRAY);
-                    $this->schema->addProperty(new PropertyItems(ItemsType::REF, $this->ref));
-                }
+            if ($schemaType === SchemaType::OBJECT) {
+                $this->schema->addProperty(new RefProperty($ref));
+            } elseif ($schemaType === SchemaType::ARRAY) {
+                $this->schema->addProperty(new PropertyItems(ItemsType::REF, $ref));
             }
         }
     }
