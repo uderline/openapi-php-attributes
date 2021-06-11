@@ -131,10 +131,15 @@ class PathMethodBuilderTest extends TestCase
         $schemaProperty->setAccessible(true);
 
         $expectedArray = [
-            "items" => [
-                "type" => PropertyType::INT,
-                "example" => ""
-            ],
+            "application/json" => [
+                "schema" => [
+                    "type" => "array",
+                    "items" => [
+                        "type" => PropertyType::INT,
+                        "example" => ""
+                    ]
+                ]
+            ]
         ];
 
         $actualArray = json_decode(json_encode($schemaProperty->getValue($requestBodyPropertyValue)), true);
