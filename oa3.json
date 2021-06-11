@@ -5,12 +5,130 @@
         "version": "1.0.0"
     },
     "paths": {
-        "/path/{prop1}": {
+        "/path": {
             "get": {
                 "tags": [
                     "Dummy"
                 ],
-                "summary": "Dummy path",
+                "summary": "Dummy get path",
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "prop1": {
+                                            "type": "string",
+                                            "description": "Prop 1"
+                                        },
+                                        "prop2": {
+                                            "type": "string",
+                                            "description": "Prop 2"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Dummy"
+                ],
+                "summary": "Dummy post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "prop1": {
+                                        "type": "string",
+                                        "description": ""
+                                    },
+                                    "prop2": {
+                                        "type": "string",
+                                        "description": "Prop2 description"
+                                    },
+                                    "prop3": {
+                                        "type": "string",
+                                        "description": "Prop3 description"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/path/entity/{id}": {
+            "get": {
+                "tags": [
+                    "Dummy"
+                ],
+                "summary": "Get an entity with a ref",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DummyComponent"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/path/entities": {
+            "get": {
+                "tags": [
+                    "Dummy"
+                ],
+                "summary": "Get a list",
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/DummyComponent"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/path/image/{prop1}": {
+            "get": {
+                "tags": [
+                    "Dummy"
+                ],
+                "summary": "Dummy image path",
                 "parameters": [
                     {
                         "name": "prop1",
@@ -36,7 +154,69 @@
                     }
                 }
             }
+        },
+        "/path/{id}": {
+            "put": {
+                "tags": [
+                    "Dummy"
+                ],
+                "summary": "Dummy put",
+                "responses": {
+                    "204": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "prop1": {
+                                            "type": "string",
+                                            "description": ""
+                                        },
+                                        "prop2": {
+                                            "type": "integer",
+                                            "description": ""
+                                        },
+                                        "prop3": {
+                                            "type": "boolean",
+                                            "description": ""
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
-    "components": []
+    "components": {
+        "schemas": {
+            "DummyComponent": {
+                "type": "object",
+                "properties": {
+                    "prop1": {
+                        "type": "string",
+                        "description": "Prop1 description"
+                    },
+                    "prop2": {
+                        "type": "integer",
+                        "description": ""
+                    },
+                    "prop3": {
+                        "type": "boolean",
+                        "description": "Prop 3"
+                    },
+                    "prop4": {
+                        "type": "string",
+                        "description": "Prop 4",
+                        "enum": [
+                            "val1",
+                            "val2"
+                        ]
+                    }
+                }
+            }
+        }
+    }
 }

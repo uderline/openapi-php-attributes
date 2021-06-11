@@ -30,12 +30,6 @@ class RequestBody implements JsonSerializable
         }
 
         // TODO: deal with media content or any other Types (cf. $this->type)
-        return [
-            "content" => [
-                "application/json" => [
-                    "schema" => $this->schema
-                ]
-            ]
-        ];
+        return ["content" => $this->schema];
     }
 }

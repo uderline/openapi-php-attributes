@@ -21,21 +21,21 @@ use JsonSerializable;
         private int $code = 200,
         private string $description = "",
         private ?string $responseType = null,
-        private ?string $schemaType = null,
+        private ?string $schemaType = SchemaType::OBJECT,
         private ?string $ref = null
-    ) {
+    )
+    {
         if ($ref) {
-            $this->schemaType = SchemaType::OBJECT;
             if ($this->ref) {
                 $ref = explode('\\', $this->ref);
                 $ref = end($ref);
 
                 if ($this->schemaType === SchemaType::OBJECT) {
-                    $schema = new Schema($this->schemaType);
-                    $schema->addProperty(new RefProperty($ref));
+                    $this->schema = new Schema($this->schemaType);
+                    $this->schema->addProperty(new RefProperty($ref));
                 } elseif ($this->schemaType === SchemaType::ARRAY) {
-                    $schema = new Schema(SchemaType::ARRAY);
-                    $schema->addProperty(new PropertyItems(ItemsType::REF, $this->ref));
+                    $this->schema = new Schema(SchemaType::ARRAY);
+                    $this->schema->addProperty(new PropertyItems(ItemsType::REF, $this->ref));
                 }
             }
         }
@@ -53,12 +53,17 @@ use JsonSerializable;
 
     public function jsonSerialize(): array
     {
-        return [
+        $array = [
             $this->code => [
-                "description" => $this->description,
-                "content" => $this->schema
+                "description" => $this->description
             ]
         ];
+
+        if ($this->schema) {
+            $array[$this->code]["content"] = $this->schema;
+        }
+
+        return $array;
     }
 
     public function setSchema(Schema $schema): void

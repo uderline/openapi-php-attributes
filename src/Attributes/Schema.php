@@ -45,7 +45,9 @@ use JsonSerializable;
 
     public function jsonSerialize(): array
     {
-        $schema = [];
+        $schema = [
+            "type" => $this->schemaType
+        ];
 
         if ($this->schemaType === SchemaType::ARRAY) {
             $schema["items"] = reset($this->properties);
@@ -53,7 +55,6 @@ use JsonSerializable;
             $firstProperty = reset($this->properties);
 
             if ($firstProperty instanceof RefProperty || $firstProperty instanceof MediaProperty) {
-                var_dump($firstProperty);
                 $schema = $firstProperty;
             } else {
                 $array = [];
@@ -64,7 +65,6 @@ use JsonSerializable;
 
                 foreach ($this->properties as $property) {
                     if ($property instanceof Property) {
-                        $array["type"] = $this->schemaType;
                         $array["properties"][$property->getProperty()] = $property;
                     }
                 }

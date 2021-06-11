@@ -9,10 +9,10 @@ use OpenApiGenerator\Attributes\PropertyItems;
 use OpenApiGenerator\Attributes\RequestBody;
 use OpenApiGenerator\Attributes\Response;
 use OpenApiGenerator\Attributes\Route;
-use Illuminate\Http\Request;
 use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionParameter;
+use Symfony\Component\HttpFoundation\Request;
 
 class GenerateHttp
 {

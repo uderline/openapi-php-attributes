@@ -37,7 +37,7 @@ class PropertyItems implements PropertyInterface, JsonSerializable
     {
         if ($this->type === ItemsType::REF) {
             $ref = explode('\\', $this->ref);
-            $ref = last($ref);
+            $ref = end($ref);
 
             return ['$ref' => "#/components/schemas/$ref"];
         }
