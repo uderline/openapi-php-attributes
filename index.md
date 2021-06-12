@@ -1,37 +1,194 @@
-## Welcome to GitHub Pages
+# Before you start ...
 
-You can use the [editor on GitHub](https://github.com/uderline/openapi-php-attributes/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+## What is OPAG ?
+OpenApi PHP Attributes Generator is a library made to automatically generate a valid OA3 file which describes your API.
+Each path is described in your PHP files (often your controllers) using [PHP 8 attributes](https://stitcher.io/blog/attributes-in-php-8).
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+## Why should I use OpenApi in the first place ?
+Having a file describing your API will allow you to share it with your community (if it's public) and it can be used 
+with softwares such as Swagger or Postman.
 
-### Markdown
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+## Recommendations
+We recommend having some knowledge on OpenApi: https://spec.openapis.org/oas/latest.html
 
-```markdown
-Syntax highlighted code block
 
-# Header 1
-## Header 2
-### Header 3
+## Which version compatible
+Only the version 3 is compatible with this library
 
-- Bulleted
-- List
 
-1. Numbered
-2. List
+# How to read this documentation
+- The documentation is split into 3 sections: the header, paths and components
+- Only required values are mentioned in the documentation according to the OpenApi [documentation](https://spec.openapis.org/oas/latest.html)
+- Optional fields can be accessed by respecting the parameters order or using the syntax `#[Element(prop1: "value1")]`
 
-**Bold** and _Italic_ and `Code` text
+# Let's start describing !
 
-[Link](url) and ![Image](src)
+## Header
+On any class, start by adding the [info](https://spec.openapis.org/oas/latest.html#info-object) object.
+```php
+#[Info("Title of your projet", "Version of the API")]
+// Example:
+#[Info("OpenApi PHP Generator", "1.0.0")]
 ```
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+## Paths
+Paths must be described on methods (1 path = 1 route) in a class (a controller).
 
-### Jekyll Themes
+```php
+<?php
+#[Controller]
+class Controller {
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/uderline/openapi-php-attributes/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+}
+```
 
-### Support or Contact
+### Declare routes (GET example)
+```php
+<?php
+#[Controller]
+class Controller {
+    #[
+        Route(Route::GET, "/path")
+    ]
+    public function getAll() { }
+}
+```
 
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+### Declare a parameter (PUT example)
+```php
+<?php
+#[Controller]
+class Controller {
+    #[
+        Route(Route::PUT, "/path/{id}")
+    ]
+    public function put(#[Parameter] int $id) { }
+}
+```
+
+### Declare a request body with properties
+```php
+<?php
+#[Controller]
+class Controller {
+    #[
+        Route(Route::PUT, "/path"),
+        Property(PropertyType::STRING, "prop1"),
+        Property(PropertyType::INT, "prop2"),
+    ]
+    public function post() { }
+}
+```
+Available property types:
+- `PropertyType::STRING`: "string"
+- `PropertyType::INT`: "integer"
+- `PropertyType::BOOLEAN`: "boolean"
+- `PropertyType::REF`: "ref" (explained below)
+
+### Declare a simple response (POST example)
+```php
+<?php
+#[Controller]
+class Controller {
+    #[
+        Route(Route::POST, "/path"),
+        Property(PropertyType::STRING, "prop1"),
+        Property(PropertyType::INT, "prop2"),
+        Response(201)
+    ]
+    public function post() { }
+}
+```
+*The response code is actually optional*
+
+### Declare a response with properties (GET example)
+This method will return:
+```json
+{
+    "prop1": "value1",
+    "prop2": ["val1", "val2", "val3"],
+    "prop3": "value3"
+}
+```
+
+```php
+<?php
+#[Controller]
+class Controller {
+    #[
+        Route(Route::GET, "/path/{id}"),
+        Response,
+        Property(PropertyType::STRING, "prop1"),
+        Property(PropertyType::ARRAY, "prop2"),
+        PropertyItems(PropertyType::STRING),
+        Property(PropertyType::INT, "prop3")
+    ]
+    public function get(#[Parameter] int $id) { }
+}
+```
+
+### Create OA3 components ($ref)
+A component is a PHP class and will often be an entity (or a model). 
+On this entity, declare a schema and it's properties. The name of the schema is the name of the class.
+
+```php
+<?php
+#[
+    Schema,
+    Property(PropertyType::STRING, "prop1"),
+    Property(PropertyType::STRING, "prop2", enum: ["val1", "val2", "val3"]), // Enum type
+    Property(PropertyType::ARRAY, "prop3"),
+    PropertyItems(PropertyType::INT),
+    Property(PropertyType::BOOLEAN, "prop4"),
+]
+class Entity {
+
+}
+```
+
+### Use a component
+
+#### Response
+```php
+<?php
+class Controller {
+    #[Response(ref: Entity::class)]
+    public function get() {}
+}
+```
+Means the method will return something like:
+```json
+{
+    "prop1": "value 1",
+    "prop2": "val2",
+    "prop3": [1, 2, 3],
+    "prop4": true
+}
+```
+
+If instead we have
+```php
+<?php
+class Controller {
+    #[Response(schemaType: ResponseType::ARRAY, ref: Entity::class)]
+    public function get() {}
+}
+```
+then it means the method will return something like:
+```json
+[
+    {
+        "prop1": "value 1",
+        "prop2": "val2",
+        "prop3": [1, 2, 3],
+        "prop4": true
+    },
+    {
+        "prop1": "value 12",
+        "prop2": "val22",
+        "prop3": [12, 22, 32],
+        "prop4": false
+    }
+]
+```
