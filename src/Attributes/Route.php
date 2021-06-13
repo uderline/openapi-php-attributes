@@ -79,7 +79,7 @@ class Route implements JsonSerializable
             $array[$this->route][$this->method]["parameters"] = $this->getParams;
         }
 
-        if ($this->requestBody) {
+        if ($this->requestBody && !$this->requestBody->empty()) {
             $array[$this->route][$this->method]["requestBody"] = $this->requestBody;
         }
 

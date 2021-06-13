@@ -33,7 +33,7 @@ class DummyController
         Route(Route::GET, "/path/entity/{id}", ["Dummy"], "Get an entity with a ref"),
         Response(ref: DummyComponent::class)
     ]
-    public function getEntity(#[Parameter("id")] int $id): void
+    public function getEntity(#[Parameter] int $id): void
     {
 
     }
@@ -64,7 +64,7 @@ class DummyController
         Property(PropertyType::STRING, "prop3", "Prop3 description", "Value 3 example"),
         Response(201)
     ]
-    public function post(Request $requestBody): void
+    public function post(): void
     {
 
     }
@@ -76,7 +76,7 @@ class DummyController
         Property(PropertyType::BOOLEAN, "prop3"),
         Response(204)
     ]
-    public function put(): void
+    public function put(#[Parameter] int $id): void
     {
 
     }

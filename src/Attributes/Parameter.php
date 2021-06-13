@@ -18,11 +18,14 @@ class Parameter implements JsonSerializable
     private string $paramType;
 
     public function __construct(
-        private string $description,
-        private bool $required = true,
+        private string $description = "",
         private string $in = "path",
+        private ?bool $required = null,
         private mixed $example = ""
     ) {
+        if ($in === "path") {
+            $this->required = true;
+        }
     }
 
     public function setName(string $name): void
@@ -41,12 +44,20 @@ class Parameter implements JsonSerializable
 
     public function jsonSerialize(): array
     {
-        return [
+        $param = [
             "name" => $this->name,
             "in" => $this->in,
-            "description" => $this->description,
-            "required" => $this->required,
             "schema" => ["type" => $this->paramType]
         ];
+
+        if ($this->required) {
+            $param["required"] = $this->required;
+        }
+
+        if ($this->description) {
+            $param["description"] = $this->description;
+        }
+
+        return $param;
     }
 }

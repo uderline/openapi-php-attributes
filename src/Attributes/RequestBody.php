@@ -23,6 +23,11 @@ class RequestBody implements JsonSerializable
         $this->schema = $schema;
     }
 
+    public function empty(): bool
+    {
+        return !$this->schema;
+    }
+
     public function jsonSerialize(): array
     {
         if (!$this->schema) {

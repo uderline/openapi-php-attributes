@@ -22,7 +22,6 @@ class GenerateHttp
     {
         foreach ($reflectionClass->getMethods() as $method) {
             $methodAttributes = $method->getAttributes();
-            $methodParameters = $method->getParameters();
 
             $route = array_filter($methodAttributes, fn(ReflectionAttribute $attribute) => $attribute->getName() === Route::class);
 
@@ -30,48 +29,10 @@ class GenerateHttp
                 continue;
             }
 
-            $parameters = array_map(
-                function (ReflectionParameter $param) {
-                    return array_map(
-                        function (ReflectionAttribute $attribute) use ($param) {
-                            $instance = $attribute->newInstance();
-                            $instance->setName($param->getName());
-                            $instance->setParamType($param->getType());
-
-                            return $instance;
-                        },
-                        $param->getAttributes(Parameter::class, ReflectionAttribute::IS_INSTANCEOF)
-                    );
-                },
-                $methodParameters
-            );
+            $parameters = $this->getParameters($method->getParameters());
 
             $pathBuilder = new PathMethodBuilder();
-
-            // Look for a Request type parameter and add it to the builder
-            foreach ($methodParameters as $param) {
-                if ((string)$param->getType() !== Request::class) {
-                    continue;
-                }
-
-                // Check if the parameter has an attribute
-                $paramAttributes = $param->getAttributes(RequestBody::class, ReflectionAttribute::IS_INSTANCEOF);
-                $requestBodyAttr = array_filter(
-                    $paramAttributes,
-                    function (ReflectionAttribute $attribute) {
-                        return ($attribute->getName() === RequestBody::class) ? $attribute : null;
-                    }
-                );
-
-                // If so, use it. Otherwise, set a default one
-                if (count($requestBodyAttr) === 1) {
-                    $pathBuilder->setRequestBody(reset($requestBodyAttr)->newInstance());
-                    break;
-                }
-
-                $pathBuilder->setRequestBody(new RequestBody());
-                break;
-            }
+            $pathBuilder->setRequestBody(new RequestBody());
 
             // Add method Attributes to the builder
             foreach ($methodAttributes as $attribute) {
@@ -80,6 +41,7 @@ class GenerateHttp
 
                 match ($name) {
                     Route::class => $pathBuilder->setRoute($instance, $parameters),
+                    RequestBody::class => $pathBuilder->setRequestBody($instance),
                     Property::class => $pathBuilder->addProperty($instance),
                     PropertyItems::class => $pathBuilder->setPropertyItems($instance),
                     MediaProperty::class => $pathBuilder->setMediaProperty($instance),
@@ -88,13 +50,30 @@ class GenerateHttp
                 };
             }
 
-            $requestBodyAttr = null;
-
             $route = $pathBuilder->getRoute();
             if ($route) {
                 $this->paths[] = $route;
             }
         }
+    }
+
+    private function getParameters(array $methodParameters): array
+    {
+        return array_map(
+            function (ReflectionParameter $param) {
+                return array_map(
+                    function (ReflectionAttribute $attribute) use ($param) {
+                        $instance = $attribute->newInstance();
+                        $instance->setName($param->getName());
+                        $instance->setParamType($param->getType());
+
+                        return $instance;
+                    },
+                    $param->getAttributes(Parameter::class, ReflectionAttribute::IS_INSTANCEOF)
+                );
+            },
+            $methodParameters
+        );
     }
 
     public function build(): array
