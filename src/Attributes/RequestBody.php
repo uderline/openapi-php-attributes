@@ -15,7 +15,7 @@ class RequestBody implements JsonSerializable
 
     public function __construct(private ?string $type = null)
     {
-        $type ??= RequestBodyType::JSON;
+        $this->type ??= RequestBodyType::JSON;
     }
 
     public function setSchema(Schema $schema): void

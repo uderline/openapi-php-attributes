@@ -18,7 +18,7 @@ class Parameter implements JsonSerializable
     private string $paramType;
 
     public function __construct(
-        private string $description = "",
+        private ?string $description = null,
         private string $in = "path",
         private ?bool $required = null,
         private mixed $example = ""

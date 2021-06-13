@@ -45,19 +45,19 @@ use JsonSerializable;
 
     public function jsonSerialize(): array
     {
-       $schema = [];
+       $schema = [
+           "type" => $this->schemaType
+       ];
 
         if ($this->schemaType === SchemaType::ARRAY) {
-            $schema = reset($this->properties);
+            $schema += json_decode(json_encode(reset($this->properties)), true);
         } elseif ($this->schemaType === SchemaType::OBJECT) {
             $firstProperty = reset($this->properties);
 
             if ($firstProperty instanceof RefProperty || $firstProperty instanceof MediaProperty) {
                 $schema = $firstProperty;
             } else {
-                $array = [
-                    "type" => $this->schemaType
-                ];
+                $array = [];
 
                 if ($this->required) {
                     $array["required"] = $this->required;

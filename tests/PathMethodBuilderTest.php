@@ -116,7 +116,7 @@ class PathMethodBuilderTest extends TestCase
 
         $builder = new PathMethodBuilder();
         $builder->setRoute($route, []);
-        $builder->setRequestBody(new RequestBody(RequestBodyType::JSON));
+        $builder->setRequestBody(new RequestBody());
         $builder->addProperty($property);
         $builder->setPropertyItems(new PropertyItems(PropertyType::INT));
         $route = $builder->getRoute();

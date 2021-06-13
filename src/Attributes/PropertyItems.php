@@ -43,17 +43,19 @@ class PropertyItems implements PropertyInterface, JsonSerializable
 
     public function jsonSerialize(): array
     {
+        $array = [
+            "items" => []
+        ];
+
         if ($this->type === ItemsType::REF && $this->ref) {
-            return [
-                "items" => [
-                    '$ref' => "#/components/schemas/$this->ref"
-                ]
+            $array["items"] = ['$ref' => "#/components/schemas/$this->ref"];
+        } else {
+            $array["items"] = [
+                "type" => $this->type,
+                "example" => $this->example
             ];
         }
 
-        return [
-            "type" => $this->type,
-            "example" => $this->example
-        ];
+        return $array;
     }
 }
