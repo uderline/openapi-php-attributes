@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace OpenApiGenerator;
 
 use OpenApiGenerator\Attributes\MediaProperty;
@@ -13,7 +15,7 @@ use OpenApiGenerator\Types\PropertyType;
 use OpenApiGenerator\Types\SchemaType;
 
 /**
- * This represents an OpenAPI path which has a route with only ONE m    ethod (GET, POST, PUT or PATCH)
+ * This represents an OpenAPI path which has a route with only ONE method (GET, POST, PUT or PATCH)
  * Paths are merged in the generator
  */
 class PathMethodBuilder

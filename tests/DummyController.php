@@ -26,7 +26,7 @@ class DummyController
     ]
     public function get(): void
     {
-
+        //
     }
 
     #[
@@ -35,7 +35,7 @@ class DummyController
     ]
     public function getEntity(#[Parameter] int $id): void
     {
-
+        //
     }
 
     #[
@@ -44,7 +44,7 @@ class DummyController
     ]
     public function getEntities(): void
     {
-
+        //
     }
 
     #[
@@ -54,7 +54,7 @@ class DummyController
     ]
     public function getImage(#[Parameter("prop1")] int $prop1): void
     {
-
+        //
     }
 
     #[
@@ -66,7 +66,7 @@ class DummyController
     ]
     public function post(): void
     {
-
+        //
     }
 
     #[
@@ -78,6 +78,6 @@ class DummyController
     ]
     public function put(#[Parameter] int $id): void
     {
-
+        //
     }
 }

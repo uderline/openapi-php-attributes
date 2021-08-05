@@ -18,6 +18,6 @@ class SimpleController
     ]
     public function get(#[Parameter] int $id): void
     {
-
+        //
     }
 }

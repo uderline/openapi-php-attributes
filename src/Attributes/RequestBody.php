@@ -1,20 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace OpenApiGenerator\Attributes;
 
+use Attribute;
 use OpenApiGenerator\Types\RequestBodyType;
 use JsonSerializable;
 
 /**
  * The entire request body where you can specify the return type and a schema
  */
-#[\Attribute]
+#[Attribute]
 class RequestBody implements JsonSerializable
 {
     private ?Schema $schema = null;
 
-    public function __construct(private ?string $type = null)
-    {
+    public function __construct(
+        private ?string $type = null
+    ) {
         $this->type ??= RequestBodyType::JSON;
     }
 

@@ -1,8 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace OpenApiGenerator\Attributes;
 
-#[\Attribute] class Controller
-{
+use Attribute;
 
+#[Attribute]
+class Controller
+{
+    //
 }

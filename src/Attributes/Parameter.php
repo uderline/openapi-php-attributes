@@ -1,17 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace OpenApiGenerator\Attributes;
 
+use Attribute;
 use JsonSerializable;
-use OpenApiGenerator\Types\PropertyType;
-use OpenApiGenerator\Types\SchemaType;
 
 /**
  * Represents a parameter (e.g. /route/{id} where id is the parameter)
  *
  * A schema is automatically set to generate the parameter type
  */
-#[\Attribute]
+#[Attribute]
 class Parameter implements JsonSerializable
 {
     private string $name;

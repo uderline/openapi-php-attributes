@@ -1,18 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace OpenApiGenerator\Attributes;
 
-use OpenApiGenerator\Types\MediaType;
-use OpenApiGenerator\Types\PropertyType;
+use Attribute;
 use JsonSerializable;
-use OpenApiGenerator\Types\SchemaType;
 
 /**
  * This represents an open api property.
  * The property must have a type and a property name and can have a description and an example
  * If the property is an array, a PropertyItems must be set
  */
-#[\Attribute(\Attribute::IS_REPEATABLE | \Attribute::TARGET_ALL)]
+#[Attribute(Attribute::IS_REPEATABLE | Attribute::TARGET_ALL)]
 class MediaProperty implements PropertyInterface, JsonSerializable
 {
     public function __construct(
@@ -49,6 +49,4 @@ class MediaProperty implements PropertyInterface, JsonSerializable
     {
         return $this->contentEncoding;
     }
-
-
 }

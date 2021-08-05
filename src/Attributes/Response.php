@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace OpenApiGenerator\Attributes;
 
+use Attribute;
 use OpenApiGenerator\Types\ItemsType;
 use OpenApiGenerator\Types\PropertyType;
 use OpenApiGenerator\Types\ResponseType;
@@ -13,7 +16,7 @@ use JsonSerializable;
  * Additionally, a schema type can be added (array or object) and a ref which will return any other property
  * Consider the ref parameter like a shortcut
  */
-#[\Attribute] class Response implements JsonSerializable
+#[Attribute] class Response implements JsonSerializable
 {
     private ?Schema $schema = null;
 
@@ -23,8 +26,7 @@ use JsonSerializable;
         private ?string $responseType = null,
         private ?string $schemaType = SchemaType::OBJECT,
         private ?string $ref = null
-    )
-    {
+    ) {
         if ($ref) {
             $this->schema = new Schema($schemaType);
 

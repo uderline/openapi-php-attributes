@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace OpenApiGenerator;
 
 use OpenApiGenerator\Attributes\Controller;
@@ -12,10 +14,6 @@ use ReflectionException;
 class Generator
 {
     private const OPENAPI_VERSION = "3.0.0";
-
-    public function __construct()
-    {
-    }
 
     /**
      * Start point of the Open Api generator
