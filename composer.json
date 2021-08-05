@@ -1,8 +1,10 @@
 {
     "name": "uderline/openapi-php-attributes",
-    "description": "description",
+    "description": "Automatically render your OpenApi 3 file describing your PHP API using attributes",
+    "keywords": ["api", "php", "json", "attributes", "openapi", "renderer", "api-rest", "openapi3", "php8"],
     "minimum-stability": "stable",
-    "license": "proprietary",
+    "homepage": "https://uderline.github.io/openapi-php-attributes/",
+    "license": "MIT",
     "authors": [
         {
             "name": "Joseph Martell",
@@ -11,6 +13,7 @@
         }
     ],
     "require": {
+        "php": ">=8.0",
         "symfony/finder": "^5.3",
         "symfony/http-foundation": "^5.3"
     },
