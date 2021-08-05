@@ -1,14 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace OpenApiGenerator\Attributes;
 
+use Attribute;
 use OpenApiGenerator\Types\SchemaType;
 use JsonSerializable;
 
 /**
  * A schema represents a list of properties
  */
-#[\Attribute(\Attribute::TARGET_CLASS)] class Schema implements JsonSerializable
+#[Attribute(Attribute::TARGET_CLASS)]
+class Schema implements JsonSerializable
 {
     private array $properties = [];
     private bool $noMedia = false;
@@ -17,8 +21,8 @@ use JsonSerializable;
         private string $schemaType,
         private ?array $required = null,
         private ?string $name = null
-    )
-    {
+    ) {
+        //
     }
 
     public function getName(): ?string

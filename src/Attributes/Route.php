@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace OpenApiGenerator\Attributes;
 
+use Attribute;
 use JsonSerializable;
 
 /**
@@ -9,7 +12,7 @@ use JsonSerializable;
  *
  * On top of the normal route info, there are all parameters, the request body and the response.
  */
-#[\Attribute]
+#[Attribute]
 class Route implements JsonSerializable
 {
     public const GET = 'get';
@@ -27,6 +30,7 @@ class Route implements JsonSerializable
         private array $tags = [],
         private string $summary = ""
     ) {
+        //
     }
 
     public function addParam(Parameter $params): void
@@ -67,6 +71,8 @@ class Route implements JsonSerializable
 
     public function jsonSerialize(): array
     {
+        $array = [];
+
         if ($this->tags) {
             $array[$this->route][$this->method]["tags"] = $this->tags;
         }
