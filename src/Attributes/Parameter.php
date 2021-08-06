@@ -38,9 +38,9 @@ class Parameter implements JsonSerializable
     {
         if ($paramType === 'int') {
             $this->paramType = 'integer';
-            return;
+        } else {
+            $this->paramType = $paramType;
         }
-        $this->paramType = $paramType;
     }
 
     public function jsonSerialize(): array

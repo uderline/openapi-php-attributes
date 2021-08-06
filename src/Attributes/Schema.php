@@ -44,13 +44,13 @@ class Schema implements JsonSerializable
         }
 
         // By default, return json type
-        return "application/json";
+        return 'application/json';
     }
 
     public function jsonSerialize(): array
     {
        $schema = [
-           "type" => $this->schemaType
+           'type' => $this->schemaType
        ];
 
         if ($this->schemaType === SchemaType::ARRAY) {
@@ -64,12 +64,12 @@ class Schema implements JsonSerializable
                 $array = [];
 
                 if ($this->required) {
-                    $array["required"] = $this->required;
+                    $array['required'] = $this->required;
                 }
 
                 foreach ($this->properties as $property) {
                     if ($property instanceof Property) {
-                        $array["properties"][$property->getProperty()] = $property;
+                        $array['properties'][$property->getProperty()] = $property;
                     }
                 }
 
@@ -84,7 +84,7 @@ class Schema implements JsonSerializable
 
         return [
             $this->getMediaType() => [
-                "schema" => $schema
+                'schema' => $schema
             ]
         ];
     }

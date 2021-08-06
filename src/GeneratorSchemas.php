@@ -9,7 +9,7 @@ use OpenApiGenerator\Attributes\PropertyItems;
 use OpenApiGenerator\Attributes\Schema;
 use ReflectionClass;
 
-class GenerateSchemas
+class GeneratorSchemas
 {
     private array $components = [];
 

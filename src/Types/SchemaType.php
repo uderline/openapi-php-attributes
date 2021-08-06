@@ -8,5 +8,5 @@ class SchemaType
 {
     public const OBJECT = 'object';
     public const ARRAY = 'array';
-    public const STRING = "string";
+    public const STRING = 'string';
 }

@@ -53,16 +53,16 @@ class Property implements PropertyInterface, JsonSerializable
         }
 
         $array = [
-            "type" => $this->type,
-            "description" => $this->description
+            'type' => $this->type,
+            'description' => $this->description
         ];
 
         if ($this->format) {
-            $array["format"] = $this->format;
+            $array['format'] = $this->format;
         }
 
         if ($this->enum) {
-            $array["enum"] = $this->enum;
+            $array['enum'] = $this->enum;
         }
 
         return $array;

@@ -1,6 +1,8 @@
 <?php
 
-namespace OpenApiGenerator\Tests;
+declare(strict_types=1);
+
+namespace OpenApiGenerator\Tests\Examples;
 
 use OpenApiGenerator\Attributes\Controller;
 use OpenApiGenerator\Attributes\Info;

@@ -1,25 +1,28 @@
 <?php
 
-namespace OpenApiGenerator;
+declare(strict_types=1);
+
+namespace OpenApiGenerator\Tests;
 
 use OpenApiGenerator\Attributes\Parameter;
 use OpenApiGenerator\Attributes\RequestBody;
 use OpenApiGenerator\Attributes\Response;
 use OpenApiGenerator\Attributes\Route;
-use OpenApiGenerator\Tests\SimpleController;
+use OpenApiGenerator\GeneratorHttp;
+use OpenApiGenerator\Tests\Examples\SimpleController;
 use PHPUnit\Framework\TestCase;
+use ReflectionClass;
 
 class GenerateHttpTest extends TestCase
 {
-
-    public function testAppend()
+    public function testAppend(): void
     {
-        $dummyReflection = new \ReflectionClass(SimpleController::class);
+        $dummyReflection = new ReflectionClass(SimpleController::class);
 
-        $generateHttp = new GenerateHttp();
+        $generateHttp = new GeneratorHttp();
         $generateHttp->append($dummyReflection);
 
-        $reflection = new \ReflectionClass($generateHttp);
+        $reflection = new ReflectionClass($generateHttp);
         $pathsProperty = $reflection->getProperty("paths");
         $pathsProperty->setAccessible(true);
         $actual = $pathsProperty->getValue($generateHttp);
@@ -36,7 +39,7 @@ class GenerateHttpTest extends TestCase
         self::assertEquals([$expectedRoute], $actual);
     }
 
-    public function testBuild()
+    public function testBuild(): void
     {
         $this->markTestSkipped("to implement");
     }

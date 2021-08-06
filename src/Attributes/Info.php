@@ -13,7 +13,7 @@ class Info implements JsonSerializable
     public function __construct(
         private string $title,
         private string $version,
-        private string $description = "",
+        private string $description = '',
     ) {
         //
     }
@@ -23,15 +23,10 @@ class Info implements JsonSerializable
      */
     public function jsonSerialize(): array
     {
-        $data = [
-            "title" => $this->title,
-            "version" => $this->version,
+        return [
+            'title' => $this->title,
+            'version' => $this->version,
+            'description' =>  $this->description,
         ];
-
-        if ($this->description) {
-            $data['description'] = $this->description;
-        }
-
-        return $data;
     }
 }

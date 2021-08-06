@@ -1,6 +1,8 @@
 <?php
 
-namespace OpenApiGenerator\Tests;
+declare(strict_types=1);
+
+namespace OpenApiGenerator\Tests\Examples;
 
 use OpenApiGenerator\Attributes\Controller;
 use OpenApiGenerator\Attributes\Info;
@@ -12,7 +14,6 @@ use OpenApiGenerator\Attributes\Route;
 use OpenApiGenerator\Types\MediaType;
 use OpenApiGenerator\Types\PropertyType;
 use OpenApiGenerator\Types\SchemaType;
-use Symfony\Component\HttpFoundation\Request;
 
 #[Info("title", "1.0.0")]
 #[Controller]

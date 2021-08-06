@@ -15,11 +15,10 @@ use JsonSerializable;
 #[Attribute(Attribute::IS_REPEATABLE | Attribute::TARGET_ALL)]
 class PropertyItems implements PropertyInterface, JsonSerializable
 {
-    private mixed $example = "";
-
     public function __construct(
         private string $type,
-        private ?string $ref = null
+        private ?string $ref = null,
+        private mixed $example = '',
     ) {
         if ($this->ref) {
             $ref = explode('\\', $this->ref);
@@ -53,8 +52,8 @@ class PropertyItems implements PropertyInterface, JsonSerializable
             "items" => []
         ];
 
-        if ($this->type === ItemsType::REF && $this->ref) {
-            $array["items"] = ['$ref' => "#/components/schemas/$this->ref"];
+        if ($this->type === ItemsType::REF && $this->getRef()) {
+            $array["items"] = ['$ref' => "#/components/schemas/{$this->getRef()}"];
         } else {
             $array["items"] = [
                 "type" => $this->type,

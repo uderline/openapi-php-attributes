@@ -16,7 +16,8 @@ use JsonSerializable;
  * Additionally, a schema type can be added (array or object) and a ref which will return any other property
  * Consider the ref parameter like a shortcut
  */
-#[Attribute] class Response implements JsonSerializable
+#[Attribute]
+class Response implements JsonSerializable
 {
     private ?Schema $schema = null;
 

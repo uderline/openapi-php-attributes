@@ -16,7 +16,7 @@ use ReflectionClass;
 use ReflectionParameter;
 use Symfony\Component\HttpFoundation\Request;
 
-class GenerateHttp
+class GeneratorHttp
 {
     private array $paths = [];
 
@@ -48,7 +48,6 @@ class GenerateHttp
                     PropertyItems::class => $pathBuilder->setPropertyItems($instance),
                     MediaProperty::class => $pathBuilder->setMediaProperty($instance),
                     Response::class => $pathBuilder->setResponse($instance),
-                    default => true
                 };
             }
 
@@ -67,7 +66,7 @@ class GenerateHttp
                     function (ReflectionAttribute $attribute) use ($param) {
                         $instance = $attribute->newInstance();
                         $instance->setName($param->getName());
-                        $instance->setParamType($param->getType());
+                        $instance->setParamType((string) $param->getType());
 
                         return $instance;
                     },

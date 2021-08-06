@@ -29,11 +29,11 @@ class MediaProperty implements PropertyInterface, JsonSerializable
     public function jsonSerialize(): array
     {
         return [
-            "type" => "string",
-            "format" => $this->contentEncoding
+            'type' => 'string',
+            'format' => $this->contentEncoding
             // TODO For Body request ?
-//            "contentMediaType" => $this->contentMediaType,
-//            "contentEncoding" => $this->contentEncoding
+//            'contentMediaType' => $this->contentMediaType,
+//            'contentEncoding' => $this->contentEncoding
         ];
     }
 
