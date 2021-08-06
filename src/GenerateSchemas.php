@@ -34,10 +34,10 @@ class GenerateSchemas
 
     public function build(): array
     {
-        $array = ["components" => ["schemas" => []]];
+        $array = [];
 
         foreach ($this->components as $component) {
-            $array["components"]["schemas"][$component->getName()] = $component;
+            $array[$component->getName()] = $component;
         }
 
         return $array;

@@ -6,7 +6,7 @@ namespace OpenApiGenerator\Attributes;
 
 use Attribute;
 
-#[Attribute]
+#[Attribute(Attribute::TARGET_CLASS)]
 class Controller
 {
     //
