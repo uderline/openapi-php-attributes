@@ -8,7 +8,7 @@ use OpenApiGenerator\Attributes\PropertyItems;
 use OpenApiGenerator\Attributes\RequestBody;
 use OpenApiGenerator\Attributes\Response;
 use OpenApiGenerator\Attributes\Route;
-use OpenApiGenerator\Attributes\SchemaSecurity;
+use OpenApiGenerator\Attributes\Schema;
 use OpenApiGenerator\PathMethodBuilder;
 use OpenApiGenerator\Types\PropertyType;
 use OpenApiGenerator\Types\RequestBodyType;
@@ -69,7 +69,7 @@ class PathMethodBuilderTest extends TestCase
         $builder->addProperty($property);
 
         // Manually make the route
-        $schema = new SchemaSecurity(SchemaType::OBJECT);
+        $schema = new Schema(SchemaType::OBJECT);
         $schema->addProperty($property);
         $requestBody = new RequestBody(RequestBodyType::JSON);
         $requestBody->setSchema($schema);
@@ -95,7 +95,7 @@ class PathMethodBuilderTest extends TestCase
         $builder->addProperty($property);
 
         // Manually make the route
-        $schema = new SchemaSecurity(SchemaType::ARRAY);
+        $schema = new Schema(SchemaType::ARRAY);
         $schema->addProperty($property);
         $requestBody = new RequestBody(RequestBodyType::JSON);
         $requestBody->setSchema($schema);
