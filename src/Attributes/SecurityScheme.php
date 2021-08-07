@@ -8,10 +8,10 @@ use Attribute;
 use JsonSerializable;
 
 #[Attribute(Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]
-class SchemaSecurity implements JsonSerializable
+class SecurityScheme implements JsonSerializable
 {
     public function __construct(
-        private string $schemaKey = '',
+        private string $securityKey = '',
         private string $type = '',
         private string $name= '',
         private string $in = '',
@@ -27,7 +27,7 @@ class SchemaSecurity implements JsonSerializable
     public function jsonSerialize()
     {
         return [
-            $this->schemaKey => [
+            $this->securityKey => [
                 'type' => $this->type,
                 'name' => $this->name,
                 'in' => $this->in,
