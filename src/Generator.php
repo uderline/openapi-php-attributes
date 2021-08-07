@@ -8,7 +8,7 @@ use JetBrains\PhpStorm\Pure;
 use OpenApiGenerator\Attributes\Controller;
 use OpenApiGenerator\Attributes\Info;
 use OpenApiGenerator\Attributes\Schema;
-use OpenApiGenerator\Attributes\SecurityScheme;
+use OpenApiGenerator\Attributes\SecuritySchema;
 use OpenApiGenerator\Attributes\Server;
 use ReflectionAttribute;
 use ReflectionClass;
@@ -156,8 +156,8 @@ class Generator
      */
     private function loadSchemaSecurity(ReflectionClass $reflectionClass): void
     {
-        if (count($reflectionClass->getAttributes(SecurityScheme::class))) {
-            $securitySchemas = $reflectionClass->getAttributes(SecurityScheme::class);
+        if (count($reflectionClass->getAttributes(SecuritySchema::class))) {
+            $securitySchemas = $reflectionClass->getAttributes(SecuritySchema::class);
 
             foreach ($securitySchemas as $item) {
                 $data = $item->newInstance()->jsonSerialize();

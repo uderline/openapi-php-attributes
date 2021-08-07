@@ -8,7 +8,7 @@ use Attribute;
 use JsonSerializable;
 
 #[Attribute(Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]
-class SecurityScheme implements JsonSerializable
+class SecuritySchema implements JsonSerializable
 {
     public function __construct(
         private string $securityKey,
