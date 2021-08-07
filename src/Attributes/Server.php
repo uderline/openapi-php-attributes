@@ -12,21 +12,21 @@ use JsonSerializable;
 class Server implements JsonSerializable
 {
     public function __construct(
-        private string $description,
         private string $url,
-    ){
+        private string $description = '',
+    ) {
         //
     }
 
     /**
      * @inheritDoc
      */
-    #[ArrayShape(['description' => 'string', 'url' => 'string'])]
+    #[ArrayShape(['url' => 'string', 'description' => 'string'])]
     public function jsonSerialize(): array
     {
         return [
-            'description' => $this->description,
             'url' => $this->url,
+            'description' => $this->description,
         ];
     }
 }

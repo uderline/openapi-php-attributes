@@ -14,6 +14,7 @@ class Info implements JsonSerializable
     public function __construct(
         private string $title,
         private string $version = '1.0.0',
+        private string $summary = '',
         private string $description = '',
     ) {
         //
