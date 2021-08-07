@@ -23,7 +23,7 @@ class Response implements JsonSerializable
 
     public function __construct(
         private int $code = 200,
-        private string $description = "",
+        private string $description = '',
         private ?string $responseType = null,
         private ?string $schemaType = SchemaType::OBJECT,
         private ?string $ref = null
@@ -53,12 +53,12 @@ class Response implements JsonSerializable
     {
         $array = [
             $this->code => [
-                "description" => $this->description
+                'description' => $this->description
             ]
         ];
 
         if ($this->schema) {
-            $array[$this->code]["content"] = $this->schema;
+            $array[$this->code]['content'] = $this->schema;
         }
 
         return $array;

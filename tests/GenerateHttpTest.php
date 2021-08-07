@@ -9,7 +9,7 @@ use OpenApiGenerator\Attributes\RequestBody;
 use OpenApiGenerator\Attributes\Response;
 use OpenApiGenerator\Attributes\Route;
 use OpenApiGenerator\GeneratorHttp;
-use OpenApiGenerator\Tests\Examples\SimpleController;
+use OpenApiGenerator\Tests\Examples\Controller\SimpleController;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 
@@ -19,28 +19,28 @@ class GenerateHttpTest extends TestCase
     {
         $dummyReflection = new ReflectionClass(SimpleController::class);
 
-        $generateHttp = new GeneratorHttp();
+        $generateHttp = new GeneratorHttp;
         $generateHttp->append($dummyReflection);
 
         $reflection = new ReflectionClass($generateHttp);
-        $pathsProperty = $reflection->getProperty("paths");
+        $pathsProperty = $reflection->getProperty('paths');
         $pathsProperty->setAccessible(true);
         $actual = $pathsProperty->getValue($generateHttp);
 
-        $expectedParameter = new Parameter();
-        $expectedParameter->setName("id");
-        $expectedParameter->setParamType("integer");
+        $expectedParameter = new Parameter(example: '2');
+        $expectedParameter->setName('id');
+        $expectedParameter->setParamType('float');
 
-        $expectedRoute = new Route(Route::GET, "/path/{id}", ["Dummy"], "Dummy path");
+        $expectedRoute = new Route(Route::GET, '/path/{id}', ['Dummy'], 'Dummy path');
         $expectedRoute->addParam($expectedParameter);
-        $expectedRoute->setRequestBody(new RequestBody());
-        $expectedRoute->setResponse(new Response());
+        $expectedRoute->setRequestBody(new RequestBody);
+        $expectedRoute->setResponse(new Response);
 
         self::assertEquals([$expectedRoute], $actual);
     }
 
     public function testBuild(): void
     {
-        $this->markTestSkipped("to implement");
+        $this->markTestSkipped('to implement');
     }
 }

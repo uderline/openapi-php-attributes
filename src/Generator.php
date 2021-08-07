@@ -40,10 +40,12 @@ class Generator
     }
 
     /**
+     * Create object with using package dependencies.
+     *
      * @return Generator
      */
     #[Pure]
-    public static function factory(): Generator
+    public static function create(): Generator
     {
         return new self(new GeneratorHttp, new GeneratorSchemas);
     }
@@ -64,22 +66,20 @@ class Generator
             try {
                 $reflectionClass = new ReflectionClass($class);
             } catch (ReflectionException $e) {
-                echo '[Waring] ReflectionException ' . $e->getMessage();
+                echo '[Warning] ReflectionException ' . $e->getMessage();
 
                 continue;
             }
 
             $this->loadInfo($reflectionClass);
-
-            if ($this->loadController($reflectionClass)) {
-                continue;
-            }
-
+            $this->loadController($reflectionClass);
             $this->loadSchema($reflectionClass);
-
             $this->loadServer($reflectionClass);
             $this->loadSchemaSecurity($reflectionClass);
         }
+
+        $this->definition['paths'] = $this->generatorHttp->build();
+        $this->definition['components']['schemas'] = $this->generatorSchemas->build();
 
         // Final array to transform to a json file
         return [
@@ -99,9 +99,8 @@ class Generator
      */
     private function loadInfo(ReflectionClass $reflectionClass): void
     {
-        if (count($reflectionClass->getAttributes(Info::class))) {
-            $info = $reflectionClass->getAttributes(Info::class, ReflectionAttribute::IS_INSTANCEOF)[0];
-            $this->definition["info"] = $info->newInstance();
+        if ($infos = $reflectionClass->getAttributes(Info::class, ReflectionAttribute::IS_INSTANCEOF)) {
+            $this->definition["info"] = $infos[0]->newInstance();
         }
     }
 
@@ -110,18 +109,13 @@ class Generator
      * A controller with routes, call the HTTP Generator.
      *
      * @param ReflectionClass $reflectionClass
-     * @return bool
+     * @return void
      */
-    private function loadController(ReflectionClass $reflectionClass): bool
+    private function loadController(ReflectionClass $reflectionClass): void
     {
         if (count($reflectionClass->getAttributes(Controller::class))) {
             $this->generatorHttp->append($reflectionClass);
-            $this->definition = array_merge($this->definition, $this->generatorHttp->build());
-
-            return true;
         }
-
-        return false;
     }
 
     /**
@@ -134,7 +128,6 @@ class Generator
     {
         if (count($reflectionClass->getAttributes(Schema::class))) {
             $this->generatorSchemas->append($reflectionClass);
-            $this->definition['components']['schemas'] = $this->generatorSchemas->build();
         }
     }
 

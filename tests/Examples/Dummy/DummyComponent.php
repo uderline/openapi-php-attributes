@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace OpenApiGenerator\Tests\Examples;
+namespace OpenApiGenerator\Tests\Examples\Dummy;
 
 use OpenApiGenerator\Attributes\Property;
 use OpenApiGenerator\Attributes\PropertyItems;

@@ -50,6 +50,7 @@ class Route implements JsonSerializable
 
     public function getRoute(): string
     {
+        // all routes must starting with /.
         if (substr($this->route, 0, 1) !== '/') {
             return '/' . $this->route;
         }

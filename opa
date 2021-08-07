@@ -24,7 +24,7 @@ foreach ($files as $autoload) {
     include_once $autoload->getPathName();
 }
 
-$generator = \OpenApiGenerator\Generator::factory()->generate();
+$generator = \OpenApiGenerator\Generator::create()->generate();
 
 $schema = stripslashes(json_encode($generator, JSON_PRETTY_PRINT));
 

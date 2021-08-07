@@ -80,15 +80,14 @@ class GeneratorHttp
     public function build(): array
     {
         $paths = [];
+
         foreach ($this->paths as $path) {
-            if (!isset($paths[$path->getRoute()])) {
-                $paths = array_merge($paths, $path->jsonSerialize());
-            } else {
-                $paths = $this->mergeRoutes($paths, $path);
-            }
+            $paths = isset($paths[$path->getRoute()])
+                ? $this->mergeRoutes($paths, $path)
+                : array_merge($paths, $path->jsonSerialize());
         }
 
-        return ["paths" => $paths];
+        return $paths;
     }
 
     private function mergeRoutes($paths, Route $route): array
