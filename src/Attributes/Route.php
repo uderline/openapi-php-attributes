@@ -30,6 +30,7 @@ class Route implements JsonSerializable
         private array $tags = [],
         private string $summary = '',
         private string $description = '',
+        private mixed $security = null,
     ) {
         //
     }
@@ -100,7 +101,11 @@ class Route implements JsonSerializable
         }
 
         if ($this->description) {
-            $array[$this->getRoute()][$this->method]['description'] = $this->response;
+            $array[$this->getRoute()][$this->method]['description'] = $this->description;
+        }
+
+        if ($this->security) {
+            $array[$this->getRoute()][$this->method]['security'] = $this->security;
         }
 
         return $array;
