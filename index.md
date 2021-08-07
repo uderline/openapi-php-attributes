@@ -25,12 +25,24 @@ Only the version 3 is compatible with this library
 # Let's start describing !
 
 ## Header
-On any class, start by adding the [info](https://spec.openapis.org/oas/latest.html#info-object) object.
+On any class, start by adding the required [Info](https://spec.openapis.org/oas/latest.html#info-object) object.
 ```php
-#[Info("Title of your projet", "Version of the API")]
+#[Info("Title of your project", "Version of the API")]
 // Example:
 #[Info("OpenApi PHP Generator", "1.0.0")]
 ```
+
+Then, you can add one or more [Server](https://spec.openapis.org/oas/latest.html#server-object) object(s).
+```php
+#[Server("https://api.url.com", "API description")]
+```
+
+## Security
+You can add the [Security Scheme](https://spec.openapis.org/oas/v3.1.0#security-scheme-object) policy of your API.
+```php
+#[SecurityScheme("securityKey", "type", "name", "in", "scheme", "description", "bearerFormat")]
+```
+
 
 ## Paths
 Paths must be described on methods (1 path = 1 route) in a class (a controller).
