@@ -16,13 +16,14 @@ use JsonSerializable;
  * Additionally, a schema type can be added (array or object) and a ref which will return any other property
  * Consider the ref parameter like a shortcut
  */
-#[Attribute] class Response implements JsonSerializable
+#[Attribute]
+class Response implements JsonSerializable
 {
     private ?Schema $schema = null;
 
     public function __construct(
         private int $code = 200,
-        private string $description = "",
+        private string $description = '',
         private ?string $responseType = null,
         private ?string $schemaType = SchemaType::OBJECT,
         private ?string $ref = null
@@ -52,12 +53,12 @@ use JsonSerializable;
     {
         $array = [
             $this->code => [
-                "description" => $this->description
+                'description' => $this->description
             ]
         ];
 
         if ($this->schema) {
-            $array[$this->code]["content"] = $this->schema;
+            $array[$this->code]['content'] = $this->schema;
         }
 
         return $array;

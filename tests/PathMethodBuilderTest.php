@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace OpenApiGenerator\Tests;
 
 use OpenApiGenerator\Attributes\Parameter;
@@ -14,18 +16,18 @@ use OpenApiGenerator\Types\PropertyType;
 use OpenApiGenerator\Types\RequestBodyType;
 use OpenApiGenerator\Types\SchemaType;
 use PHPUnit\Framework\TestCase;
+use ReflectionClass;
 
 class PathMethodBuilderTest extends TestCase
 {
-
-    public function testAddResponse()
+    public function testAddResponse(): void
     {
         $response = new Response();
 
         $builder = new PathMethodBuilder();
         $builder->setResponse($response);
 
-        $reflection = new \ReflectionClass($builder);
+        $reflection = new ReflectionClass($builder);
         $responseProperty = $reflection->getProperty("currentSchemaHolder");
         $responseProperty->setAccessible(true);
 
@@ -35,14 +37,14 @@ class PathMethodBuilderTest extends TestCase
     /**
      * @requires testSetRoute
      */
-    public function testGetRouteWithoutSavingSchemaHolder()
+    public function testGetRouteWithoutSavingSchemaHolder(): void
     {
         $route = new Route(Route::GET, "/path");
 
         $builder = new PathMethodBuilder();
 
         // Use a reflection to avoid testing PathMethodBuilder::setRoute
-        $reflection = new \ReflectionClass($builder);
+        $reflection = new ReflectionClass($builder);
         $property = $reflection->getProperty("currentRoute");
         $property->setAccessible(true);
         $property->setValue($builder, $route);
@@ -58,7 +60,7 @@ class PathMethodBuilderTest extends TestCase
      * @requires testGetRoute
      * @requires testSetRequestBody
      */
-    public function testAddPropertyObject()
+    public function testAddPropertyObject(): void
     {
         $route = new Route(Route::POST, "/path");
         $property = new Property(PropertyType::INT, "prop1");
@@ -84,7 +86,7 @@ class PathMethodBuilderTest extends TestCase
      *
      * @requires testGetRoute
      */
-    public function testAddPropertyArray()
+    public function testAddPropertyArray(): void
     {
         $route = new Route(Route::POST, "/path");
         $property = new Property(PropertyType::ARRAY, "prop1");
@@ -109,7 +111,7 @@ class PathMethodBuilderTest extends TestCase
      * @requires testAddPropertyArray
      * @requires testGetRoute
      */
-    public function testAddPropertyItems()
+    public function testAddPropertyItems(): void
     {
         $route = new Route(Route::POST, "/path");
         $property = new Property(PropertyType::ARRAY, "prop1");
@@ -122,11 +124,11 @@ class PathMethodBuilderTest extends TestCase
         $route = $builder->getRoute();
 
         // Access the property items of the route to check it has been set
-        $reflection = new \ReflectionClass($route);
+        $reflection = new ReflectionClass($route);
         $requestBodyProperty = $reflection->getProperty("requestBody");
         $requestBodyProperty->setAccessible(true);
         $requestBodyPropertyValue = $requestBodyProperty->getValue($route);
-        $reflection = new \ReflectionClass($requestBodyPropertyValue);
+        $reflection = new ReflectionClass($requestBodyPropertyValue);
         $schemaProperty = $reflection->getProperty("schema");
         $schemaProperty->setAccessible(true);
 
@@ -148,7 +150,7 @@ class PathMethodBuilderTest extends TestCase
         self::assertEquals($expectedArray, $actualArray);
     }
 
-    public function testSetRoute()
+    public function testSetRoute(): void
     {
         $route = new Route(Route::GET, "/path");
 
@@ -156,21 +158,21 @@ class PathMethodBuilderTest extends TestCase
         $builder->setRoute($route, [[new Parameter("desc")]]);
 
         // Use a reflection to avoid testing PathMethodBuilder::getRoute
-        $reflection = new \ReflectionClass($builder);
+        $reflection = new ReflectionClass($builder);
         $property = $reflection->getProperty("currentRoute");
         $property->setAccessible(true);
 
         self::assertEquals($route, $property->getValue($builder));
     }
 
-    public function testSetRequestBody()
+    public function testSetRequestBody(): void
     {
         $requestBody = new RequestBody();
 
         $builder = new PathMethodBuilder();
         $builder->setRequestBody($requestBody);
 
-        $reflection = new \ReflectionClass($builder);
+        $reflection = new ReflectionClass($builder);
         $schemaProperty = $reflection->getProperty("currentSchemaHolder");
         $schemaProperty->setAccessible(true);
 

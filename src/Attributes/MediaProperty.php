@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace OpenApiGenerator\Attributes;
 
 use Attribute;
+use JetBrains\PhpStorm\ArrayShape;
+use JetBrains\PhpStorm\Pure;
 use JsonSerializable;
 
 /**
@@ -26,20 +28,25 @@ class MediaProperty implements PropertyInterface, JsonSerializable
         return $this->contentMediaType;
     }
 
+    #[ArrayShape([
+        'type' => 'string',
+        'format' => 'string'
+    ])]
     public function jsonSerialize(): array
     {
         return [
-            "type" => "string",
-            "format" => $this->contentEncoding
+            'type' => 'string',
+            'format' => $this->contentEncoding
             // TODO For Body request ?
-//            "contentMediaType" => $this->contentMediaType,
-//            "contentEncoding" => $this->contentEncoding
+//            'contentMediaType' => $this->contentMediaType,
+//            'contentEncoding' => $this->contentEncoding
         ];
     }
 
+    #[Pure]
     public function getType(): string
     {
-        return $this->contentMediaType;
+        return $this->getContentMediaType();
     }
 
     /**

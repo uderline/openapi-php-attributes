@@ -1,6 +1,8 @@
 <?php
 
-namespace OpenApiGenerator\Tests;
+declare(strict_types=1);
+
+namespace OpenApiGenerator\Tests\Examples\Dummy;
 
 use OpenApiGenerator\Attributes\Property;
 use OpenApiGenerator\Attributes\Schema;

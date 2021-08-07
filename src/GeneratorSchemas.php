@@ -9,7 +9,7 @@ use OpenApiGenerator\Attributes\PropertyItems;
 use OpenApiGenerator\Attributes\Schema;
 use ReflectionClass;
 
-class GenerateSchemas
+class GeneratorSchemas
 {
     private array $components = [];
 
@@ -34,10 +34,10 @@ class GenerateSchemas
 
     public function build(): array
     {
-        $array = ["components" => ["schemas" => []]];
+        $array = [];
 
         foreach ($this->components as $component) {
-            $array["components"]["schemas"][$component->getName()] = $component;
+            $array[$component->getName()] = $component;
         }
 
         return $array;
