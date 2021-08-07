@@ -28,4 +28,4 @@ $generator = (new \OpenApiGenerator\Generator())->generate();
 
 $schema = stripslashes(json_encode($generator, JSON_PRETTY_PRINT));
 
-file_put_contents($argv[2] . '/oa3.json', $schema);
+file_put_contents($argv[2] . '/openapi.json', $schema);

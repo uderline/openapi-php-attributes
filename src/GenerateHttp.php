@@ -67,7 +67,7 @@ class GenerateHttp
                     function (ReflectionAttribute $attribute) use ($param) {
                         $instance = $attribute->newInstance();
                         $instance->setName($param->getName());
-                        $instance->setParamType($param->getType());
+                        $instance->setParamType((string) $param->getType());
 
                         return $instance;
                     },
