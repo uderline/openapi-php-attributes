@@ -11,13 +11,12 @@ use JsonSerializable;
 class SecurityScheme implements JsonSerializable
 {
     public function __construct(
-        private string $securityKey,
-        private string $type,
-        private string $name,
-        private string $in,
-        private string $scheme,
-        private string $description = '',
+        private string $securityKey = '',
+        private string $type = '',
+        private string $name= '',
+        private string $in = '',
         private string $bearerFormat = '',
+        private string $scheme = '',
     ) {
         //
     }
@@ -27,24 +26,14 @@ class SecurityScheme implements JsonSerializable
      */
     public function jsonSerialize()
     {
-        $securityScheme = [
+        return [
             $this->securityKey => [
                 'type' => $this->type,
                 'name' => $this->name,
                 'in' => $this->in,
+                'bearerFormat' => $this->bearerFormat,
                 'scheme' => $this->scheme,
             ],
         ];
-
-        $securitySchemeKey = &$securityScheme[$this->securityKey];
-        if ($this->description) {
-            $securitySchemeKey['description'] = $this->description;
-        }
-
-        if ($this->bearerFormat) {
-            $securitySchemeKey['bearerFormat'] = $this->bearerFormat;
-        }
-
-        return $securityScheme;
     }
 }
