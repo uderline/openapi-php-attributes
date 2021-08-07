@@ -8,7 +8,7 @@ use JetBrains\PhpStorm\Pure;
 use OpenApiGenerator\Attributes\Controller;
 use OpenApiGenerator\Attributes\Info;
 use OpenApiGenerator\Attributes\Schema;
-use OpenApiGenerator\Attributes\SchemaSecurity;
+use OpenApiGenerator\Attributes\SecurityScheme;
 use OpenApiGenerator\Attributes\Server;
 use ReflectionAttribute;
 use ReflectionClass;
@@ -19,19 +19,11 @@ class Generator
     public const OPENAPI_VERSION = "3.0.0";
 
     /**
-     * default definition json schema.
+     * API description
      *
      * @var array
      */
-    private array $definition = [
-        'info' => [],
-        'paths' => [],
-        'servers' => [],
-        'components' => [
-            'schemas' => [],
-            'securitySchemes' => [],
-        ],
-    ];
+    private array $description = [];
 
     public function __construct(
         private GeneratorHttp $generatorHttp,
@@ -78,17 +70,29 @@ class Generator
             $this->loadSchemaSecurity($reflectionClass);
         }
 
-        $this->definition['paths'] = $this->generatorHttp->build();
-        $this->definition['components']['schemas'] = $this->generatorSchemas->build();
+        $this->description['paths'] = $this->generatorHttp->build();
+        $this->description['components']['schemas'] = $this->generatorSchemas->build();
 
-        // Final array to transform to a json file
-        return [
+        // Final array that will be transformed
+        return $this->makeFinalArray();
+    }
+
+    /**
+     * Array containing the entire API description
+     */
+    public function makeFinalArray(): array
+    {
+        $definition = [
             'openapi' => self::OPENAPI_VERSION,
-            'info' => $this->definition['info'],
-            'servers' => $this->definition['servers'],
-            'paths' => $this->definition['paths'],
-            'components' => $this->definition['components'],
+            'info' => $this->description['info'],
+            'servers' => $this->description['servers'],
+            'paths' => $this->description['paths'],
+            'components' => $this->description['components'],
         ];
+
+        ApiDescriptionChecker::check($definition);
+
+        return $definition;
     }
 
     /**
@@ -100,7 +104,7 @@ class Generator
     private function loadInfo(ReflectionClass $reflectionClass): void
     {
         if ($infos = $reflectionClass->getAttributes(Info::class, ReflectionAttribute::IS_INSTANCEOF)) {
-            $this->definition["info"] = $infos[0]->newInstance();
+            $this->description["info"] = $infos[0]->newInstance();
         }
     }
 
@@ -141,7 +145,7 @@ class Generator
             $serverAttributes = $reflectionClass->getAttributes(Server::class);
 
             foreach ($serverAttributes as $item) {
-                $this->definition['servers'][] = $item->newInstance();
+                $this->description['servers'][] = $item->newInstance();
             }
         }
     }
@@ -152,13 +156,13 @@ class Generator
      */
     private function loadSchemaSecurity(ReflectionClass $reflectionClass): void
     {
-        if (count($reflectionClass->getAttributes(SchemaSecurity::class))) {
-            $securitySchemas = $reflectionClass->getAttributes(SchemaSecurity::class);
+        if (count($reflectionClass->getAttributes(SecurityScheme::class))) {
+            $securitySchemas = $reflectionClass->getAttributes(SecurityScheme::class);
 
             foreach ($securitySchemas as $item) {
                 $data = $item->newInstance()->jsonSerialize();
                 $key = array_keys($data)[0];
-                $this->definition['components']['securitySchemes'][$key] = $data[$key];
+                $this->description['components']['securitySchemes'][$key] = $data[$key];
             }
         }
     }
