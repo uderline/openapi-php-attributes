@@ -8,11 +8,11 @@ Just open an issue saying what's missing ! Feel free to open a PR but we recomme
 
 
 ## Where to start ?
-- Clone this project: `git clone https://github.com/uderline/openapi-php-attributes.git`
+- `composer require uderline/openapi-php-attributes`
 - Describe your API by following this documentation: https://uderline.github.io/openapi-php-attributes/
-- Then, generate the JSON file: `php ./vendor/uderline/openapi-php-attributes/opa /src/files/project /save/the/file`.
+- Then, generate the JSON file: `php ./vendor/uderline/openapi-php-attributes/opag /src/files/project /save/the/file`.
 
-A new file called `oa3.json` has been generated !
+A new file called `openapi.json` has been generated !
 
 
 ## Example
