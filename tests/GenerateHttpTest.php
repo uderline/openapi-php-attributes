@@ -19,7 +19,7 @@ class GenerateHttpTest extends TestCase
     {
         $dummyReflection = new ReflectionClass(SimpleController::class);
 
-        $generateHttp = new GeneratorHttp;
+        $generateHttp = new GeneratorHttp();
         $generateHttp->append($dummyReflection);
 
         $reflection = new ReflectionClass($generateHttp);
@@ -33,8 +33,8 @@ class GenerateHttpTest extends TestCase
 
         $expectedRoute = new Route(Route::GET, '/path/{id}', ['Dummy'], 'Dummy path');
         $expectedRoute->addParam($expectedParameter);
-        $expectedRoute->setRequestBody(new RequestBody);
-        $expectedRoute->setResponse(new Response);
+        $expectedRoute->setRequestBody(new RequestBody());
+        $expectedRoute->setResponse(new Response());
 
         self::assertEquals([$expectedRoute], $actual);
     }

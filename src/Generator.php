@@ -47,7 +47,7 @@ class Generator
     #[Pure]
     public static function create(): Generator
     {
-        return new self(new GeneratorHttp, new GeneratorSchemas);
+        return new self(new GeneratorHttp(), new GeneratorSchemas());
     }
 
     /**
