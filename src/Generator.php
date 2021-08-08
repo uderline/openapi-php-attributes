@@ -90,7 +90,7 @@ class Generator
             'components' => $this->description['components'],
         ];
 
-        ApiDescriptionChecker::check($definition);
+        ValidatorSchema::check($definition);
 
         return $definition;
     }

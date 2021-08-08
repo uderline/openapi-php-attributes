@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace OpenApiGenerator;
 
 use OpenApiGenerator\Exceptions\DefinitionCheckerException;
 
-class ApiDescriptionChecker
+class ValidatorSchema
 {
     /**
      * @throws DefinitionCheckerException
