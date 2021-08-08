@@ -24,9 +24,11 @@ class Server implements JsonSerializable
     #[ArrayShape(['url' => 'string', 'description' => 'string'])]
     public function jsonSerialize(): array
     {
-        return [
+        $data = [
             'url' => $this->url,
             'description' => $this->description,
         ];
+
+        return removeEmptyValues($data);
     }
 }

@@ -27,24 +27,17 @@ class SecurityScheme implements JsonSerializable
      */
     public function jsonSerialize()
     {
-        $securityScheme = [
-            $this->securityKey => [
-                'type' => $this->type,
-                'name' => $this->name,
-                'in' => $this->in,
-                'scheme' => $this->scheme,
-            ],
+        $data = [
+            'type' => $this->type,
+            'name' => $this->name,
+            'in' => $this->in,
+            'scheme' => $this->scheme,
+            'description' => $this->description,
+            'bearerFormat' => $this->bearerFormat,
         ];
 
-        $securitySchemeKey = &$securityScheme[$this->securityKey];
-        if ($this->description) {
-            $securitySchemeKey['description'] = $this->description;
-        }
-
-        if ($this->bearerFormat) {
-            $securitySchemeKey['bearerFormat'] = $this->bearerFormat;
-        }
-
-        return $securityScheme;
+        return [
+            $this->securityKey => removeEmptyValues($data),
+        ];
     }
 }
