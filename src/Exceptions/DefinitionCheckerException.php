@@ -1,6 +1,8 @@
 <?php
 
-namespace OpenApiGenerator;
+declare(strict_types=1);
+
+namespace OpenApiGenerator\Exceptions;
 
 use Exception;
 use JetBrains\PhpStorm\Pure;

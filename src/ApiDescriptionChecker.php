@@ -2,6 +2,8 @@
 
 namespace OpenApiGenerator;
 
+use OpenApiGenerator\Exceptions\DefinitionCheckerException;
+
 class ApiDescriptionChecker
 {
     /**
@@ -52,12 +54,16 @@ class ApiDescriptionChecker
      */
     private function checkServers(): void
     {
-        if ($this->definition['servers']) {
+        // check exists section servers.
+        if (!array_key_exists('servers', $this->definition)) {
             return;
         }
 
-        if (!isset($this->definition['servers']['url'])) {
-            throw DefinitionCheckerException::missingField('servers.url');
+        // check required props of server.
+        foreach ($this->definition['servers'] as $server) {
+            if (!array_key_exists('url', $server)) {
+                throw DefinitionCheckerException::missingField('servers.url');
+            }
         }
     }
 
