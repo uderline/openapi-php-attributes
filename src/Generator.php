@@ -85,7 +85,7 @@ class Generator
         $definition = [
             'openapi' => self::OPENAPI_VERSION,
             'info' => $this->description['info'],
-            'servers' => $this->description['servers'],
+            'servers' => $this->description['servers'] ?? [],
             'paths' => $this->description['paths'],
             'components' => $this->description['components'],
         ];
