@@ -1,8 +1,9 @@
 {
-    "name": "akiosarkiz/openapi-php-attributes",
+    "name": "uderline/openapi-php-attributes",
     "description": "Automatically render your OpenApi 3 file describing your PHP API using attributes",
     "keywords": ["api", "php", "json", "attributes", "openapi", "renderer", "api-rest", "openapi3", "php8"],
     "minimum-stability": "stable",
+    "homepage": "https://uderline.github.io/openapi-php-attributes/",
     "license": "MIT",
     "authors": [
         {
