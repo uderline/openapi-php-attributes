@@ -75,17 +75,12 @@ class Property implements PropertyInterface, JsonSerializable
 
         $data = [
             'type' => $this->type,
-            'description' => $this->description
+            'description' => $this->description,
+            'enum' => $this->enum,
+            'format' => $this->format,
         ];
 
-        if ($this->format) {
-            $data['format'] = $this->format;
-        }
-
-        if ($this->enum) {
-            $data['enum'] = $this->enum;
-        }
-
+        // Create objects properties from array properties. Recursive serialize objects.
         if ($this->getType() === PropertyType::OBJECT && $this->properties) {
             foreach ($this->formatProperties() as $property) {
                 $propObject = $this->createFromArray($property);
