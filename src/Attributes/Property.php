@@ -90,7 +90,6 @@ class Property implements PropertyInterface, JsonSerializable
             foreach ($this->formatProperties() as $property) {
                 $propObject = $this->createFromArray($property);
                 $data['properties'][$propObject->getProperty()] = $propObject->jsonSerialize();
-//                dd($data['properties']);
             }
         }
 
