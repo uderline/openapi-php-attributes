@@ -16,7 +16,22 @@ use OpenApiGenerator\Types\SchemaType;
 
 #[
     Server('same server1', 'same url1'),
-    Info("title", "1.0.0", "The description"),
+    Info(
+        'title',
+        '1.0.0',
+        'The summary',
+        'description',
+        'url terms Of Service',
+        [
+            'name' => 'API Support',
+            'url' => 'https://www.example.com/support',
+            'email' => 'support@example.com'
+        ],
+        [
+            'name' => 'Apache 2.0',
+            'url' => 'https://www.apache.org/licenses/LICENSE-2.0.html'
+        ],
+    ),
     Server('same server2', 'same url2'),
     SecuritySchema(
         'bearerAuth',
@@ -31,13 +46,12 @@ use OpenApiGenerator\Types\SchemaType;
 class SimpleController
 {
     #[
-        Route(Route::GET, "/path/{id}", ["Dummy"], "Dummy path"),
+        Route(Route::GET, '/path/{id}', ['Dummy'], 'Dummy path'),
         Response(200),
     ]
     public function get(
-        #[Parameter(example: "2")] float $id
-    ): void
-    {
+        #[Parameter(example: '2')] float $id
+    ): void {
         //
     }
 }

@@ -51,26 +51,20 @@ class Parameter implements JsonSerializable
         'name' => 'string',
         'in' => 'string',
         'schema' => 'array',
-        'description' => 'null|string',
+        'description' => 'string|null',
         'required' => 'bool|null'
     ])]
     public function jsonSerialize(): array
     {
-        $param = [
+        $data = [
             'name' => $this->name,
             'in' => $this->in,
             'schema' => $this->formatSchema(),
+            'required' => $this->required,
+            'description' => $this->description,
         ];
 
-        if ($this->required) {
-            $param['required'] = $this->required;
-        }
-
-        if ($this->description) {
-            $param['description'] = $this->description;
-        }
-
-        return $param;
+        return removeEmptyValues($data);
     }
 
     /**
