@@ -24,8 +24,29 @@ class Property implements PropertyInterface, JsonSerializable
         private string $description = '',
         private mixed $example = null,
         private ?string $format = null,
-        private ?array $enum = null
+        private ?array $enum = null,
+        private mixed $properties = null,
     ) {
+    }
+
+    public function createFromArray(array $data): self
+    {
+        $args = [];
+        $format = [
+            'type' => '',
+            'property' => '',
+            'description' => '',
+            'example' => null,
+            'format' => null,
+            'enum' => null,
+            'properties' => null,
+        ];
+
+        foreach ($format as $key => $default) {
+            $args[] = array_key_exists($key, $data) ? $data[$key] : $default;
+        }
+
+        return new self(...$args);
     }
 
     public function setPropertyItems(PropertyItems $propertyItems): void
@@ -36,7 +57,7 @@ class Property implements PropertyInterface, JsonSerializable
 
     public function getType(): string
     {
-        return $this->type;
+        return $this->properties ? PropertyType::OBJECT : $this->property;
     }
 
     public function getProperty(): ?string
@@ -46,25 +67,49 @@ class Property implements PropertyInterface, JsonSerializable
 
     public function jsonSerialize(): array
     {
-        if ($this->type === PropertyType::ARRAY) {
+        if ($this->getType() === PropertyType::ARRAY) {
             if ($this->propertyItems) {
                 return $this->propertyItems->jsonSerialize();
             }
         }
 
-        $array = [
+        $data = [
             'type' => $this->type,
-            'description' => $this->description
+            'description' => $this->description,
+            'enum' => $this->enum,
+            'format' => $this->format,
         ];
 
-        if ($this->format) {
-            $array['format'] = $this->format;
+        // Create objects properties from array properties. Recursive serialize objects.
+        if ($this->getType() === PropertyType::OBJECT && $this->properties) {
+            foreach ($this->formatProperties() as $property) {
+                $propObject = $this->createFromArray($property);
+                $data['properties'][$propObject->getProperty()] = $propObject->jsonSerialize();
+            }
         }
 
-        if ($this->enum) {
-            $array['enum'] = $this->enum;
+        // TODO: add removeEmptyValues
+        return $data;
+    }
+
+    private function formatProperties(): array
+    {
+        $format = [];
+
+        foreach($this->properties as $name => $property) {
+            $data =  [
+                'property' => $name,
+            ];
+
+            if (is_array($property)) {
+                $data = array_merge($data, $property);
+            } else {
+                $data['type'] = $property;
+            }
+
+            $format[] = $data;
         }
 
-        return $array;
+        return $format;
     }
 }
