@@ -10,8 +10,7 @@ use OpenApiGenerator\Attributes\Parameter;
 use OpenApiGenerator\Attributes\Property;
 use OpenApiGenerator\Attributes\Response;
 use OpenApiGenerator\Attributes\Route;
-use OpenApiGenerator\Attributes\Schema;
-use OpenApiGenerator\Attributes\SecurityScheme;
+use OpenApiGenerator\Attributes\SecuritySchema;
 use OpenApiGenerator\Attributes\Server;
 use OpenApiGenerator\Types\PropertyType;
 
