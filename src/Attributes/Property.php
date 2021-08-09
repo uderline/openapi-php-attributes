@@ -88,8 +88,7 @@ class Property implements PropertyInterface, JsonSerializable
             }
         }
 
-        // TODO: add removeEmptyValues
-        return $data;
+        return removeEmptyValues($data);
     }
 
     private function formatProperties(): array
