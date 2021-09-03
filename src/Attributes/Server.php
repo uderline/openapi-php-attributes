@@ -19,6 +19,14 @@ class Server implements JsonSerializable
     }
 
     /**
+     * @return string
+     */
+    public function getUrl(): string
+    {
+        return $this->url;
+    }
+
+    /**
      * @inheritDoc
      */
     #[ArrayShape(['url' => 'string', 'description' => 'string'])]

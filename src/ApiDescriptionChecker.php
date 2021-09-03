@@ -2,6 +2,8 @@
 
 namespace OpenApiGenerator;
 
+use OpenApiGenerator\Attributes\Server;
+
 class ApiDescriptionChecker
 {
     /**
@@ -52,12 +54,14 @@ class ApiDescriptionChecker
      */
     private function checkServers(): void
     {
-        if ($this->definition['servers']) {
+        if (!isset($this->definition['servers'])) {
             return;
         }
 
-        if (!isset($this->definition['servers']['url'])) {
-            throw DefinitionCheckerException::missingField('servers.url');
+        foreach ($this->definition['servers'] as $server) {
+            if ($server instanceof Server && !$server->getUrl()) {
+                throw DefinitionCheckerException::missingField('servers.url');
+            }
         }
     }
 
