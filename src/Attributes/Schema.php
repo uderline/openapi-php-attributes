@@ -18,7 +18,7 @@ class Schema implements JsonSerializable
     private bool $noMedia = false;
 
     public function __construct(
-        private string $schemaType,
+        private string $schemaType = SchemaType::OBJECT,
         private ?array $required = null,
         private ?string $name = null
     ) {

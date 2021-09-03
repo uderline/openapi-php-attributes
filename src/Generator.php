@@ -82,17 +82,11 @@ class Generator
      */
     public function makeFinalArray(): array
     {
-        $definition = [
-            'openapi' => self::OPENAPI_VERSION,
-            'info' => $this->description['info'],
-            'servers' => $this->description['servers'],
-            'paths' => $this->description['paths'],
-            'components' => $this->description['components'],
-        ];
+        $this->description['openapi'] = self::OPENAPI_VERSION;
 
-        ApiDescriptionChecker::check($definition);
+        ApiDescriptionChecker::check($this->description);
 
-        return $definition;
+        return $this->description;
     }
 
     /**
