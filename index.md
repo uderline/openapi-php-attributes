@@ -1,3 +1,91 @@
+# Quick example
+This is the easiest example we could've made.
+
+```php
+<?php
+#[Info("OpenApi PHP Generator", "1.0.0")]
+#[Controller]
+class Controller {
+    #[
+        POST("/path"),
+        Property(Type::STRING, "prop1"),
+        Property(Type::INT, "prop2"),
+        Response(200, ref: YourObject::class)
+    ]
+    public function post() { }
+}
+
+#[
+    Schema,
+    Property(Type::STRING, "prop1"),
+    Property(Type::INT, "prop2"),
+]
+class YourObject {
+
+}
+```
+
+This will return:
+```json
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "OpenApi PHP Generator",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/path": {
+            "post": {
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "prop1": {
+                                        "type": "string"
+                                    },
+                                    "prop2": {
+                                        "type": "integer"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/YourObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Event": {
+                "type": "object",
+                "properties": {
+                    "prop1": {
+                        "type": "string"
+                    },
+                    "prop2": {
+                        "type": "integer"
+                    }
+                }
+            }
+        }
+    }
+}
+```
+
 # Before you start ...
 
 ## What is OPAG ?
@@ -8,14 +96,11 @@ Each path is described in your PHP files (often your controllers) using [PHP 8 a
 Having a file describing your API will allow you to share it with your community (if it's public) and it can be used 
 with softwares such as Swagger or Postman.
 
-
 ## Recommendations
 We recommend having some knowledge on OpenApi: https://spec.openapis.org/oas/latest.html
 
-
 ## Which version compatible
 Only the version 3 is compatible with this library
-
 
 # How to read this documentation
 - The documentation is split into 3 sections: the header, paths and components
@@ -61,7 +146,7 @@ class Controller {
 #[Controller]
 class Controller {
     #[
-        Route(Route::GET, "/path")
+        GET("/path")
     ]
     public function getAll() { }
 }
@@ -73,7 +158,7 @@ class Controller {
 #[Controller]
 class Controller {
     #[
-        Route(Route::PUT, "/path/{id}")
+        PUT("/path/{id}")
     ]
     public function put(#[Parameter] int $id) { }
 }
@@ -85,18 +170,18 @@ class Controller {
 #[Controller]
 class Controller {
     #[
-        Route(Route::PUT, "/path"),
-        Property(PropertyType::STRING, "prop1"),
-        Property(PropertyType::INT, "prop2"),
+        PUT("/path"),
+        Property(Type::STRING, "prop1"),
+        Property(Type::INT, "prop2"),
     ]
     public function post() { }
 }
 ```
 Available property types:
-- `PropertyType::STRING`: "string"
-- `PropertyType::INT`: "integer"
-- `PropertyType::BOOLEAN`: "boolean"
-- `PropertyType::REF`: "ref" (explained below)
+- `Type::STRING`: "string"
+- `Type::INT`: "integer"
+- `Type::BOOLEAN`: "boolean"
+- `Type::REF`: "ref" (explained below)
 
 ### Declare a simple response (POST example)
 ```php
@@ -104,9 +189,9 @@ Available property types:
 #[Controller]
 class Controller {
     #[
-        Route(Route::POST, "/path"),
-        Property(PropertyType::STRING, "prop1"),
-        Property(PropertyType::INT, "prop2"),
+        POST("/path"),
+        Property(Type::STRING, "prop1"),
+        Property(Type::INT, "prop2"),
         Response(201)
     ]
     public function post() { }
@@ -129,12 +214,12 @@ This method will return:
 #[Controller]
 class Controller {
     #[
-        Route(Route::GET, "/path/{id}"),
+        GET("/path/{id}"),
         Response,
-        Property(PropertyType::STRING, "prop1"),
-        Property(PropertyType::ARRAY, "prop2"),
-        PropertyItems(PropertyType::STRING),
-        Property(PropertyType::INT, "prop3")
+        Property(Type::STRING, "prop1"),
+        Property(Type::ARRAY, "prop2"),
+        PropertyItems(Type::STRING),
+        Property(Type::INT, "prop3")
     ]
     public function get(#[Parameter] int $id) { }
 }
@@ -148,11 +233,11 @@ On this entity, declare a schema and it's properties. The name of the schema is 
 <?php
 #[
     Schema,
-    Property(PropertyType::STRING, "prop1"),
-    Property(PropertyType::STRING, "prop2", enum: ["val1", "val2", "val3"]), // Enum type
-    Property(PropertyType::ARRAY, "prop3"),
-    PropertyItems(PropertyType::INT),
-    Property(PropertyType::BOOLEAN, "prop4"),
+    Property(Type::STRING, "prop1"),
+    Property(Type::STRING, "prop2", enum: ["val1", "val2", "val3"]), // Enum type
+    Property(Type::ARRAY, "prop3"),
+    PropertyItems(Type::INT),
+    Property(Type::BOOLEAN, "prop4"),
 ]
 class Entity {
 
@@ -183,7 +268,7 @@ If instead we have
 ```php
 <?php
 class Controller {
-    #[Response(schemaType: ResponseType::ARRAY, ref: Entity::class)]
+    #[Response(schemaType: Type::ARRAY, ref: Entity::class)]
     public function get() {}
 }
 ```
