@@ -4,10 +4,15 @@ declare(strict_types=1);
 
 namespace OpenApiGenerator;
 
+use OpenApiGenerator\Attributes\DELETE;
+use OpenApiGenerator\Attributes\GET;
 use OpenApiGenerator\Attributes\MediaProperty;
 use OpenApiGenerator\Attributes\Parameter;
+use OpenApiGenerator\Attributes\PATCH;
+use OpenApiGenerator\Attributes\POST;
 use OpenApiGenerator\Attributes\Property;
 use OpenApiGenerator\Attributes\PropertyItems;
+use OpenApiGenerator\Attributes\PUT;
 use OpenApiGenerator\Attributes\RequestBody;
 use OpenApiGenerator\Attributes\Response;
 use OpenApiGenerator\Attributes\Route;
@@ -25,7 +30,10 @@ class GeneratorHttp
         foreach ($reflectionClass->getMethods() as $method) {
             $methodAttributes = $method->getAttributes();
 
-            $route = array_filter($methodAttributes, fn(ReflectionAttribute $attribute) => $attribute->getName() === Route::class);
+            $routeAttributeNames = [Route::class, GET::class, POST::class, PUT::class, DELETE::class, PATCH::class];
+            $route = array_filter(
+                $methodAttributes,
+                fn(ReflectionAttribute $attribute) => in_array($attribute->getName(), $routeAttributeNames));
 
             if (count($route) < 1) {
                 continue;
@@ -42,7 +50,12 @@ class GeneratorHttp
                 $instance = $attribute->newInstance();
 
                 match ($name) {
-                    Route::class => $pathBuilder->setRoute($instance, $parameters),
+                    Route::class,
+                    GET::class,
+                    POST::class,
+                    PUT::class,
+                    DELETE::class,
+                    PATCH::class => $pathBuilder->setRoute($instance, $parameters),
                     RequestBody::class => $pathBuilder->setRequestBody($instance),
                     Property::class => $pathBuilder->addProperty($instance),
                     PropertyItems::class => $pathBuilder->setPropertyItems($instance),

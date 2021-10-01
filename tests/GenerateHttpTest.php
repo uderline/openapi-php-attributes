@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace OpenApiGenerator\Tests;
 
+use OpenApiGenerator\Attributes\GET;
 use OpenApiGenerator\Attributes\Parameter;
 use OpenApiGenerator\Attributes\RequestBody;
 use OpenApiGenerator\Attributes\Response;
@@ -31,7 +32,7 @@ class GenerateHttpTest extends TestCase
         $expectedParameter->setName('id');
         $expectedParameter->setParamType('float');
 
-        $expectedRoute = new Route(Route::GET, '/path/{id}', ['Dummy'], 'Dummy path');
+        $expectedRoute = new GET('/path/{id}', ['Dummy'], 'Dummy path');
         $expectedRoute->addParam($expectedParameter);
         $expectedRoute->setRequestBody(new RequestBody());
         $expectedRoute->setResponse(new Response());

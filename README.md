@@ -20,11 +20,11 @@ A new file called `openapi.json` has been generated !
 #[Controller]
 class Controller {
     #[
-        Route(Route::GET, "/path/{id}", ["Tag1", "Tag2"], "Description of the method"),
+        GET("/path/{id}", ["Tag1", "Tag2"], "Description of the method"),
         Property(PropertyType::STRING, "prop1", description: "Property description", enum: ["val1", "val2"]),
         Property(PropertyType::INT, "prop2", example: 1),
         Property(PropertyType::BOOLEAN, "prop3"),
-        Response(200, "Response description", ref: SchemaName::class)
+        Response(ref: SchemaName::class, description: "Response description")
     ]
     public function get(#[Parameter("Parameter description")] int $id): JsonResponse {
         // ...

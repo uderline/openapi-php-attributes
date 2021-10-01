@@ -19,6 +19,7 @@ class Route implements JsonSerializable
     public const POST = 'post';
     public const PUT = 'put';
     public const DELETE = 'delete';
+    public const PATCH = 'patch';
 
     private array $getParams = [];
     private ?Response $response = null;
