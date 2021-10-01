@@ -12,5 +12,5 @@ class PropertyType
     public const REF = 'ref';
     public const BOOLEAN = 'boolean';
     public const OBJECT = 'object';
-    const MEDIA = 'media';
+    public const MEDIA = 'media';
 }

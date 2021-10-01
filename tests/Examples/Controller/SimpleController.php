@@ -8,11 +8,11 @@ use OpenApiGenerator\Attributes\Controller;
 use OpenApiGenerator\Attributes\GET;
 use OpenApiGenerator\Attributes\Info;
 use OpenApiGenerator\Attributes\Parameter;
+use OpenApiGenerator\Attributes\Property;
 use OpenApiGenerator\Attributes\Response;
-use OpenApiGenerator\Attributes\Route;
-use OpenApiGenerator\Attributes\Schema;
 use OpenApiGenerator\Attributes\SecurityScheme;
 use OpenApiGenerator\Attributes\Server;
+use OpenApiGenerator\Type;
 
 #[
     Server('same server1', 'same url1'),
@@ -32,6 +32,7 @@ class SimpleController
 {
     #[
         GET("/path/{id}", ["Dummy"], "Dummy path"),
+        Property(Type::STRING, "prop1"),
         Response(200),
     ]
     public function get(

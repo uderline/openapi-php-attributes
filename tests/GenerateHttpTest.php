@@ -6,9 +6,11 @@ namespace OpenApiGenerator\Tests;
 
 use OpenApiGenerator\Attributes\GET;
 use OpenApiGenerator\Attributes\Parameter;
+use OpenApiGenerator\Attributes\Property;
 use OpenApiGenerator\Attributes\RequestBody;
 use OpenApiGenerator\Attributes\Response;
 use OpenApiGenerator\Attributes\Route;
+use OpenApiGenerator\Attributes\Schema;
 use OpenApiGenerator\GeneratorHttp;
 use OpenApiGenerator\Tests\Examples\Controller\SimpleController;
 use PHPUnit\Framework\TestCase;
@@ -32,9 +34,14 @@ class GenerateHttpTest extends TestCase
         $expectedParameter->setName('id');
         $expectedParameter->setParamType('float');
 
+        $schema = new Schema();
+        $schema->addProperty(new Property('string', 'prop1'));
+        $requestBody = new RequestBody();
+        $requestBody->setSchema($schema);
+
         $expectedRoute = new GET('/path/{id}', ['Dummy'], 'Dummy path');
         $expectedRoute->addParam($expectedParameter);
-        $expectedRoute->setRequestBody(new RequestBody());
+        $expectedRoute->setRequestBody($requestBody);
         $expectedRoute->setResponse(new Response());
 
         self::assertEquals([$expectedRoute], $actual);
