@@ -65,6 +65,10 @@ class Property implements PropertyInterface, JsonSerializable
             $array['enum'] = $this->enum;
         }
 
+        if ($this->example) {
+            $array['example'] = $this->example;
+        }
+
         return $array;
     }
 }
