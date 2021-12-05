@@ -13,4 +13,8 @@ class PropertyType
     public const BOOLEAN = 'boolean';
     public const OBJECT = 'object';
     public const MEDIA = 'media';
+
+    /* Special types */
+    // Will become {type: 'integer', minimum: 1}
+    public const ID = 'id';
 }

@@ -5,14 +5,18 @@ declare(strict_types=1);
 namespace OpenApiGenerator\Tests\Examples\Dummy;
 
 use OpenApiGenerator\Attributes\Controller;
+use OpenApiGenerator\Attributes\GET;
+use OpenApiGenerator\Attributes\IDParam;
 use OpenApiGenerator\Attributes\Info;
 use OpenApiGenerator\Attributes\MediaProperty;
 use OpenApiGenerator\Attributes\Parameter;
+use OpenApiGenerator\Attributes\POST;
 use OpenApiGenerator\Attributes\Property;
+use OpenApiGenerator\Attributes\PUT;
 use OpenApiGenerator\Attributes\Response;
 use OpenApiGenerator\Attributes\Route;
+use OpenApiGenerator\Type;
 use OpenApiGenerator\Types\MediaType;
-use OpenApiGenerator\Types\PropertyType;
 use OpenApiGenerator\Types\SchemaType;
 
 #[Info("title", "1.0.0")]
@@ -20,10 +24,10 @@ use OpenApiGenerator\Types\SchemaType;
 class DummyController
 {
     #[
-        Route(Route::GET, "/path", ["Dummy"], "Dummy get path"),
-        Response,
-        Property(PropertyType::STRING, "prop1", "Prop 1", "val1"),
-        Property(PropertyType::STRING, "prop2", "Prop 2", "val2")
+        GET("/path", ["Dummy"], "Dummy get path"),
+        Property(Type::STRING, "prop1", "Prop 1", "val1"),
+        Property(Type::STRING, "prop2", "Prop 2", "val2"),
+        Response
     ]
     public function get(): void
     {
@@ -31,16 +35,16 @@ class DummyController
     }
 
     #[
-        Route(Route::GET, "/path/entity/{id}", ["Dummy"], "Get an entity with a ref"),
+        GET("/path/entity/{id}", ["Dummy"], "Get an entity with a ref"),
         Response(ref: DummyComponent::class)
     ]
-    public function getEntity(#[Parameter] int $id): void
+    public function getEntity(#[IDParam] int $id): void
     {
         //
     }
 
     #[
-        Route(Route::GET, "/path/entities", ["Dummy"], "Get a list"),
+        GET("/path/entities", ["Dummy"], "Get a list"),
         Response(schemaType: SchemaType::ARRAY, ref: DummyComponent::class)
     ]
     public function getEntities(): void
@@ -49,7 +53,7 @@ class DummyController
     }
 
     #[
-        Route(Route::GET, "/path/image/{prop1}", ["Dummy"], "Dummy image path"),
+        GET("/path/image/{prop1}", ["Dummy"], "Dummy image path"),
         Response,
         MediaProperty(MediaType::MEDIA_IMAGE_PNG, MediaType::ENCODING_BASE64)
     ]
@@ -59,10 +63,10 @@ class DummyController
     }
 
     #[
-        Route(Route::POST, "/path", ["Dummy"], "Dummy post"),
-        Property(PropertyType::STRING, "prop1"),
-        Property(PropertyType::STRING, "prop2", "Prop2 description"),
-        Property(PropertyType::STRING, "prop3", "Prop3 description", "Value 3 example"),
+        POST("/path", ["Dummy"], "Dummy post"),
+        Property(Type::STRING, "prop1"),
+        Property(Type::STRING, "prop2", "Prop2 description"),
+        Property(Type::STRING, "prop3", "Prop3 description", "Value 3 example"),
         Response(201)
     ]
     public function post(): void
@@ -71,13 +75,13 @@ class DummyController
     }
 
     #[
-        Route(Route::PUT, "/path/{id}", ["Dummy"], "Dummy put"),
-        Property(PropertyType::STRING, "prop1"),
-        Property(PropertyType::INT, "prop2"),
-        Property(PropertyType::BOOLEAN, "prop3"),
+        PUT("/path/{id}", ["Dummy"], "Dummy put"),
+        Property(Type::STRING, "prop1"),
+        Property(Type::ID, "prop2"),
+        Property(Type::BOOLEAN, "prop3"),
         Response(204)
     ]
-    public function put(#[Parameter] int $id): void
+    public function put(#[IDParam] int $id): void
     {
         //
     }

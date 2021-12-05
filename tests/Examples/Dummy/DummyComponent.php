@@ -7,17 +7,17 @@ namespace OpenApiGenerator\Tests\Examples\Dummy;
 use OpenApiGenerator\Attributes\Property;
 use OpenApiGenerator\Attributes\PropertyItems;
 use OpenApiGenerator\Attributes\Schema;
-use OpenApiGenerator\Types\PropertyType;
+use OpenApiGenerator\Type;
 use OpenApiGenerator\Types\SchemaType;
 
 #[
     Schema(SchemaType::OBJECT),
-    Property(PropertyType::STRING, "prop1", "Prop1 description", "Value 1"),
-    Property(PropertyType::INT, "prop2", example: "Value2"),
-    Property(PropertyType::BOOLEAN, "prop3", "Prop 3"),
-    Property(PropertyType::STRING, "prop4", "Prop 4", enum: ["val1", "val2"]),
-    Property(PropertyType::ARRAY, "propArray"),
-    PropertyItems(PropertyType::REF, DummyRefComponent::class)
+    Property(Type::STRING, "prop1", "Prop1 description", "Value 1"),
+    Property(Type::INT, "prop2", example: "Value2"),
+    Property(Type::BOOLEAN, "prop3", "Prop 3"),
+    Property(Type::STRING, "prop4", "Prop 4", enum: ["val1", "val2"]),
+    Property(Type::ARRAY, "propArray"),
+    PropertyItems(Type::REF, DummyRefComponent::class)
 ]
 class DummyComponent
 {

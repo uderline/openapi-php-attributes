@@ -11,6 +11,7 @@ class Type
     public const JSON = 'json';
     public const OBJECT = 'object';
     public const ARRAY = 'array';
+    public const ID = 'id';
 
     // MEDIA
     // Media Types

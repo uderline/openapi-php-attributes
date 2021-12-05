@@ -17,7 +17,7 @@ use JsonSerializable;
 class Parameter implements JsonSerializable
 {
     private string $name;
-    private array $schema;
+    protected array $schema;
 
     public function __construct(
         private ?string $description = null,

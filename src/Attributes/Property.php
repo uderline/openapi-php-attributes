@@ -46,14 +46,22 @@ class Property implements PropertyInterface, JsonSerializable
 
     public function jsonSerialize(): array
     {
+        $type = $this->type;
+        $minimum = null;
+
         if ($this->type === PropertyType::ARRAY) {
             if ($this->propertyItems) {
                 return $this->propertyItems->jsonSerialize();
             }
         }
 
+        if ($this->type === PropertyType::ID) {
+            $type = 'integer';
+            $minimum = 1;
+        }
+
         $array = [
-            'type' => $this->type,
+            'type' => $type,
             'description' => $this->description
         ];
 
@@ -67,6 +75,10 @@ class Property implements PropertyInterface, JsonSerializable
 
         if ($this->example) {
             $array['example'] = $this->example;
+        }
+
+        if ($minimum) {
+            $array['minimum'] = $minimum;
         }
 
         return $array;
