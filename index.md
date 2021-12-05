@@ -7,6 +7,12 @@ This is the easiest example we could've made.
 #[Controller]
 class Controller {
     #[
+        GET("/path/{id}"),
+        Response(200, ref: YourObject::class)
+    ]
+    public function get(#[IDParam] $id) { }
+
+    #[
         POST("/path"),
         Property(Type::STRING, "prop1"),
         Property(Type::INT, "prop2"),
@@ -34,6 +40,33 @@ This will return:
         "version": "1.0.0"
     },
     "paths": {
+        "/path/{id}": {
+            "get": {
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        },
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DummyComponent"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/path": {
             "post": {
                 "requestBody": {
@@ -141,6 +174,7 @@ class Controller {
 ```
 
 ### Declare routes (GET example)
+#### Easy example
 ```php
 <?php
 #[Controller]
@@ -152,7 +186,22 @@ class Controller {
 }
 ```
 
+#### Comprehensive example
+```php
+<?php
+#[Controller]
+class Controller {
+    #[
+        GET(route: "/path", tags: ["Entity"], description: "Get all entities")
+        // OR
+        Route(Route::GET, route: "/path", tags: ["Entity"], description: "Get all entities")
+    ]
+    public function getAll() { }
+}
+```
+
 ### Declare a parameter (PUT example)
+#### Easy example
 ```php
 <?php
 #[Controller]
@@ -164,7 +213,27 @@ class Controller {
 }
 ```
 
+#### Comprehensive example
+```php
+<?php
+#[Controller]
+class Controller {
+    #[
+        PUT("/path/{id}")
+    ]
+    public function put(
+    #[Parameter(description: "Id of an entity", in: "path", required: true, example: 123, format: "uuid")] int $id
+    // OR
+    #[IDParam] int $id
+    ) { }
+}
+```
+> Please note that we do not specify the type because it's using the type of the variable
+
+`IDParam` will set a _minimum_ property to 1
+
 ### Declare a request body with properties
+#### Easy example
 ```php
 <?php
 #[Controller]
@@ -181,9 +250,25 @@ Available property types:
 - `Type::STRING`: "string"
 - `Type::INT`: "integer"
 - `Type::BOOLEAN`: "boolean"
+- `Type::ID`: "id" (shortcut for an integer strictly greater than 0)
 - `Type::REF`: "ref" (explained below)
 
+#### Comprehensive example
+```php
+<?php
+#[Controller]
+class Controller {
+    #[
+        PUT("/path"),
+        Property(type: Type::STRING, property: "prop1", description: "Property 1", example: "abcd", format: "hostname", enum: ["host1", "host2"]),
+        Property(Type::INT, "prop2"),
+    ]
+    public function post() { }
+}
+```
+
 ### Declare a simple response (POST example)
+#### Easy example
 ```php
 <?php
 #[Controller]
@@ -198,6 +283,21 @@ class Controller {
 }
 ```
 *The response code is actually optional*
+
+#### Comprehensive example
+```php
+<?php
+#[Controller]
+class Controller {
+    #[
+        POST("/path"),
+        Property(Type::STRING, "prop1"),
+        Property(Type::INT, "prop2"),
+        Response(code: 201, description: "Created", responseType: Type::JSON, schemaType: Type::OBJECT, ref: Component::class)
+    ]
+    public function post() { }
+}
+```
 
 ### Declare a response with properties (GET example)
 This method will return:
@@ -221,7 +321,7 @@ class Controller {
         PropertyItems(Type::STRING),
         Property(Type::INT, "prop3")
     ]
-    public function get(#[Parameter] int $id) { }
+    public function get(#[IDParam] int $id) { }
 }
 ```
 
