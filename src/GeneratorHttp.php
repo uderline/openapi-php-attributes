@@ -61,6 +61,7 @@ class GeneratorHttp
                     PropertyItems::class => $pathBuilder->setPropertyItems($instance),
                     MediaProperty::class => $pathBuilder->setMediaProperty($instance),
                     Response::class => $pathBuilder->setResponse($instance),
+                    default => null
                 };
             }
 
