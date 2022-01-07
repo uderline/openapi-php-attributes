@@ -18,7 +18,18 @@ require $autoload_path;
 
 use Symfony\Component\Finder\Finder;
 
-$files = Finder::create()->files()->name('*.php')->in($argv[1]);
+if ($argc <= 2) {
+    $dirs = [$argv[1] ?? './'];
+    $outputFile = './openapi.json';
+} else if (is_dir($argv[$argc - 1])) {
+    $dirs = array_slice($argv, 1);
+    $outputFile = './openapi.json';
+} else {
+    $dirs = array_slice($argv, 1, -1);
+    $outputFile = $argv[$argc - 1];
+}
+
+$files = Finder::create()->files()->name('*.php')->in($dirs);
 
 foreach ($files as $autoload) {
     include_once $autoload->getPathName();
@@ -28,4 +39,4 @@ $generator = \OpenApiGenerator\Generator::create()->generate();
 
 $schema = stripslashes(json_encode($generator, JSON_PRETTY_PRINT));
 
-file_put_contents('./openapi.json', $schema);
+file_put_contents($outputFile, $schema);
