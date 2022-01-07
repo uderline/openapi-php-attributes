@@ -73,6 +73,24 @@ class Route implements JsonSerializable
                 array_walk($params, fn(Parameter $param) => $this->getParams[] = $param);
             }
         );
+
+        if (preg_match_all('#{([^}]+)}#', $this->route, $matches)) {
+            $pathParms = array_combine($matches[1], $matches[1]);
+            foreach ($getParams as $getParam) {
+                $paramName = $getParam->getName();
+                if (isset($pathParms[$paramName])) {
+                    unset($pathParms[$paramName]);
+                }
+            }
+            if ($pathParms) {
+                foreach ($pathParms as $pathParm) {
+                    $param = new Parameter();
+                    $param->setName($pathParm);
+                    $param->setParamType('string');
+                    $this->getParams[] = $param;
+                }
+            }
+        }
     }
 
     public function jsonSerialize(): array
