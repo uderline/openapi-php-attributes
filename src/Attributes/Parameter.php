@@ -16,15 +16,15 @@ use JsonSerializable;
 #[Attribute]
 class Parameter implements JsonSerializable
 {
-    private string $name;
+    protected string $name;
     protected array $schema;
 
     public function __construct(
-        private ?string $description = null,
-        private string $in = 'path',
-        private ?bool $required = null,
-        private mixed $example = '',
-        private mixed $format = ''
+        protected ?string $description = null,
+        protected string $in = 'path',
+        protected ?bool $required = null,
+        protected mixed $example = '',
+        protected mixed $format = ''
     ) {
         if ($in === 'path') {
             $this->required = true;
