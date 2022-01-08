@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace OpenApiGenerator;
 
 use OpenApiGenerator\Attributes\MediaProperty;
+use OpenApiGenerator\Attributes\Parameter;
 use OpenApiGenerator\Attributes\Property;
 use OpenApiGenerator\Attributes\PropertyItems;
 use OpenApiGenerator\Attributes\RequestBody;
@@ -29,7 +30,7 @@ class PathMethodBuilder
      * Set the current route with GET parameters
      *
      * @param Route $route
-     * @param array $params
+     * @param Parameter[] $params
      */
     public function setRoute(Route $route, array $params): void
     {
