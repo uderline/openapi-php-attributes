@@ -80,10 +80,12 @@ class Route implements JsonSerializable
 
         if (preg_match_all('#{([^}]+)}#', $this->route, $matches)) {
             $pathParms = array_combine($matches[1], $matches[1]);
-            foreach ($getParams as $getParam) {
-                $paramName = $getParam->getName();
-                if (isset($pathParms[$paramName])) {
-                    unset($pathParms[$paramName]);
+            foreach ($getParams as $getParamsRow) {
+                foreach ($getParamsRow as $getParam) {
+                    $paramName = $getParam->getName();
+                    if (isset($pathParms[$paramName])) {
+                        unset($pathParms[$paramName]);
+                    }
                 }
             }
             if ($pathParms) {
