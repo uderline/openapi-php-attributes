@@ -30,7 +30,7 @@ class PathMethodBuilder
      * Set the current route with GET parameters
      *
      * @param Route $route
-     * @param Parameter[][] $params
+     * @param Parameter[] $params
      */
     public function setRoute(Route $route, array $params): void
     {

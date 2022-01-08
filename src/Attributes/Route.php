@@ -65,27 +65,20 @@ class Route implements JsonSerializable
     }
 
     /**
-     * @param Parameter[][] $getParams
+     * @param Parameter[] $getParams
      * @return void
      */
     public function setGetParams(array $getParams): void
     {
         // Just check if it's an array of GetParam and add it
-        array_walk(
-            $getParams,
-            function (array $params) {
-                array_walk($params, fn(Parameter $param) => $this->getParams[] = $param);
-            }
-        );
+        array_walk($getParams, fn(Parameter $param) => $this->getParams[] = $param);
 
         if (preg_match_all('#{([^}]+)}#', $this->route, $matches)) {
             $pathParms = array_combine($matches[1], $matches[1]);
-            foreach ($getParams as $getParamsRow) {
-                foreach ($getParamsRow as $getParam) {
-                    $paramName = $getParam->getName();
-                    if (isset($pathParms[$paramName])) {
-                        unset($pathParms[$paramName]);
-                    }
+            foreach ($getParams as $getParam) {
+                $paramName = $getParam->getName();
+                if (isset($pathParms[$paramName])) {
+                    unset($pathParms[$paramName]);
                 }
             }
             if ($pathParms) {
