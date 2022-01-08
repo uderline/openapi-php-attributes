@@ -6,6 +6,7 @@ namespace OpenApiGenerator\Attributes;
 
 use Attribute;
 use JsonSerializable;
+use OpenApiGenerator\Type;
 
 /**
  * Root node for the paths part of the Open API definition
@@ -74,20 +75,13 @@ class Route implements JsonSerializable
         array_walk($getParams, fn(Parameter $param) => $this->getParams[] = $param);
 
         if (preg_match_all('#{([^}]+)}#', $this->route, $matches)) {
-            $pathParms = array_combine($matches[1], $matches[1]);
-            foreach ($getParams as $getParam) {
-                $paramName = $getParam->getName();
-                if (isset($pathParms[$paramName])) {
-                    unset($pathParms[$paramName]);
-                }
-            }
-            if ($pathParms) {
-                foreach ($pathParms as $pathParm) {
-                    $param = new Parameter();
-                    $param->setName($pathParm);
-                    $param->setParamType('string');
-                    $this->getParams[] = $param;
-                }
+            $pathParams = $matches[1];
+            $declaredParamsName = array_map(static fn(Parameter $parameter): string => $parameter->getName(), $getParams);
+            foreach (array_diff($pathParams, $declaredParamsName) as $pathParam) {
+                $param = new Parameter();
+                $param->setName($pathParam);
+                $param->setParamType(Type::STRING);
+                $this->getParams[] = $param;
             }
         }
     }
