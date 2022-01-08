@@ -6,7 +6,6 @@ namespace OpenApiGenerator\Attributes;
 
 use Attribute;
 use JsonSerializable;
-use ReflectionAttribute;
 
 /**
  * Root node for the paths part of the Open API definition
@@ -65,11 +64,6 @@ class Route implements JsonSerializable
         return $this->getParams;
     }
 
-    /**
-     * @param Parameter[][] $getParams
-     * @param ReflectionAttribute[] $pathParameters
-     * @return void
-     */
     public function setGetParams(array $getParams): void
     {
         // Just check if it's an array of GetParam and add it
