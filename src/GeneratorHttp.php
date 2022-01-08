@@ -71,6 +71,10 @@ class GeneratorHttp
         }
     }
 
+    /**
+     * @param ReflectionParameter[] $methodParameters
+     * @return Parameter[][]
+     */
     private function getParameters(array $methodParameters): array
     {
         return array_map(

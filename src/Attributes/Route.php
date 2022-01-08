@@ -64,6 +64,10 @@ class Route implements JsonSerializable
         return $this->getParams;
     }
 
+    /**
+     * @param Parameter[][] $getParams
+     * @return void
+     */
     public function setGetParams(array $getParams): void
     {
         // Just check if it's an array of GetParam and add it
