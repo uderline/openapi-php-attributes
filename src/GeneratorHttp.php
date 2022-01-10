@@ -44,13 +44,13 @@ class GeneratorHttp
 
             $pathParameters = array_filter(
                 $methodAttributes,
-                static fn(ReflectionAttribute $attribute) => $attribute->getName() === PathParameter::class);
+                static fn(ReflectionAttribute $attribute) => $attribute->getName() === PathParameter::class
+            );
 
             if ($pathParameters) {
-                $parameters[] = array_map(
-                    static fn (ReflectionAttribute $attribute) => $attribute->newInstance(),
-                    $pathParameters,
-                );
+                foreach ($pathParameters as $attribute) {
+                    $parameters[] = $attribute->newInstance();
+                }
             }
 
             $pathBuilder = new PathMethodBuilder();
