@@ -34,18 +34,15 @@ class GeneratorHttp
             $routeAttributeNames = [Route::class, GET::class, POST::class, PUT::class, DELETE::class, PATCH::class];
             $route = array_filter(
                 $methodAttributes,
-                static fn(ReflectionAttribute $attribute) => in_array($attribute->getName(), $routeAttributeNames));
+                static fn(ReflectionAttribute $attribute) => in_array($attribute->getName(), $routeAttributeNames)
+            );
 
             if (count($route) < 1) {
                 continue;
             }
 
             $parameters = $this->getParameters($method->getParameters());
-
-            $pathParameters = array_filter(
-                $methodAttributes,
-                static fn(ReflectionAttribute $attribute) => $attribute->getName() === PathParameter::class
-            );
+            $pathParameters = $method->getAttributes(PathParameter::class);
 
             if ($pathParameters) {
                 foreach ($pathParameters as $attribute) {
