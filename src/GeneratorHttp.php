@@ -59,6 +59,7 @@ class GeneratorHttp
             // Add method Attributes to the builder
             foreach ($methodAttributes as $attribute) {
                 $name = $attribute->getName();
+                /** @var Route|RequestBody|Property|PropertyItems|MediaProperty|Response $instance */
                 $instance = $attribute->newInstance();
 
                 match ($name) {
@@ -84,22 +85,26 @@ class GeneratorHttp
         }
     }
 
+    /**
+     * @param ReflectionParameter[] $methodParameters
+     * @return Parameter[]
+     */
     private function getParameters(array $methodParameters): array
     {
-        return array_map(
-            function (ReflectionParameter $param) {
-                return array_map(
-                    function (ReflectionAttribute $attribute) use ($param) {
-                        $instance = $attribute->newInstance();
-                        $instance->setName($param->getName());
-                        $instance->setParamType((string) $param->getType());
-
-                        return $instance;
-                    },
-                    $param->getAttributes(Parameter::class, ReflectionAttribute::IS_INSTANCEOF)
-                );
-            },
-            $methodParameters
+        return array_filter(
+            array_map(
+                static function (ReflectionParameter $param) {
+                    $attributes = $param->getAttributes(Parameter::class, ReflectionAttribute::IS_INSTANCEOF);
+                    if (!$attributes) {
+                        return null;
+                    }
+                    $instance = $attributes[0]->newInstance();
+                    $instance->setName($param->getName());
+                    $instance->setParamType((string)$param->getType());
+                    return $instance;
+                },
+                $methodParameters
+            )
         );
     }
 
