@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace OpenApiGenerator\Attributes;
 
 use Attribute;
-use JetBrains\PhpStorm\ArrayShape;
-use JsonSerializable;
 
 /**
  * Represents a parameter (e.g. /route/{id} where id is the parameter)
@@ -21,7 +19,7 @@ class IDParam extends Parameter
         string $in = 'path',
         ?bool $required = null,
     ) {
-        parent::__construct($this->description, $this->in, $this->required);
+        parent::__construct($description, $in, $required);
     }
 
     public function setParamType(string $paramType): void

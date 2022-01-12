@@ -8,6 +8,7 @@ use OpenApiGenerator\Attributes\Controller;
 use OpenApiGenerator\Attributes\GET;
 use OpenApiGenerator\Attributes\Info;
 use OpenApiGenerator\Attributes\Parameter;
+use OpenApiGenerator\Attributes\PathParameter;
 use OpenApiGenerator\Attributes\Property;
 use OpenApiGenerator\Attributes\Response;
 use OpenApiGenerator\Attributes\SecurityScheme;
@@ -31,14 +32,14 @@ use OpenApiGenerator\Type;
 class SimpleController
 {
     #[
-        GET("/path/{id}", ["Dummy"], "Dummy path"),
+        GET("/path/{id}/{otherParameter}", ["Dummy"], "Dummy path"),
+        PathParameter("otherParameter", description: "Parameter which is not used as an argument in this method"),
         Property(Type::STRING, "prop1"),
         Response(200),
     ]
     public function get(
         #[Parameter(example: "2")] float $id
-    ): void
-    {
+    ): void {
         //
     }
 }
