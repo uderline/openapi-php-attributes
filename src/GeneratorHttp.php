@@ -9,6 +9,7 @@ use OpenApiGenerator\Attributes\GET;
 use OpenApiGenerator\Attributes\MediaProperty;
 use OpenApiGenerator\Attributes\Parameter;
 use OpenApiGenerator\Attributes\PATCH;
+use OpenApiGenerator\Attributes\PathParameter;
 use OpenApiGenerator\Attributes\POST;
 use OpenApiGenerator\Attributes\Property;
 use OpenApiGenerator\Attributes\PropertyItems;
@@ -33,13 +34,21 @@ class GeneratorHttp
             $routeAttributeNames = [Route::class, GET::class, POST::class, PUT::class, DELETE::class, PATCH::class];
             $route = array_filter(
                 $methodAttributes,
-                fn(ReflectionAttribute $attribute) => in_array($attribute->getName(), $routeAttributeNames));
+                static fn(ReflectionAttribute $attribute) => in_array($attribute->getName(), $routeAttributeNames)
+            );
 
             if (count($route) < 1) {
                 continue;
             }
 
             $parameters = $this->getParameters($method->getParameters());
+            $pathParameters = $method->getAttributes(PathParameter::class);
+
+            if ($pathParameters) {
+                foreach ($pathParameters as $attribute) {
+                    $parameters[] = $attribute->newInstance();
+                }
+            }
 
             $pathBuilder = new PathMethodBuilder();
             $pathBuilder->setRequestBody(new RequestBody());
