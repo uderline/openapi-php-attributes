@@ -132,12 +132,12 @@ with softwares such as Swagger or Postman.
 ## Recommendations
 We recommend having some knowledge on OpenApi: https://spec.openapis.org/oas/latest.html
 
-## Which version compatible
+## Which version is compatible
 Only the version 3 is compatible with this library
 
 # How to read this documentation
 - The documentation is split into 3 sections: the header, paths and components
-- Only required values are mentioned in the documentation according to the OpenApi [documentation](https://spec.openapis.org/oas/latest.html)
+- Mandatory and optional fields are described in the Open Api [documentation](https://spec.openapis.org/oas/latest.html)
 - Optional fields can be accessed by respecting the parameters order or using the syntax `#[Element(prop1: "value1")]`
 
 # Let's start describing !
@@ -219,7 +219,8 @@ class Controller {
 #[Controller]
 class Controller {
     #[
-        PUT("/path/{id}")
+        PUT("/path/{id}/{parameter}"),
+        PathParameter(name: "parameter", type: Type::STRING, description: "An other parameter", in: "path", required: true, example: "abcd")
     ]
     public function put(
     #[Parameter(description: "Id of an entity", in: "path", required: true, example: 123, format: "uuid")] int $id
