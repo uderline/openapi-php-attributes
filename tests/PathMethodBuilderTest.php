@@ -155,7 +155,7 @@ class PathMethodBuilderTest extends TestCase
         $route = new Route(Route::GET, "/path");
 
         $builder = new PathMethodBuilder();
-        $builder->setRoute($route, [[new Parameter("desc")]]);
+        $builder->setRoute($route, [new Parameter("desc")]);
 
         // Use a reflection to avoid testing PathMethodBuilder::getRoute
         $reflection = new ReflectionClass($builder);
