@@ -67,7 +67,7 @@ class Generator
             $this->loadController($reflectionClass);
             $this->loadSchema($reflectionClass);
             $this->loadServer($reflectionClass);
-            $this->loadSchemaSecurity($reflectionClass);
+            $this->loadSecurityScheme($reflectionClass);
         }
 
         $this->description['paths'] = $this->generatorHttp->build();
@@ -88,6 +88,7 @@ class Generator
             'servers' => $this->description['servers'] ?? [],
             'paths' => $this->description['paths'],
             'components' => $this->description['components'],
+            'security' => $this->description['security'],
         ];
 
         ApiDescriptionChecker::check($definition);
@@ -154,7 +155,7 @@ class Generator
      * @param ReflectionClass $reflectionClass
      * @return void
      */
-    private function loadSchemaSecurity(ReflectionClass $reflectionClass): void
+    private function loadSecurityScheme(ReflectionClass $reflectionClass): void
     {
         if (count($reflectionClass->getAttributes(SecurityScheme::class))) {
             $securitySchemas = $reflectionClass->getAttributes(SecurityScheme::class);
@@ -164,6 +165,11 @@ class Generator
                 $key = array_keys($data)[0];
                 $this->description['components']['securitySchemes'][$key] = $data[$key];
             }
+
+            $this->description['security'] = array_map(
+                fn(string $canonicalName) => [$canonicalName => []],
+                array_keys($this->description['components']['securitySchemes'])
+            );
         }
     }
 }
