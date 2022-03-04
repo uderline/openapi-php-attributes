@@ -14,11 +14,15 @@ use OpenApiGenerator\Attributes\POST;
 use OpenApiGenerator\Attributes\Property;
 use OpenApiGenerator\Attributes\PropertyItems;
 use OpenApiGenerator\Attributes\PUT;
+use OpenApiGenerator\Attributes\RefProperty;
 use OpenApiGenerator\Attributes\RequestBody;
 use OpenApiGenerator\Attributes\Response;
 use OpenApiGenerator\Attributes\Route;
+use OpenApiGenerator\Attributes\Schema;
+use OpenApiGenerator\Tests\Examples\Dummy\DummyRequest;
 use ReflectionAttribute;
 use ReflectionClass;
+use ReflectionMethod;
 use ReflectionParameter;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -50,8 +54,10 @@ class GeneratorHttp
                 }
             }
 
+            $requestBody = $this->getRequestBody($method);
+
             $pathBuilder = new PathMethodBuilder();
-            $pathBuilder->setRequestBody(new RequestBody());
+            $pathBuilder->setRequestBody($requestBody);
 
             // Add method Attributes to the builder
             foreach ($methodAttributes as $attribute) {
@@ -80,6 +86,39 @@ class GeneratorHttp
                 $this->paths[] = $route;
             }
         }
+    }
+
+    private function getRequestBody(ReflectionMethod $method): RequestBody
+    {
+        $requestBody = new RequestBody();
+
+        $requestClass = array_filter(
+            $method->getParameters(),
+            static fn(ReflectionParameter $parameter): bool => is_subclass_of(
+                $parameter->getType()->getName(),
+                Request::class
+            )
+        );
+
+        if (count($requestClass) > 0) {
+            $requestReflection = new ReflectionClass(DummyRequest::class);
+            $schemaAttributes = $requestReflection->getAttributes(Schema::class);
+            /** @var ReflectionAttribute|false $schema */
+            $schema = reset($schemaAttributes);
+
+            if ($schema) {
+                /** @var Schema $requestSchema */
+                $requestSchema = $schema->newInstance();
+
+                $builder = new ComponentBuilder(false);
+                $builder->addSchema($requestSchema, DummyRequest::class);
+                $builder->addProperty(new RefProperty($requestSchema->getName()));
+
+                $requestBody->setSchema($builder->getComponent());
+            }
+        }
+
+        return $requestBody;
     }
 
     /**

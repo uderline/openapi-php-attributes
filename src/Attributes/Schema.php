@@ -59,7 +59,7 @@ class Schema implements JsonSerializable
             $firstProperty = reset($this->properties);
 
             if ($firstProperty instanceof RefProperty || $firstProperty instanceof MediaProperty) {
-                $schema = $firstProperty;
+                $schema = $firstProperty->jsonSerialize();
             } else {
                 $array = [];
 
