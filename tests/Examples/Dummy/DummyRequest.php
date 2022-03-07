@@ -13,7 +13,8 @@ use Symfony\Component\HttpFoundation\Request;
     Property(Type::STRING, "Property 1"),
     Property(Type::INT, "Property 2"),
     Property(Type::ARRAY, "Property 3"),
-    PropertyItems(Type::STRING)
+    PropertyItems(Type::STRING),
+    Property(Type::REF, "Property 4", ref: DummyRefComponent::class),
 ]
 class DummyRequest extends Request
 {

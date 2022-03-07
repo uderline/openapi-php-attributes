@@ -24,8 +24,13 @@ class Property implements PropertyInterface, JsonSerializable
         private string $description = '',
         private mixed $example = null,
         private ?string $format = null,
-        private ?array $enum = null
+        private ?array $enum = null,
+        private ?string $ref = null
     ) {
+        if ($this->ref) {
+            $ref = explode('\\', $this->ref);
+            $this->ref = end($ref);
+        }
     }
 
     public function setPropertyItems(PropertyItems $propertyItems): void
@@ -53,6 +58,10 @@ class Property implements PropertyInterface, JsonSerializable
             if ($this->propertyItems) {
                 return $this->propertyItems->jsonSerialize();
             }
+        }
+
+        if ($this->type === PropertyType::REF) {
+            return ['$ref' => "#/components/schemas/$this->ref"];
         }
 
         if ($this->type === PropertyType::ID) {
