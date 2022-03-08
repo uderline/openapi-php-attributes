@@ -24,11 +24,23 @@ class Controller {
         Property(PropertyType::STRING, "prop1", description: "Property description", enum: ["val1", "val2"]),
         Property(PropertyType::INT, "prop2", example: 1),
         Property(PropertyType::BOOLEAN, "prop3"),
+        Property(PropertyType::REF, "prop4", ref: RefSchema::class)
         Response(ref: SchemaName::class, description: "Response description")
     ]
     public function get(#[Parameter("Parameter description")] int $id): JsonResponse {
         // ...
     }
+}
+
+#[
+    Schema,
+    Property(Type::STRING, "Property 1"),
+    Property(Type::INT, "Property 2"),
+]
+class RefSchema
+{
+    public string $property1;
+    public int $property2;
 }
 ```
 
@@ -75,6 +87,9 @@ Will generate
                                     "prop3": {
                                         "type": "boolean",
                                         "description": ""
+                                    },
+                                    "prop4": {
+                                        "$ref": "#/components/schemas/RefSchema"
                                     }
                                 }
                             }
