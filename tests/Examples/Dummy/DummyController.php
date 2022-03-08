@@ -27,7 +27,9 @@ class DummyController
         GET("/path", ["Dummy"], "Dummy get path"),
         Property(Type::STRING, "prop1", "Prop 1", "val1"),
         Property(Type::STRING, "prop2", "Prop 2", "val2"),
-        Response
+        Response,
+        Property(Type::STRING, "Response prop 1", "Prop response 1", "1"),
+        Property(Type::INT, "Response prop 2", "Prop response 2", 4)
     ]
     public function get(): void
     {
@@ -76,12 +78,9 @@ class DummyController
 
     #[
         PUT("/path/{id}", ["Dummy"], "Dummy put"),
-        Property(Type::STRING, "prop1"),
-        Property(Type::ID, "prop2"),
-        Property(Type::BOOLEAN, "prop3"),
         Response(204)
     ]
-    public function put(#[IDParam] int $id): void
+    public function put(#[IDParam] int $id, DummyRequest $dummyRequest): void
     {
         //
     }
