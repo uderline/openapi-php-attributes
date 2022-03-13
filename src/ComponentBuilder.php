@@ -4,19 +4,21 @@ declare(strict_types=1);
 
 namespace OpenApiGenerator;
 
-use OpenApiGenerator\Attributes\Property;
+use OpenApiGenerator\Attributes\PropertyInterface;
 use OpenApiGenerator\Attributes\PropertyItems;
 use OpenApiGenerator\Attributes\Schema;
 
 class ComponentBuilder
 {
     private ?Schema $currentSchema = null;
-    private ?Property $currentProperty = null;
+    private ?PropertyInterface $currentProperty = null;
+
+    public function __construct(private $noMedia = true)
+    {
+    }
 
     public function addSchema(Schema $schema, string $className): bool
     {
-        $schema->setNoMedia(true);
-
         if (!$schema->getName()) {
             $explodedNamespace = explode('\\', $className);
             $className = end($explodedNamespace);
@@ -28,7 +30,7 @@ class ComponentBuilder
         return true;
     }
 
-    public function addProperty(Property $property): bool
+    public function addProperty(PropertyInterface $property): bool
     {
         $this->saveProperty();
         $this->currentProperty = $property;
@@ -57,6 +59,7 @@ class ComponentBuilder
     public function getComponent(): ?Schema
     {
         $this->saveProperty();
+        $this->currentSchema->setNoMedia($this->noMedia);
 
         return $this->currentSchema;
     }
