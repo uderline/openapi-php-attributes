@@ -101,7 +101,7 @@ class GeneratorHttp
         );
 
         if (count($requestClass) > 0) {
-            $requestReflection = new ReflectionClass(DummyRequest::class);
+            $requestReflection = new ReflectionClass(Request::class);
             $schemaAttributes = $requestReflection->getAttributes(Schema::class);
             /** @var ReflectionAttribute|false $schema */
             $schema = reset($schemaAttributes);
