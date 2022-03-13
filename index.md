@@ -59,7 +59,7 @@ This will return:
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/DummyComponent"
+                                    "$ref": "#/components/schemas/YourObject"
                                 }
                             }
                         }
@@ -103,7 +103,7 @@ This will return:
     },
     "components": {
         "schemas": {
-            "Event": {
+            "YourObject": {
                 "type": "object",
                 "properties": {
                     "prop1": {
@@ -268,6 +268,34 @@ class Controller {
 }
 ```
 
+#### Using a custom request
+```php
+<?php
+
+// CustomRequest.php
+#[
+    Schema,
+    Property(type: Type::STRING, property: "prop1", description: "Property 1", example: "abcd", format: "hostname", enum: ["host1", "host2"]),
+    Property(Type::INT, "prop2"),
+]
+class CustomRequest extends \Symfony\Component\HttpFoundation\Request {
+    
+}
+
+// Constroller.php
+
+class Controller {
+    #[
+        POST("/path"),
+        Response(201)
+    ]
+    public function post(CustomRequest $request): Response
+    {
+        //
+    }
+}
+```
+
 ### Declare a simple response (POST example)
 #### Easy example
 ```php
@@ -347,6 +375,32 @@ class Entity {
 
 ### Use a component
 
+#### Request
+```php
+<?php
+class Controller {
+    #[
+        POST("/path"),
+        Property(Type::INT, "non_ref_prop"),
+        Property(Type::REF, "entity_props", ref: Entity::class),
+        Response()
+    ]
+    public function get() {}
+}
+```
+Means the method will want something like:
+```json
+{
+    "non_ref_prop": 1,
+    "entity_props": {
+        "prop1": "value 1",
+        "prop2": "val2",
+        "prop3": [1, 2, 3],
+        "prop4": true
+    }
+}
+```
+
 #### Response
 ```php
 <?php
@@ -390,3 +444,4 @@ then it means the method will return something like:
     }
 ]
 ```
+
