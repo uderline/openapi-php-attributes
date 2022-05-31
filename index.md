@@ -1,4 +1,5 @@
 # Quick example
+
 This is the easiest example we could've made.
 
 ```php
@@ -32,6 +33,7 @@ class YourObject {
 ```
 
 This will return:
+
 ```json
 {
     "openapi": "3.0.0",
@@ -122,20 +124,26 @@ This will return:
 # Before you start ...
 
 ## What is OPAG ?
+
 OpenApi PHP Attributes Generator is a library made to automatically generate a valid OA3 file which describes your API.
-Each path is described in your PHP files (often your controllers) using [PHP 8 attributes](https://stitcher.io/blog/attributes-in-php-8).
+Each path is described in your PHP files (often your controllers)
+using [PHP 8 attributes](https://stitcher.io/blog/attributes-in-php-8).
 
 ## Why should I use OpenApi in the first place ?
-Having a file describing your API will allow you to share it with your community (if it's public) and it can be used 
+
+Having a file describing your API will allow you to share it with your community (if it's public) and it can be used
 with softwares such as Swagger or Postman.
 
 ## Recommendations
+
 We recommend having some knowledge on OpenApi: https://spec.openapis.org/oas/latest.html
 
 ## Which version is compatible
+
 Only the version 3 is compatible with this library
 
 # How to read this documentation
+
 - The documentation is split into 3 sections: the header, paths and components
 - Mandatory and optional fields are described in the Open Api [documentation](https://spec.openapis.org/oas/latest.html)
 - Optional fields can be accessed by respecting the parameters order or using the syntax `#[Element(prop1: "value1")]`
@@ -143,7 +151,9 @@ Only the version 3 is compatible with this library
 # Let's start describing !
 
 ## Header
+
 On any class, start by adding the required [Info](https://spec.openapis.org/oas/latest.html#info-object) object.
+
 ```php
 #[Info("Title of your project", "Version of the API")]
 // Example:
@@ -151,18 +161,21 @@ On any class, start by adding the required [Info](https://spec.openapis.org/oas/
 ```
 
 Then, you can add one or more [Server](https://spec.openapis.org/oas/latest.html#server-object) object(s).
+
 ```php
 #[Server("https://api.url.com", "API description")]
 ```
 
 ## Security
+
 You can add the [Security Scheme](https://spec.openapis.org/oas/v3.1.0#security-scheme-object) policy of your API.
+
 ```php
 #[SecurityScheme("securityKey", "type", "name", "in", "scheme", "description", "bearerFormat")]
 ```
 
-
 ## Paths
+
 Paths must be described on methods (1 path = 1 route) in a class (a controller).
 
 ```php
@@ -174,7 +187,9 @@ class Controller {
 ```
 
 ### Declare routes (GET example)
+
 #### Easy example
+
 ```php
 <?php
 #[Controller]
@@ -187,6 +202,7 @@ class Controller {
 ```
 
 #### Comprehensive example
+
 ```php
 <?php
 #[Controller]
@@ -201,7 +217,9 @@ class Controller {
 ```
 
 ### Declare a parameter (PUT example)
+
 #### Easy example
+
 ```php
 <?php
 #[Controller]
@@ -214,6 +232,7 @@ class Controller {
 ```
 
 #### Comprehensive example
+
 ```php
 <?php
 #[Controller]
@@ -229,12 +248,51 @@ class Controller {
     ) { }
 }
 ```
+
 > Please note that we do not specify the type because it's using the type of the variable
 
 `IDParam` will set a _minimum_ property to 1
 
+If you are using auto-wiring and injecting objects as arguments, you can still set an `IDParam` but make sure you set a
+property as object id.
+
+```php
+// Model
+#[
+  Schema,
+  Property(Type::STRING, "id", isObjectId: true)
+]
+class ObjectModel {
+}
+
+// Controller
+class Controller {
+    public function put(#[IDParam] ObjectModel $model) {
+        // ...
+    }
+}
+```
+
+This will generate:
+```json
+    ...
+    "parameters": [
+        {
+            "name": "id",
+            "in": "path",
+            "schema": {
+                "type": "string"
+            },
+            "required": true
+        }
+    ],
+    ...
+```
+
 ### Declare a request body with properties
+
 #### Easy example
+
 ```php
 <?php
 #[Controller]
@@ -247,7 +305,9 @@ class Controller {
     public function post() { }
 }
 ```
+
 Available property types:
+
 - `Type::STRING`: "string"
 - `Type::INT`: "integer"
 - `Type::BOOLEAN`: "boolean"
@@ -255,6 +315,7 @@ Available property types:
 - `Type::REF`: "ref" (explained below)
 
 #### Comprehensive example
+
 ```php
 <?php
 #[Controller]
@@ -269,6 +330,7 @@ class Controller {
 ```
 
 #### Using a custom request
+
 ```php
 <?php
 
@@ -282,7 +344,7 @@ class CustomRequest extends \Symfony\Component\HttpFoundation\Request {
     
 }
 
-// Constroller.php
+// Controller.php
 
 class Controller {
     #[
@@ -297,7 +359,9 @@ class Controller {
 ```
 
 ### Declare a simple response (POST example)
+
 #### Easy example
+
 ```php
 <?php
 #[Controller]
@@ -311,9 +375,11 @@ class Controller {
     public function post() { }
 }
 ```
+
 *The response code is actually optional*
 
 #### Comprehensive example
+
 ```php
 <?php
 #[Controller]
@@ -329,11 +395,17 @@ class Controller {
 ```
 
 ### Declare a response with properties (GET example)
+
 This method will return:
+
 ```json
 {
     "prop1": "value1",
-    "prop2": ["val1", "val2", "val3"],
+    "prop2": [
+        "val1",
+        "val2",
+        "val3"
+    ],
     "prop3": "value3"
 }
 ```
@@ -355,7 +427,8 @@ class Controller {
 ```
 
 ### Create OA3 components ($ref)
-A component is a PHP class and will often be an entity (or a model). 
+
+A component is a PHP class and will often be an entity (or a model).
 On this entity, declare a schema and it's properties. The name of the schema is the name of the class.
 
 ```php
@@ -376,6 +449,7 @@ class Entity {
 ### Use a component
 
 #### Request
+
 ```php
 <?php
 class Controller {
@@ -388,20 +462,27 @@ class Controller {
     public function get() {}
 }
 ```
+
 Means the method will want something like:
+
 ```json
 {
     "non_ref_prop": 1,
     "entity_props": {
         "prop1": "value 1",
         "prop2": "val2",
-        "prop3": [1, 2, 3],
+        "prop3": [
+            1,
+            2,
+            3
+        ],
         "prop4": true
     }
 }
 ```
 
 #### Response
+
 ```php
 <?php
 class Controller {
@@ -409,17 +490,24 @@ class Controller {
     public function get() {}
 }
 ```
+
 Means the method will return something like:
+
 ```json
 {
     "prop1": "value 1",
     "prop2": "val2",
-    "prop3": [1, 2, 3],
+    "prop3": [
+        1,
+        2,
+        3
+    ],
     "prop4": true
 }
 ```
 
 If instead we have
+
 ```php
 <?php
 class Controller {
@@ -427,19 +515,29 @@ class Controller {
     public function get() {}
 }
 ```
+
 then it means the method will return something like:
+
 ```json
 [
     {
         "prop1": "value 1",
         "prop2": "val2",
-        "prop3": [1, 2, 3],
+        "prop3": [
+            1,
+            2,
+            3
+        ],
         "prop4": true
     },
     {
         "prop1": "value 12",
         "prop2": "val22",
-        "prop3": [12, 22, 32],
+        "prop3": [
+            12,
+            22,
+            32
+        ],
         "prop4": false
     }
 ]
