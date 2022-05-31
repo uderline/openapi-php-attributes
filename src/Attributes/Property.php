@@ -25,7 +25,8 @@ class Property implements PropertyInterface, JsonSerializable
         private mixed $example = null,
         private ?string $format = null,
         private ?array $enum = null,
-        private ?string $ref = null
+        private ?string $ref = null,
+        private bool $isObjectId = false,
     ) {
         if ($this->ref) {
             $ref = explode('\\', $this->ref);
@@ -47,6 +48,11 @@ class Property implements PropertyInterface, JsonSerializable
     public function getProperty(): ?string
     {
         return $this->property;
+    }
+
+    public function isObjectId(): bool
+    {
+        return $this->isObjectId;
     }
 
     public function jsonSerialize(): array

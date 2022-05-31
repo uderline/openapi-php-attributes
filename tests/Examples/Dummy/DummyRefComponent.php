@@ -11,7 +11,7 @@ use OpenApiGenerator\Types\SchemaType;
 
 #[
     Schema(SchemaType::OBJECT),
-    Property(PropertyType::STRING, "prop1", "Prop1 description", "Value 1"),
+    Property(PropertyType::STRING, "prop1", "Prop1 description", "Value 1", isObjectId: true),
     Property(PropertyType::INT, "prop2", example: "Value2"),
 ]
 class DummyRefComponent

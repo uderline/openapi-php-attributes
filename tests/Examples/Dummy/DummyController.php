@@ -80,7 +80,7 @@ class DummyController
         PUT("/path/{id}", ["Dummy"], "Dummy put"),
         Response(204)
     ]
-    public function put(#[IDParam] int $id, DummyRequest $dummyRequest): void
+    public function put(#[IDParam] DummyRefComponent $id, DummyRequest $dummyRequest): void
     {
         //
     }
