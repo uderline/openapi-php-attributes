@@ -55,6 +55,11 @@ class Property implements PropertyInterface, JsonSerializable
         return $this->isObjectId;
     }
 
+    public function getExample(): mixed
+    {
+        return $this->example;
+    }
+
     public function jsonSerialize(): array
     {
         $type = $this->type;

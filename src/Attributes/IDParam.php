@@ -25,8 +25,7 @@ class IDParam extends Parameter
     public function setParamType(string $paramType): void
     {
         // With frameworks' auto wiring, objects are injected as arguments.
-        // If the object has a Property(Type::STRING, isObjectId: true), use the type of the
-        // property (string for this example)
+        // If the object has a Property(Type::STRING, isObjectId: true), use the type of the property
         if (class_exists($paramType)) {
             $reflection = new \ReflectionClass($paramType);
             $attributes = $reflection->getAttributes();
@@ -39,6 +38,11 @@ class IDParam extends Parameter
 
                     $instance = $attribute->newInstance();
                     if ($instance instanceof Property && $instance->isObjectId()) {
+                        // Use the example of the object
+                        if ($instance->getExample()) {
+                            $this->example = $instance->getExample();
+                        }
+
                         return $instance->getType();
                     }
 
