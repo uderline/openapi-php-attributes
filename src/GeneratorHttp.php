@@ -19,16 +19,19 @@ use OpenApiGenerator\Attributes\RequestBody;
 use OpenApiGenerator\Attributes\Response;
 use OpenApiGenerator\Attributes\Route;
 use OpenApiGenerator\Attributes\Schema;
-use OpenApiGenerator\Tests\Examples\Dummy\DummyRequest;
 use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionParameter;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 
 class GeneratorHttp
 {
+    /** @var Route[] */
     private array $paths = [];
+
+    /** @var string[] */
+    private array $schemaListNames = [];
 
     public function append(ReflectionClass $reflectionClass)
     {
@@ -88,6 +91,9 @@ class GeneratorHttp
         }
     }
 
+    /**
+     * Return an empty request body or a pre-built request body if there is a parameter that is a Symfony Request type
+     */
     private function getRequestBody(ReflectionMethod $method): RequestBody
     {
         $requestBody = new RequestBody();
@@ -96,12 +102,14 @@ class GeneratorHttp
             $method->getParameters(),
             static fn(ReflectionParameter $parameter): bool => is_subclass_of(
                 $parameter->getType()->getName(),
-                Request::class
+                SymfonyRequest::class
             )
         );
 
-        if (count($requestClass) > 0) {
-            $requestReflection = new ReflectionClass(Request::class);
+        if (count($requestClass)) {
+            $requestClass = reset($requestClass);
+            $requestReflection = new ReflectionClass($requestClass->getType()->getName());
+
             $schemaAttributes = $requestReflection->getAttributes(Schema::class);
             /** @var ReflectionAttribute|false $schema */
             $schema = reset($schemaAttributes);
@@ -110,8 +118,10 @@ class GeneratorHttp
                 /** @var Schema $requestSchema */
                 $requestSchema = $schema->newInstance();
 
+                $schemaName = $requestClass->getType()->getName();
+
                 $builder = new ComponentBuilder(false);
-                $builder->addSchema($requestSchema, DummyRequest::class);
+                $builder->addSchema($requestSchema, $schemaName);
                 $builder->addProperty(new RefProperty($requestSchema->getName()));
 
                 $requestBody->setSchema($builder->getComponent());
@@ -165,5 +175,10 @@ class GeneratorHttp
         $paths[$route->getRoute()][$route->getMethod()] = $methodToMerge;
 
         return $paths;
+    }
+
+    public function setCurrentSchemaListNames(array $schemaNames): void
+    {
+        $this->schemaListNames = $schemaNames;
     }
 }
