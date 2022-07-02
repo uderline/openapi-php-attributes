@@ -122,7 +122,7 @@ class PathMethodBuilder
             if ($this->currentSchemaHolder instanceof RequestBody) {
                 $this->currentRoute->setRequestBody($this->currentSchemaHolder);
             } else {
-                $this->currentRoute->setResponse($this->currentSchemaHolder);
+                $this->currentRoute->addResponse($this->currentSchemaHolder);
             }
 
             $this->currentSchemaHolder = null;
