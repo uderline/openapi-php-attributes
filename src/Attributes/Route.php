@@ -107,7 +107,11 @@ class Route implements JsonSerializable
         }
 
         if ($this->response) {
-            $array[$this->getRoute()][$this->method]['responses'] = $this->response;
+            $responses = array_reduce($this->response, function ($response, $current) {
+                return $response + $current->jsonSerialize();
+            }, []);
+
+            $array[$this->getRoute()][$this->method]['responses'] = $responses;
         }
 
         return $array;
