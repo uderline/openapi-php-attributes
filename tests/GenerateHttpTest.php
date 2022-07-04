@@ -13,6 +13,7 @@ use OpenApiGenerator\Attributes\Response;
 use OpenApiGenerator\Attributes\Route;
 use OpenApiGenerator\Attributes\Schema;
 use OpenApiGenerator\GeneratorHttp;
+use OpenApiGenerator\Tests\Examples\Controller\ManyResponsesController;
 use OpenApiGenerator\Tests\Examples\Controller\SimpleController;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
@@ -46,7 +47,27 @@ class GenerateHttpTest extends TestCase
         $expectedRoute->addParam($expectedParameter);
         $expectedRoute->addParam($expectedPathParameter);
         $expectedRoute->setRequestBody($requestBody);
-        $expectedRoute->setResponse(new Response());
+        $expectedRoute->addResponse(new Response());
+
+        self::assertEquals([$expectedRoute], $actual);
+    }
+
+    public function testManyResponses(): void
+    {
+        $dummyReflection = new ReflectionClass(ManyResponsesController::class);
+
+        $generateHttp = new GeneratorHttp();
+        $generateHttp->append($dummyReflection);
+
+        $reflection = new ReflectionClass($generateHttp);
+        $pathsProperty = $reflection->getProperty('paths');
+        $pathsProperty->setAccessible(true);
+        $actual = $pathsProperty->getValue($generateHttp);
+
+        $expectedRoute = new GET('/path', ['Dummy'], 'Dummy path');
+        $expectedRoute->setRequestBody(new RequestBody());
+        $expectedRoute->addResponse(new Response());
+        $expectedRoute->addResponse(new Response(401));
 
         self::assertEquals([$expectedRoute], $actual);
     }

@@ -23,7 +23,7 @@ class Route implements JsonSerializable
     public const PATCH = 'patch';
 
     private array $getParams = [];
-    private ?Response $response = null;
+    private array $responses = [];
     private ?RequestBody $requestBody = null;
 
     public function __construct(
@@ -40,9 +40,9 @@ class Route implements JsonSerializable
         $this->getParams[] = $params;
     }
 
-    public function setResponse(Response $response): void
+    public function addResponse(Response $response): void
     {
-        $this->response = $response;
+        $this->responses[] = $response;
     }
 
     public function getMethod(): string
@@ -106,8 +106,12 @@ class Route implements JsonSerializable
             $array[$this->getRoute()][$this->method]['requestBody'] = $this->requestBody;
         }
 
-        if ($this->response) {
-            $array[$this->getRoute()][$this->method]['responses'] = $this->response;
+        if ($this->responses) {
+            $responses = array_reduce($this->responses, function ($response, $current) {
+                return $response + $current->jsonSerialize();
+            }, []);
+
+            $array[$this->getRoute()][$this->method]['responses'] = $responses;
         }
 
         return $array;
