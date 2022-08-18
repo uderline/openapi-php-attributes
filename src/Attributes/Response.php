@@ -26,7 +26,8 @@ class Response implements JsonSerializable
         private string $description = '',
         private ?string $responseType = null,
         private ?string $schemaType = SchemaType::OBJECT,
-        private ?string $ref = null
+        private ?string $ref = null,
+        private array $extra = [],
     ) {
         if ($ref) {
             $this->schema = new Schema($schemaType);
@@ -59,6 +60,10 @@ class Response implements JsonSerializable
 
         if ($this->schema) {
             $array[$this->code]['content'] = $this->schema;
+        }
+
+        if ($this->extra) {
+            $array[$this->code] = array_merge($array[$this->code], $this->extra);
         }
 
         return $array;
