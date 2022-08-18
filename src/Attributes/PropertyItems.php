@@ -19,6 +19,7 @@ class PropertyItems implements PropertyInterface, JsonSerializable
         private string $type,
         private ?string $ref = null,
         private mixed $example = '',
+        private array $extra = [],
     ) {
         if ($this->ref) {
             $ref = explode('\\', $this->ref);
@@ -59,6 +60,10 @@ class PropertyItems implements PropertyInterface, JsonSerializable
                 'type' => $this->type,
                 'example' => $this->example
             ];
+        }
+
+        if ($this->extra) {
+            $array = array_merge($array, $this->extra);
         }
 
         return $array;

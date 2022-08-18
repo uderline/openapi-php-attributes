@@ -27,6 +27,7 @@ class Property implements PropertyInterface, JsonSerializable
         private ?array $enum = null,
         private ?string $ref = null,
         private bool $isObjectId = false,
+        private array $extra = [],
     ) {
         if ($this->ref) {
             $ref = explode('\\', $this->ref);
@@ -99,6 +100,10 @@ class Property implements PropertyInterface, JsonSerializable
 
         if ($minimum) {
             $array['minimum'] = $minimum;
+        }
+
+        if ($this->extra) {
+            $array = array_merge($array, $this->extra);
         }
 
         return $array;
