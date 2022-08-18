@@ -37,6 +37,6 @@ foreach ($files as $autoload) {
 
 $generator = \OpenApiGenerator\Generator::create()->generate();
 
-$schema = stripslashes(json_encode($generator, JSON_PRETTY_PRINT));
+$schema = json_encode($generator, JSON_PRETTY_PRINT);
 
 file_put_contents($outputFile, $schema);
