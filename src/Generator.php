@@ -88,7 +88,7 @@ class Generator
             'servers' => $this->description['servers'] ?? [],
             'paths' => $this->description['paths'],
             'components' => $this->description['components'],
-            'security' => $this->description['security'],
+            'security' => $this->description['security'] ?? [],
         ];
 
         ApiDescriptionChecker::check($definition);
