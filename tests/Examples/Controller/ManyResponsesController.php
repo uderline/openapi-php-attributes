@@ -12,7 +12,7 @@ use OpenApiGenerator\Attributes\Response;
 class ManyResponsesController
 {
     #[
-        GET("/path", ["Dummy"], "Dummy path"),
+        GET("/path", ["Dummy"], '"Dummy" \path'),
         Response(200),
         Response(401),
     ]

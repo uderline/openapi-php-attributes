@@ -64,7 +64,7 @@ class GenerateHttpTest extends TestCase
         $pathsProperty->setAccessible(true);
         $actual = $pathsProperty->getValue($generateHttp);
 
-        $expectedRoute = new GET('/path', ['Dummy'], 'Dummy path');
+        $expectedRoute = new GET('/path', ['Dummy'], '"Dummy" \path');
         $expectedRoute->setRequestBody(new RequestBody());
         $expectedRoute->addResponse(new Response());
         $expectedRoute->addResponse(new Response(401));
