@@ -22,11 +22,19 @@ class GeneratorSchemas
             $instance = $attribute->newInstance();
             $className = $reflectionClass->getName();
 
-            match ($name) {
-                Schema::class => $builder->addSchema($instance, $className),
-                Property::class => $builder->addProperty($instance),
-                PropertyItems::class => $builder->addPropertyItems($instance),
-            };
+            switch ($name) {
+                case Schema::class:
+                    $builder->addSchema($instance, $className);
+                    break;
+                case Property::class:
+                    $builder->addProperty($instance);
+                    break;
+                case PropertyItems::class:
+                    $builder->addPropertyItems($instance);
+                    break;
+                default:
+                    break;
+            }
         }
 
         $this->components[] = $builder->getComponent();
