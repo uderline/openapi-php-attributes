@@ -2,18 +2,24 @@
 
 This CLI Tool is able to generate an OpenApi JSON file description according to PHP attributes contained in your files.
 
-
 ## ⚠️ Missing something ?
-Just open an issue saying what's missing ! Feel free to open a PR but we recommend opening an issue beforehand. 
-
+Just open an issue saying what's missing ! Feel free to open a PR but we recommend opening an issue beforehand.
 
 ## Where to start ?
-- `composer require uderline/openapi-php-attributes`
-- Describe your API by following this documentation: https://uderline.github.io/openapi-php-attributes/
-- Then, generate the JSON file: `php ./vendor/uderline/openapi-php-attributes/opag /src/files/project openapi.json`.
+1 - Install the package openapi-php-attributes-generator with composer.
+
+```bash
+composer require uderline/openapi-php-attributes
+```
+
+2 - Describe your API by following this documentation: https://uderline.github.io/openapi-php-attributes/
+
+3 - Generate the JSON file:
+```bash
+php ./vendor/bin/opag /src/files/project openapi.json
+```
 
 A new file called `openapi.json` has been generated !
-
 
 ## Example
 ```php
