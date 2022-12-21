@@ -1,191 +1,12 @@
 ---
-title: Quick example
+title: Paths
 layout: home
-nav_order: 1
+nav_order: 4
 ---
 
-# Quick example
+# Paths
 
-This is the easiest example we could've made.
-
-```php
-<?php
-#[Info("OpenApi PHP Generator", "1.0.0")]
-#[Controller]
-class Controller {
-    #[
-        GET("/path/{id}"),
-        Response(200, ref: YourObject::class)
-    ]
-    public function get(#[IDParam] $id) { }
-
-    #[
-        POST("/path"),
-        Property(Type::STRING, "prop1"),
-        Property(Type::INT, "prop2"),
-        Response(200, ref: YourObject::class)
-    ]
-    public function post() { }
-}
-
-#[
-    Schema,
-    Property(Type::STRING, "prop1"),
-    Property(Type::INT, "prop2"),
-]
-class YourObject {
-
-}
-```
-
-This will return:
-
-```json
-{
-    "openapi": "3.0.0",
-    "info": {
-        "title": "OpenApi PHP Generator",
-        "version": "1.0.0"
-    },
-    "paths": {
-        "/path/{id}": {
-            "get": {
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "schema": {
-                            "type": "integer",
-                            "minimum": 1
-                        },
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/YourObject"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/path": {
-            "post": {
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "prop1": {
-                                        "type": "string"
-                                    },
-                                    "prop2": {
-                                        "type": "integer"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/YourObject"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    },
-    "components": {
-        "schemas": {
-            "YourObject": {
-                "type": "object",
-                "properties": {
-                    "prop1": {
-                        "type": "string"
-                    },
-                    "prop2": {
-                        "type": "integer"
-                    }
-                }
-            }
-        }
-    }
-}
-```
-
-# Before you start ...
-
-## What is OPAG ?
-
-OpenApi PHP Attributes Generator is a library made to automatically generate a valid OA3 file which describes your API.
-Each path is described in your PHP files (often your controllers)
-using [PHP 8 attributes](https://stitcher.io/blog/attributes-in-php-8).
-
-## Why should I use OpenApi in the first place ?
-
-Having a file describing your API will allow you to share it with your community (if it's public) and it can be used
-with softwares such as Swagger or Postman.
-
-## Recommendations
-
-We recommend having some knowledge on OpenApi: https://spec.openapis.org/oas/latest.html
-
-## Which version is compatible
-
-Only the version 3 is compatible with this library
-
-# How to read this documentation
-
-- The documentation is split into 3 sections: the header, paths and components
-- Mandatory and optional fields are described in the Open Api [documentation](https://spec.openapis.org/oas/latest.html)
-- Optional fields can be accessed by respecting the parameters order or using the syntax `#[Element(prop1: "value1")]`
-
-# Let's start describing !
-
-## Header
-
-On any class, start by adding the required [Info](https://spec.openapis.org/oas/latest.html#info-object) object.
-
-```php
-<?php
-#[Info("Title of your project", "Version of the API")]
-// Example:
-#[Info("OpenApi PHP Generator", "1.0.0")]
-```
-
-Then, you can add one or more [Server](https://spec.openapis.org/oas/latest.html#server-object) object(s).
-
-```php
-<?php
-#[Server("https://api.url.com", "API description")]
-```
-
-## Security
-
-You can add the [Security Scheme](https://spec.openapis.org/oas/v3.1.0#security-scheme-object) policy of your API.
-
-```php
-<?php
-#[SecurityScheme("securityKey", "type", "name", "in", "scheme", "description", "bearerFormat")]
-```
-
-## Paths
-
-Paths must be described on methods (1 path = 1 route) in a class (a controller).
+Paths must be described on methods (1 path = 1 route) in a class (e.g. a controller).
 
 ```php
 <?php
@@ -262,11 +83,12 @@ class Controller {
 
 `IDParam` will set a _minimum_ property to 1
 
+#### IDParam with a model
+
 If you are using auto-wiring and injecting objects as arguments, you can still set an `IDParam` but make sure you set a
 property as object id.
 
 ```php
-<?php
 // Model
 #[
   Schema,
