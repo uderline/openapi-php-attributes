@@ -11,6 +11,7 @@ use OpenApiGenerator\Attributes\Parameter;
 use OpenApiGenerator\Attributes\PathParameter;
 use OpenApiGenerator\Attributes\Property;
 use OpenApiGenerator\Attributes\Response;
+use OpenApiGenerator\Attributes\Security;
 use OpenApiGenerator\Attributes\SecurityScheme;
 use OpenApiGenerator\Attributes\Server;
 use OpenApiGenerator\Type;
@@ -19,14 +20,8 @@ use OpenApiGenerator\Type;
     Server('same server1', 'same url1'),
     Info("title", "1.0.0", "The description"),
     Server('same server2', 'same url2'),
-    SecurityScheme(
-        'bearerAuth',
-        'http',
-        'bearerAuth',
-        'header',
-        'JWT',
-        'bearer',
-    ),
+    Security(['http']),
+    SecurityScheme(type: 'http', scheme: 'Bearer', bearerFormat: 'JWT bearer token'),
     Controller,
 ]
 class SimpleController

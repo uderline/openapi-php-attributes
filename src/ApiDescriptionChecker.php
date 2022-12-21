@@ -14,6 +14,8 @@ class ApiDescriptionChecker
         $this->checkOpenApiVersion();
         $this->checkInfo();
         $this->checkServers();
+        $this->checkSecurityScheme();
+        $this->checkSecurity();
     }
 
     /**
@@ -61,6 +63,71 @@ class ApiDescriptionChecker
         foreach ($this->definition['servers'] as $server) {
             if ($server instanceof Server && !$server->getUrl()) {
                 throw DefinitionCheckerException::missingField('servers.url');
+            }
+        }
+    }
+
+    private function checkSecurityScheme(): void
+    {
+        if (!isset($this->definition['securitySchemes'])) {
+            return;
+        }
+
+        foreach ($this->definition['securitySchemes'] as $securityScheme) {
+            switch ($securityScheme["type"]) {
+                case "apiKey":
+                    if (empty($securityScheme["name"]) || !in_array(
+                            $securityScheme["in"],
+                            ['query', 'header', 'cookie'],
+                            true
+                        )) {
+                        throw new \InvalidArgumentException("SecurityScheme: apiKey must have name and in");
+                    }
+                    break;
+                case "http":
+                    if (empty($securityScheme["scheme"])) {
+                        throw new \InvalidArgumentException("SecurityScheme: http must have scheme");
+                    }
+                    break;
+                case "mutualTLS":
+                    break;
+                case "oauth2":
+                    if (empty($securityScheme["flows"])) {
+                        throw new \InvalidArgumentException("SecurityScheme: oauth2 must have flows");
+                    }
+                    break;
+                case "openIdConnect":
+                    if (empty($securityScheme["openIdConnectUrl"])) {
+                        throw new \InvalidArgumentException("SecurityScheme: openIdConnect must have openIdConnectUrl");
+                    }
+                    break;
+                default:
+                    throw new \InvalidArgumentException(
+                        'Invalid security scheme type: should be one of "apiKey", "http", "oauth2", "openIdConnect"'
+                    );
+            }
+        }
+    }
+
+    private function checkSecurity(): void
+    {
+        if (!isset($this->definition['security'])) {
+            return;
+        }
+
+        foreach ($this->definition['security'] as $security) {
+            if ($security instanceof \stdClass) {
+                continue;
+            }
+
+            $availableValues = array_keys($this->definition['components']['securitySchemes']);
+            $securityName = array_keys($security)[0];
+
+            if (!in_array($securityName, $availableValues, true)) {
+                throw new \InvalidArgumentException(
+                    "Security: security scheme not found. Please choose one of the followings: " .
+                    implode(', ', $availableValues)
+                );
             }
         }
     }

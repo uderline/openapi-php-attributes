@@ -35,8 +35,15 @@ foreach ($files as $autoload) {
     include_once $autoload->getPathName();
 }
 
-$generator = \OpenApiGenerator\Generator::create()->generate();
+try {
+    $generator = \OpenApiGenerator\Generator::create()->generate();
+} catch (\Exception $e) {
+    echo "[ERROR] ".$e->getMessage();
+    die;
+}
 
 $schema = json_encode($generator, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 
 file_put_contents($outputFile, $schema);
+
+echo "DONE !";

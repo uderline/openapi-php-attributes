@@ -27,10 +27,10 @@ A new file called `openapi.json` has been generated !
 class Controller {
     #[
         GET("/path/{id}", ["Tag1", "Tag2"], "Description of the method"),
-        Property(PropertyType::STRING, "prop1", description: "Property description", enum: ["val1", "val2"]),
-        Property(PropertyType::INT, "prop2", example: 1),
-        Property(PropertyType::BOOLEAN, "prop3"),
-        Property(PropertyType::REF, "prop4", ref: RefSchema::class)
+        Property(Type::STRING, "prop1", description: "Property description", enum: ["val1", "val2"]),
+        Property(Type::INT, "prop2", example: 1),
+        Property(Type::BOOLEAN, "prop3"),
+        Property(Type::REF, "prop4", ref: RefSchema::class)
         Response(ref: SchemaName::class, description: "Response description")
     ]
     public function get(#[Parameter("Parameter description")] int $id): JsonResponse {

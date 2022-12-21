@@ -8,6 +8,7 @@ use JetBrains\PhpStorm\Pure;
 use OpenApiGenerator\Attributes\Controller;
 use OpenApiGenerator\Attributes\Info;
 use OpenApiGenerator\Attributes\Schema;
+use OpenApiGenerator\Attributes\Security;
 use OpenApiGenerator\Attributes\SecurityScheme;
 use OpenApiGenerator\Attributes\Server;
 use ReflectionAttribute;
@@ -16,7 +17,7 @@ use ReflectionException;
 
 class Generator
 {
-    public const OPENAPI_VERSION = "3.0.0";
+    public const OPENAPI_VERSION = "3.1.0";
 
     /**
      * API description
@@ -68,6 +69,7 @@ class Generator
             $this->loadSchema($reflectionClass);
             $this->loadServer($reflectionClass);
             $this->loadSecurityScheme($reflectionClass);
+            $this->loadSecurity($reflectionClass);
         }
 
         $this->description['paths'] = $this->generatorHttp->build();
@@ -158,18 +160,26 @@ class Generator
     private function loadSecurityScheme(ReflectionClass $reflectionClass): void
     {
         if (count($reflectionClass->getAttributes(SecurityScheme::class))) {
-            $securitySchemas = $reflectionClass->getAttributes(SecurityScheme::class);
+            $securitySchemes = $reflectionClass->getAttributes(SecurityScheme::class);
 
-            foreach ($securitySchemas as $item) {
+            foreach ($securitySchemes as $item) {
                 $data = $item->newInstance()->jsonSerialize();
                 $key = array_keys($data)[0];
                 $this->description['components']['securitySchemes'][$key] = $data[$key];
             }
+        }
+    }
+    /**
+     * @param ReflectionClass $reflectionClass
+     * @return void
+     */
+    private function loadSecurity(ReflectionClass $reflectionClass): void
+    {
+        if (count($reflectionClass->getAttributes(Security::class))) {
+            $securityAttributes = $reflectionClass->getAttributes(Security::class);
+            $security = reset($securityAttributes);
 
-            $this->description['security'] = array_map(
-                fn(string $canonicalName) => [$canonicalName => []],
-                array_keys($this->description['components']['securitySchemes'])
-            );
+            $this->description['security'] = $security->newInstance()->jsonSerialize();
         }
     }
 }
