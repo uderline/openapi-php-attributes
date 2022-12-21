@@ -29,7 +29,7 @@ if ($argc <= 2) {
     $outputFile = $argv[$argc - 1];
 }
 
-$files = Finder::create()->files()->name('*.php')->in($dirs);
+$files = Finder::create()->files()->name('*.php')->in($dirs)->sortByName();
 
 foreach ($files as $autoload) {
     include_once $autoload->getPathName();
