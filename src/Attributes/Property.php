@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace OpenApiGenerator\Attributes;
 
 use Attribute;
+use BackedEnum;
 use OpenApiGenerator\Types\PropertyType;
 use JsonSerializable;
 
@@ -24,7 +25,7 @@ class Property implements PropertyInterface, JsonSerializable
         private string $description = '',
         private mixed $example = null,
         private ?string $format = null,
-        private ?array $enum = null,
+        private null|array|string $enum = null,
         private ?string $ref = null,
         private bool $isObjectId = false,
         private array $extra = [],
@@ -91,7 +92,7 @@ class Property implements PropertyInterface, JsonSerializable
         }
 
         if ($this->enum) {
-            $array['enum'] = $this->enum;
+            $array['enum'] = $this->enum();
         }
 
         if ($this->example) {
@@ -107,5 +108,21 @@ class Property implements PropertyInterface, JsonSerializable
         }
 
         return $array;
+    }
+
+    private function enum(): ?array
+    {
+        if (!is_string($this->enum)) {
+            return $this->enum;
+        }
+
+        if(!enum_exists($this->enum)) {
+            return null;
+        }
+
+        return array_map(
+            static fn(BackedEnum $enum) => $enum->value,
+            $this->enum::cases()
+        );
     }
 }
