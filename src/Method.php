@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace OpenApiGenerator;
 
 use JsonSerializable;
+use OpenApiGenerator\Attributes\DynamicBuilder;
 use OpenApiGenerator\Attributes\Parameter;
 use OpenApiGenerator\Attributes\PropertyInterface;
 use OpenApiGenerator\Attributes\PropertyItems;
 use OpenApiGenerator\Attributes\RequestBody;
 use OpenApiGenerator\Attributes\Response;
 use OpenApiGenerator\Attributes\Route;
-use OpenApiGenerator\Attributes\Schema;
 
 /**
  * This represents an OpenAPI method route (GET, POST, PUT, PATCH or DELETE path).
@@ -26,6 +26,7 @@ class Method implements JsonSerializable
     private array $properties = [];
     private Response $response;
     private ?RequestBody $requestBody = null;
+    private ?DynamicMethodResolverInterface $dynamicBuilder = null;
 
     public function getPath(): string
     {
@@ -35,6 +36,31 @@ class Method implements JsonSerializable
     public function getMethod(): string
     {
         return $this->route->getMethod();
+    }
+
+    public function getProperties(): array
+    {
+        return $this->properties;
+    }
+
+    public function getRoute(): Route
+    {
+        return $this->route;
+    }
+
+    public function getParameters(): array
+    {
+        return $this->parameters;
+    }
+
+    public function getResponse(): Response
+    {
+        return $this->response;
+    }
+
+    public function getRequestBody(): ?RequestBody
+    {
+        return $this->requestBody;
     }
 
     public function setRequestBody(RequestBody $requestBody): void
@@ -77,25 +103,21 @@ class Method implements JsonSerializable
         return $this;
     }
 
-    /**
-     * A method contains:
-     * - a schema that describes the request body
-     * - a request body that contains the schema
-     * - a route that contains (but not only) the path, method, tags, summary, parameters and the request body
-     */
+    public function setDynamicBuilder(
+        DynamicBuilder $instance,
+        \ReflectionClass $reflectionClass,
+        \ReflectionMethod $reflectionMethod
+    ): void {
+        $this->dynamicBuilder = new $instance->builder;
+        $this->dynamicBuilder->setReflectionClass($reflectionClass);
+        $this->dynamicBuilder->setReflectionMethod($reflectionMethod);
+        $this->dynamicBuilder->setMethod($this);
+    }
+
     public function jsonSerialize(): array
     {
-        $schema = new Schema();
-        array_walk($this->properties, $schema->addProperty(...));
+        $this->dynamicBuilder ??= (new DefaultDynamicMethodResolver())->setMethod($this);
 
-        $this->requestBody ??= new RequestBody();
-        $this->requestBody->setSchema($schema);
-
-        $route = clone $this->route;
-        $route->setGetParams($this->parameters);
-        $route->setRequestBody($this->requestBody);
-        $route->addResponse($this->response);
-
-        return $route->jsonSerialize();
+        return $this->dynamicBuilder->build();
     }
 }

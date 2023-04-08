@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace OpenApiGenerator;
 
 use OpenApiGenerator\Attributes\DELETE;
+use OpenApiGenerator\Attributes\DynamicBuilder;
 use OpenApiGenerator\Attributes\GET;
 use OpenApiGenerator\Attributes\MediaProperty;
 use OpenApiGenerator\Attributes\Parameter;
@@ -83,6 +84,7 @@ class GeneratorHttp
                     Property::class, MediaProperty::class => $method->addProperty($instance),
                     PropertyItems::class => $method->addPropertyItemsToLastProperty($instance),
                     Response::class => $method->setResponse($instance),
+                    DynamicBuilder::class => $method->setDynamicBuilder($instance, $reflectionClass, $reflectionMethod),
                     default => null
                 };
             }
