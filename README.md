@@ -27,7 +27,7 @@ A new file called `openapi.json` has been generated !
 class Controller {
     #[
         GET("/path/{id}", ["Tag1", "Tag2"], "Description of the method"),
-        Property(Type::STRING, "prop1", description: "Property description", enum: ["val1", "val2"]),
+        Property(Type::STRING, "prop1", description: "Property description", enum: BackedEnum::class),
         Property(Type::INT, "prop2", example: 1),
         Property(Type::BOOLEAN, "prop3"),
         Property(Type::REF, "prop4", ref: RefSchema::class)
@@ -36,6 +36,12 @@ class Controller {
     public function get(#[Parameter("Parameter description")] int $id): JsonResponse {
         // ...
     }
+}
+
+enum BackedEnum: string
+{
+    case VAL1: "val1";
+    case VAL2: "val2";
 }
 
 #[
