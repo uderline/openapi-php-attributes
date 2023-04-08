@@ -16,6 +16,7 @@ use OpenApiGenerator\Types\SchemaType;
     Property(Type::INT, "prop2", example: "Value2"),
     Property(Type::BOOLEAN, "prop3", "Prop 3"),
     Property(Type::STRING, "prop4", "Prop 4", enum: ["val1", "val2"]),
+    Property(Type::STRING, "prop5", "Prop 4", enum: DummyBackedEnum::class),
     Property(Type::ARRAY, "propArray"),
     PropertyItems(Type::REF, DummyRefComponent::class)
 ]
