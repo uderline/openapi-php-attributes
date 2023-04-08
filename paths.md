@@ -155,9 +155,17 @@ class Controller {
     #[
         PUT("/path"),
         Property(type: Type::STRING, property: "prop1", description: "Property 1", example: "abcd", format: "hostname", enum: ["host1", "host2"]),
+        // You may also use the enum syntax below (see BackedEnum)
+        Property(type: Type::STRING, property: "prop2", description: "Property 2", example: "abcd", format: "hostname", enum: BackedEnum::class),
         Property(Type::INT, "prop2"),
     ]
     public function post() { }
+}
+
+// BackedEnum.php
+enum BackedEnum: string {
+    case HOST1 = "host1";
+    case HOST2 = "host2";
 }
 ```
 
