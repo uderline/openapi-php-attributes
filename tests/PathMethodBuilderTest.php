@@ -11,7 +11,7 @@ use OpenApiGenerator\Attributes\RequestBody;
 use OpenApiGenerator\Attributes\Response;
 use OpenApiGenerator\Attributes\Route;
 use OpenApiGenerator\Attributes\Schema;
-use OpenApiGenerator\PathMethodBuilder;
+use OpenApiGenerator\Method;
 use OpenApiGenerator\Types\PropertyType;
 use OpenApiGenerator\Types\RequestBodyType;
 use OpenApiGenerator\Types\SchemaType;
@@ -24,7 +24,7 @@ class PathMethodBuilderTest extends TestCase
     {
         $response = new Response();
 
-        $builder = new PathMethodBuilder();
+        $builder = new Method();
         $builder->setResponse($response);
 
         $reflection = new ReflectionClass($builder);
@@ -41,7 +41,7 @@ class PathMethodBuilderTest extends TestCase
     {
         $route = new Route(Route::GET, "/path");
 
-        $builder = new PathMethodBuilder();
+        $builder = new Method();
 
         // Use a reflection to avoid testing PathMethodBuilder::setRoute
         $reflection = new ReflectionClass($builder);
@@ -65,7 +65,7 @@ class PathMethodBuilderTest extends TestCase
         $route = new Route(Route::POST, "/path");
         $property = new Property(PropertyType::INT, "prop1");
 
-        $builder = new PathMethodBuilder();
+        $builder = new Method();
         $builder->setRoute($route, []);
         $builder->setRequestBody(new RequestBody(RequestBodyType::JSON));
         $builder->addProperty($property);
@@ -91,7 +91,7 @@ class PathMethodBuilderTest extends TestCase
         $route = new Route(Route::POST, "/path");
         $property = new Property(PropertyType::ARRAY, "prop1");
 
-        $builder = new PathMethodBuilder();
+        $builder = new Method();
         $builder->setRoute($route, []);
         $builder->setRequestBody(new RequestBody(RequestBodyType::JSON));
         $builder->addProperty($property);
@@ -116,7 +116,7 @@ class PathMethodBuilderTest extends TestCase
         $route = new Route(Route::POST, "/path");
         $property = new Property(PropertyType::ARRAY, "prop1");
 
-        $builder = new PathMethodBuilder();
+        $builder = new Method();
         $builder->setRoute($route, []);
         $builder->setRequestBody(new RequestBody());
         $builder->addProperty($property);
@@ -154,7 +154,7 @@ class PathMethodBuilderTest extends TestCase
     {
         $route = new Route(Route::GET, "/path");
 
-        $builder = new PathMethodBuilder();
+        $builder = new Method();
         $builder->setRoute($route, [new Parameter("desc")]);
 
         // Use a reflection to avoid testing PathMethodBuilder::getRoute
@@ -169,7 +169,7 @@ class PathMethodBuilderTest extends TestCase
     {
         $requestBody = new RequestBody();
 
-        $builder = new PathMethodBuilder();
+        $builder = new Method();
         $builder->setRequestBody($requestBody);
 
         $reflection = new ReflectionClass($builder);

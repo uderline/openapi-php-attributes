@@ -12,6 +12,7 @@ use OpenApiGenerator\Attributes\PATCH;
 use OpenApiGenerator\Attributes\PathParameter;
 use OpenApiGenerator\Attributes\POST;
 use OpenApiGenerator\Attributes\Property;
+use OpenApiGenerator\Attributes\PropertyInterface;
 use OpenApiGenerator\Attributes\PropertyItems;
 use OpenApiGenerator\Attributes\PUT;
 use OpenApiGenerator\Attributes\RefProperty;
@@ -19,7 +20,6 @@ use OpenApiGenerator\Attributes\RequestBody;
 use OpenApiGenerator\Attributes\Response;
 use OpenApiGenerator\Attributes\Route;
 use OpenApiGenerator\Attributes\Schema;
-use OpenApiGenerator\Tests\Examples\Dummy\DummyRequest;
 use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionMethod;
@@ -28,12 +28,23 @@ use Symfony\Component\HttpFoundation\Request;
 
 class GeneratorHttp
 {
+    /** @var Path[] $paths */
     private array $paths = [];
+
+    public function build(): array
+    {
+        $paths = [];
+        foreach ($this->paths as $path) {
+            $paths[$path->getPath()] = $path->jsonSerialize();
+        }
+
+        return $paths;
+    }
 
     public function append(ReflectionClass $reflectionClass)
     {
-        foreach ($reflectionClass->getMethods() as $method) {
-            $methodAttributes = $method->getAttributes();
+        foreach ($reflectionClass->getMethods() as $reflectionMethod) {
+            $methodAttributes = $reflectionMethod->getAttributes();
 
             $routeAttributeNames = [Route::class, GET::class, POST::class, PUT::class, DELETE::class, PATCH::class];
             $route = array_filter(
@@ -41,28 +52,23 @@ class GeneratorHttp
                 static fn(ReflectionAttribute $attribute) => in_array($attribute->getName(), $routeAttributeNames)
             );
 
-            if (count($route) < 1) {
+            if (!count($route)) {
                 continue;
             }
 
-            $parameters = $this->getParameters($method->getParameters());
-            $pathParameters = $method->getAttributes(PathParameter::class);
+            $method = new Method();
 
-            if ($pathParameters) {
-                foreach ($pathParameters as $attribute) {
-                    $parameters[] = $attribute->newInstance();
-                }
+            if ($symfonyRequest = $this->buildRequestBodyFromSymfonyRequest($reflectionMethod)) {
+                $method->setRequestBody($symfonyRequest);
             }
 
-            $requestBody = $this->getRequestBody($method);
-
-            $pathBuilder = new PathMethodBuilder();
-            $pathBuilder->setRequestBody($requestBody);
+            $parameters = $this->getReflectionParameters($reflectionMethod->getParameters());
+            array_walk($parameters, $method->addParameter(...));
 
             // Add method Attributes to the builder
             foreach ($methodAttributes as $attribute) {
                 $name = $attribute->getName();
-                /** @var Route|RequestBody|Property|PropertyItems|MediaProperty|Response $instance */
+                /** @var Route|RequestBody|PropertyInterface|Response|PathParameter $instance */
                 $instance = $attribute->newInstance();
 
                 match ($name) {
@@ -71,27 +77,36 @@ class GeneratorHttp
                     POST::class,
                     PUT::class,
                     DELETE::class,
-                    PATCH::class => $pathBuilder->setRoute($instance, $parameters),
-                    RequestBody::class => $pathBuilder->setRequestBody($instance),
-                    Property::class => $pathBuilder->addProperty($instance),
-                    PropertyItems::class => $pathBuilder->setPropertyItems($instance),
-                    MediaProperty::class => $pathBuilder->setMediaProperty($instance),
-                    Response::class => $pathBuilder->setResponse($instance),
+                    PATCH::class => $method->setRoute($instance),
+                    PathParameter::class => $method->addParameter($instance),
+                    RequestBody::class => $method->setRequestBody($instance),
+                    Property::class, MediaProperty::class => $method->addProperty($instance),
+                    PropertyItems::class => $method->addPropertyItemsToLastProperty($instance),
+                    Response::class => $method->setResponse($instance),
                     default => null
                 };
             }
 
-            $route = $pathBuilder->getRoute();
-            if ($route) {
-                $this->paths[] = $route;
+            if ($existingPath = $this->getPathFromMethod($method)) {
+                $existingPath->addMethod($method);
+                continue;
             }
+
+            $this->paths[] = new Path($method);
         }
     }
 
-    private function getRequestBody(ReflectionMethod $method): RequestBody
+    private function getPathFromMethod($method): Path|false
+    {
+        $existingPath = array_filter($this->paths, static fn(Path $path) => $path->hasSamePath($method));
+        return reset($existingPath);
+    }
+
+    private function buildRequestBodyFromSymfonyRequest(ReflectionMethod $method): ?RequestBody
     {
         $requestBody = new RequestBody();
 
+        // Get the first parameter that is a subclass of Symfony Request
         $requestClass = array_filter(
             $method->getParameters(),
             static fn(ReflectionParameter $parameter): bool => is_subclass_of(
@@ -99,24 +114,27 @@ class GeneratorHttp
                 Request::class
             )
         );
-
-        if (count($requestClass) > 0) {
-            $requestReflection = new ReflectionClass(Request::class);
-            $schemaAttributes = $requestReflection->getAttributes(Schema::class);
-            /** @var ReflectionAttribute|false $schema */
-            $schema = reset($schemaAttributes);
-
-            if ($schema) {
-                /** @var Schema $requestSchema */
-                $requestSchema = $schema->newInstance();
-
-                $builder = new ComponentBuilder(false);
-                $builder->addSchema($requestSchema, DummyRequest::class);
-                $builder->addProperty(new RefProperty($requestSchema->getName()));
-
-                $requestBody->setSchema($builder->getComponent());
-            }
+        $requestClass = reset($requestClass);
+        if (!$requestClass) {
+            return null;
         }
+
+        // Get the Schema attribute from the Symfony Request class
+        $requestReflection = new ReflectionClass($requestClass->getType()->getName());
+        $schemaAttributes = $requestReflection->getAttributes(Schema::class);
+        $schemaAttribute = reset($schemaAttributes);
+        if (!$schemaAttribute) {
+            return null;
+        }
+
+        // Build the schema
+        $schema = $schemaAttribute->newInstance();
+        $builder = new SchemaBuilder(false);
+        $builder->addSchema($schema, Request::class);
+        $builder->addProperty(new RefProperty($schema->getName()));
+
+        // Set the schema to the RequestBody and return it
+        $requestBody->setSchema($builder->getComponent());
 
         return $requestBody;
     }
@@ -125,45 +143,22 @@ class GeneratorHttp
      * @param ReflectionParameter[] $methodParameters
      * @return Parameter[]
      */
-    private function getParameters(array $methodParameters): array
+    private function getReflectionParameters(array $methodParameters): array
     {
-        return array_filter(
-            array_map(
-                static function (ReflectionParameter $param) {
-                    $attributes = $param->getAttributes(Parameter::class, ReflectionAttribute::IS_INSTANCEOF);
-                    if (!$attributes) {
-                        return null;
-                    }
-                    $instance = $attributes[0]->newInstance();
-                    $instance->setName($param->getName());
-                    $instance->setParamType((string)$param->getType());
-                    return $instance;
-                },
-                $methodParameters
-            )
+        $methodParameters = array_map(
+            static function (ReflectionParameter $param) {
+                $attributes = $param->getAttributes(Parameter::class, ReflectionAttribute::IS_INSTANCEOF);
+                if (!$attributes) {
+                    return null;
+                }
+                $instance = $attributes[0]->newInstance();
+                $instance->setName($param->getName());
+                $instance->setParamType((string)$param->getType());
+                return $instance;
+            },
+            $methodParameters
         );
-    }
 
-    public function build(): array
-    {
-        $paths = [];
-
-        foreach ($this->paths as $path) {
-            $paths = isset($paths[$path->getRoute()])
-                ? $this->mergeRoutes($paths, $path)
-                : array_merge($paths, $path->jsonSerialize());
-        }
-
-        return $paths;
-    }
-
-    private function mergeRoutes($paths, Route $route): array
-    {
-        $toMerge = $route->jsonSerialize();
-        $routeToMerge = reset($toMerge);
-        $methodToMerge = reset($routeToMerge);
-        $paths[$route->getRoute()][$route->getMethod()] = $methodToMerge;
-
-        return $paths;
+        return array_filter($methodParameters);
     }
 }

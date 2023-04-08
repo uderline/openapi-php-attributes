@@ -16,9 +16,9 @@ class Schema implements JsonSerializable
 {
     private array $properties = [];
     private bool $noMedia = false;
+    private string $schemaType = SchemaType::OBJECT;
 
     public function __construct(
-        private string $schemaType = SchemaType::OBJECT,
         private ?array $required = null,
         private ?string $name = null
     ) {
@@ -37,7 +37,7 @@ class Schema implements JsonSerializable
             fn(?PropertyInterface $property): bool => $property instanceof MediaProperty
         );
 
-        // Has a MediaProperty object, get the first - and normally only on - property
+        // Has a MediaProperty object, get the first - normally only one - property
         if (count($hasMediaProp) > 0) {
             $property = reset($this->properties);
             return $property->getContentMediaType();
@@ -52,6 +52,15 @@ class Schema implements JsonSerializable
        $schema = [
            'type' => $this->schemaType
        ];
+
+       // By default, schemas are objects
+       // The schema type becomes an array if the first and only property is an array
+       if (count($this->properties) === 0) {
+           $property = reset($this->properties);
+           if ($property instanceof ArrayProperty && $property->isAnArray()) {
+               $this->schemaType = SchemaType::ARRAY;
+           }
+       }
 
         if ($this->schemaType === SchemaType::ARRAY) {
             $schema += json_decode(json_encode(reset($this->properties)), true);

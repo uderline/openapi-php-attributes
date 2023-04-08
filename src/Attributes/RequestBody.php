@@ -27,7 +27,7 @@ class RequestBody implements JsonSerializable
         $this->schema = $schema;
     }
 
-    public function empty(): bool
+    public function isEmpty(): bool
     {
         return !$this->schema;
     }

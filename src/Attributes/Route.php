@@ -50,9 +50,9 @@ class Route implements JsonSerializable
         return $this->method;
     }
 
-    public function getRoute(): string
+    public function getPath(): string
     {
-        // all routes must starting with /.
+        // all routes must start with /.
         if (substr($this->route, 0, 1) !== '/') {
             return '/' . $this->route;
         }
@@ -88,22 +88,22 @@ class Route implements JsonSerializable
 
     public function jsonSerialize(): array
     {
-        $array = [];
+        $methodBody = [];
 
         if ($this->tags) {
-            $array[$this->getRoute()][$this->method]['tags'] = $this->tags;
+            $methodBody['tags'] = $this->tags;
         }
 
         if ($this->summary) {
-            $array[$this->getRoute()][$this->method]['summary'] = $this->summary;
+            $methodBody['summary'] = $this->summary;
         }
 
         if (count($this->getParams) > 0) {
-            $array[$this->getRoute()][$this->method]['parameters'] = $this->getParams;
+            $methodBody['parameters'] = $this->getParams;
         }
 
-        if ($this->requestBody && !$this->requestBody->empty()) {
-            $array[$this->getRoute()][$this->method]['requestBody'] = $this->requestBody;
+        if ($this->requestBody && !$this->requestBody->isEmpty()) {
+            $methodBody['requestBody'] = $this->requestBody;
         }
 
         if ($this->responses) {
@@ -111,10 +111,10 @@ class Route implements JsonSerializable
                 return $response + $current->jsonSerialize();
             }, []);
 
-            $array[$this->getRoute()][$this->method]['responses'] = $responses;
+            $methodBody['responses'] = $responses;
         }
 
-        return $array;
+        return $methodBody;
     }
 
     public function setRequestBody(RequestBody $requestBody)

@@ -8,7 +8,7 @@ use OpenApiGenerator\Attributes\PropertyInterface;
 use OpenApiGenerator\Attributes\PropertyItems;
 use OpenApiGenerator\Attributes\Schema;
 
-class ComponentBuilder
+class SchemaBuilder
 {
     private ?Schema $currentSchema = null;
     private ?PropertyInterface $currentProperty = null;
