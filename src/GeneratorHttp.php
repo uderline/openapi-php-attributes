@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace OpenApiGenerator;
 
 use OpenApiGenerator\Attributes\DELETE;
+use OpenApiGenerator\Attributes\DynamicBuilder;
+use OpenApiGenerator\Attributes\DynamicRoute;
 use OpenApiGenerator\Attributes\GET;
 use OpenApiGenerator\Attributes\MediaProperty;
 use OpenApiGenerator\Attributes\Parameter;
@@ -72,6 +74,7 @@ class GeneratorHttp
                     PUT::class,
                     DELETE::class,
                     PATCH::class => $pathBuilder->setRoute($instance, $parameters),
+                    DynamicBuilder::class => DynamicBuilder::getBuilder()->build($pathBuilder, $instance, $parameters, $reflectionClass, $method),
                     RequestBody::class => $pathBuilder->setRequestBody($instance),
                     Property::class => $pathBuilder->addProperty($instance),
                     PropertyItems::class => $pathBuilder->setPropertyItems($instance),

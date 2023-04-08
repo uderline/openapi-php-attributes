@@ -36,6 +36,15 @@ class Controller {
     public function get(#[Parameter("Parameter description")] int $id): JsonResponse {
         // ...
     }
+    
+    #[
+        DynamicBuilder(MyFrameworkResolver::class),
+        Property(PropertyType::REF, "prop4", ref: RefSchema::class)
+        Response(ref: SchemaName::class, description: "Response description")
+    ]
+    public function getSomethingElse(#[Parameter("Parameter description")] int $id): JsonResponse {
+        // ...
+    }
 }
 
 enum BackedEnum: string
@@ -122,6 +131,20 @@ Will generate
                 }
             }
         }
+    }
+}
+```
+
+```
+class MyFrameworkResolver
+{
+    public function build(PathMethodBuilder $pathBuilder, $instance, $parameters, $reflectionClass, $method) 
+    {
+        // Here you can add your own logic to build the path
+        // How to add dependencies? Laravel uses global container so it can be done like this:
+        $route = Routes::getRoutes()->findByControllerAndMethodName()->getUri();
+
+        $pathBuilder->setRoute($route);
     }
 }
 ```
