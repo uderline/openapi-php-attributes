@@ -25,13 +25,15 @@ class Response implements JsonSerializable
         private int $code = 200,
         private string $description = '',
         private ?string $responseType = null,
-        private ?string $schemaType = SchemaType::OBJECT,
+        private ?string $schemaType = null,
         private ?string $ref = null,
         private array $extra = [],
     ) {
-        if ($ref) {
+        if ($this->schemaType) {
             $this->schema = new Schema($schemaType);
+        }
 
+        if ($ref) {
             if ($schemaType === SchemaType::OBJECT) {
                 $this->schema->addProperty(new RefProperty($ref));
             } elseif ($schemaType === SchemaType::ARRAY) {

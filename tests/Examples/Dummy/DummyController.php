@@ -69,7 +69,7 @@ class DummyController
         Property(Type::STRING, "prop1"),
         Property(Type::STRING, "prop2", "Prop2 description"),
         Property(Type::STRING, "prop3", "Prop3 description", "Value 3 example"),
-        Response(201)
+        Response(201, schemaType: SchemaType::STRING)
     ]
     public function post(): void
     {

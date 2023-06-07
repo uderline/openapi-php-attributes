@@ -43,6 +43,10 @@ class Schema implements JsonSerializable
             return $property->getContentMediaType();
         }
 
+        if ($this->schemaType === SchemaType::STRING) {
+            return 'text/plain';
+        }
+
         // By default, return json type
         return 'application/json';
     }
