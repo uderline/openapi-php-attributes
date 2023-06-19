@@ -98,7 +98,7 @@ class GeneratorHttp
         }
     }
 
-    private function getPathFromMethod($method): Path|false
+    private function getPathFromMethod(Method $method): Path|false
     {
         $existingPath = array_filter($this->paths, static fn(Path $path) => $path->hasSamePath($method));
         return reset($existingPath);

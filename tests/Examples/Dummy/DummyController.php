@@ -78,7 +78,7 @@ class DummyController
 
     #[
         PUT("/path/{id}", ["Dummy"], "Dummy put"),
-        Response(204)
+        Response(200, ref: DummyRefComponent::class)
     ]
     public function put(#[IDParam] DummyRefComponent $id, DummyRequest $dummyRequest): void
     {
