@@ -9,13 +9,13 @@ use OpenApiGenerator\Attributes\PropertyItems;
 use OpenApiGenerator\Attributes\Schema;
 use ReflectionClass;
 
-class GeneratorSchemas
+class SchemasBuilder
 {
     private array $components = [];
 
     public function append(ReflectionClass $reflectionClass)
     {
-        $builder = new ComponentBuilder();
+        $builder = new SchemaBuilder();
 
         foreach ($reflectionClass->getAttributes() as $attribute) {
             $name = $attribute->getName();

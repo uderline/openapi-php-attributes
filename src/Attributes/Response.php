@@ -22,15 +22,15 @@ class Response implements JsonSerializable
     private ?Schema $schema = null;
 
     public function __construct(
-        private int $code = 200,
-        private string $description = '',
+        private readonly int $code = 200,
+        private readonly string $description = '',
         private ?string $responseType = null,
-        private ?string $schemaType = null,
-        private ?string $ref = null,
-        private array $extra = [],
+        private readonly ?string $schemaType = null,
+        private readonly ?string $ref = null,
+        private readonly array $extra = [],
     ) {
         if ($this->schemaType) {
-            $this->schema = new Schema($schemaType);
+            $this->schema = new Schema();
         }
 
         if ($ref) {

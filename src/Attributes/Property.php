@@ -15,7 +15,7 @@ use JsonSerializable;
  * If the property is an array, a PropertyItems must be set
  */
 #[Attribute(Attribute::IS_REPEATABLE | Attribute::TARGET_ALL)]
-class Property implements PropertyInterface, JsonSerializable
+class Property implements PropertyInterface, ArrayProperty, JsonSerializable
 {
     private ?PropertyItems $propertyItems = null;
 
@@ -124,5 +124,10 @@ class Property implements PropertyInterface, JsonSerializable
             static fn(BackedEnum $enum) => $enum->value,
             $this->enum::cases()
         );
+    }
+
+    public function isAnArray(): bool
+    {
+        return $this->propertyItems !== null;
     }
 }
