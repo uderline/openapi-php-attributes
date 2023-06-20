@@ -24,7 +24,7 @@ class Response implements JsonSerializable
         private readonly int $code = 200,
         private readonly string $description = '',
         private ?string $responseType = null,
-        private readonly ?string $schemaType = null,
+        private readonly ?string $schemaType = SchemaType::OBJECT,
         private readonly ?string $ref = null,
         private readonly array $extra = [],
     ) {
