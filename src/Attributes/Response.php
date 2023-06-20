@@ -19,7 +19,7 @@ use JsonSerializable;
 #[Attribute(Attribute::TARGET_ALL | Attribute::IS_REPEATABLE)]
 class Response implements JsonSerializable
 {
-    private ?Schema $schema = null;
+    private Schema $schema;
 
     public function __construct(
         private readonly int $code = 200,
@@ -29,17 +29,20 @@ class Response implements JsonSerializable
         private readonly ?string $ref = null,
         private readonly array $extra = [],
     ) {
-        if ($this->schemaType) {
-            $this->schema = new Schema();
-        }
+        $this->schema = new Schema();
 
-        if ($ref) {
-            if ($schemaType === SchemaType::OBJECT) {
-                $this->schema->addProperty(new RefProperty($ref));
-            } elseif ($schemaType === SchemaType::ARRAY) {
-                $this->schema->addProperty(new PropertyItems(ItemsType::REF, $ref));
+        if ($this->ref) {
+            if ($this->schemaType === SchemaType::OBJECT) {
+                $this->schema->addProperty(new RefProperty($this->ref));
+            } elseif ($this->schemaType === SchemaType::ARRAY) {
+                $this->schema->addProperty(new PropertyItems(ItemsType::REF, $this->ref));
             }
         }
+    }
+
+    public function addProperty(PropertyInterface $property): void
+    {
+        $this->schema->addProperty($property);
     }
 
     public function getResponseType(): ?string

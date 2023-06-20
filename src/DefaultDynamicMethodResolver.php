@@ -42,17 +42,9 @@ final class DefaultDynamicMethodResolver implements DynamicMethodResolverInterfa
      */
     public function build(): array
     {
-        $properties = $this->method->getProperties();
-
-        $schema = new Schema();
-        array_walk($properties, $schema->addProperty(...));
-
-        $requestBody = $this->method->getRequestBody() ?? new RequestBody();
-        $requestBody->setSchema($schema);
-
         $route = clone $this->method->getRoute();
         $route->setGetParams($this->method->getParameters());
-        $route->setRequestBody($requestBody);
+        $route->setRequestBody($this->method->getRequestBody());
         $route->addResponse($this->method->getResponse());
 
         return $route->jsonSerialize();

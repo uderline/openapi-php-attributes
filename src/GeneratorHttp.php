@@ -61,6 +61,16 @@ class GeneratorHttp
 
             if ($symfonyRequest = $this->buildRequestBodyFromSymfonyRequest($reflectionMethod)) {
                 $method->setRequestBody($symfonyRequest);
+            } else {
+                $requestBody = array_filter(
+                    $methodAttributes,
+                    static fn(ReflectionAttribute $attribute) => $attribute->getName() === RequestBody::class
+                );
+                $requestBody = reset($requestBody);
+                $requestBody = $requestBody ? $requestBody->newInstance() : new RequestBody();
+                $requestBody->setSchema(new Schema());
+
+                $method->setRequestBody($requestBody);
             }
 
             $parameters = $this->getReflectionParameters($reflectionMethod->getParameters());
@@ -80,7 +90,6 @@ class GeneratorHttp
                     DELETE::class,
                     PATCH::class => $method->setRoute($instance),
                     PathParameter::class => $method->addParameter($instance),
-                    RequestBody::class => $method->setRequestBody($instance),
                     Property::class, MediaProperty::class => $method->addProperty($instance),
                     PropertyItems::class => $method->addPropertyItemsToLastProperty($instance),
                     Response::class => $method->setResponse($instance),
@@ -131,8 +140,8 @@ class GeneratorHttp
 
         // Build the schema
         $schema = $schemaAttribute->newInstance();
-        $builder = new SchemaBuilder(false);
-        $builder->addSchema($schema, Request::class);
+        $builder = new SchemaBuilder();
+        $builder->addSchema($schema, $requestClass->getType()->getName());
         $builder->addProperty(new RefProperty($schema->getName()));
 
         // Set the schema to the RequestBody and return it

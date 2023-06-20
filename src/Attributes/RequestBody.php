@@ -27,6 +27,11 @@ class RequestBody implements JsonSerializable
         $this->schema = $schema;
     }
 
+    public function addProperty(PropertyInterface $property): void
+    {
+        $this->schema->addProperty($property);
+    }
+
     public function isEmpty(): bool
     {
         return !$this->schema;

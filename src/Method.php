@@ -24,7 +24,7 @@ class Method implements JsonSerializable
     private array $parameters = [];
     /** @var PropertyInterface[] */
     private array $properties = [];
-    private Response $response;
+    private ?Response $response = null;
     private ?RequestBody $requestBody = null;
     private ?DynamicMethodResolverInterface $dynamicBuilder = null;
 
@@ -36,11 +36,6 @@ class Method implements JsonSerializable
     public function getMethod(): string
     {
         return $this->route->getMethod();
-    }
-
-    public function getProperties(): array
-    {
-        return $this->properties;
     }
 
     public function getRoute(): Route
@@ -84,7 +79,13 @@ class Method implements JsonSerializable
 
     public function addProperty(PropertyInterface $property): self
     {
-        $this->properties[] = $property;
+        if ($this->response) {
+            $this->response->addProperty($property);
+        } elseif ($this->requestBody) {
+            $this->requestBody->addProperty($property);
+        } else {
+            echo "No response or requestBody found for property {$property->getType()}\n";
+        }
 
         return $this;
     }
