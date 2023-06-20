@@ -53,18 +53,18 @@ class Schema implements JsonSerializable
 
     public function jsonSerialize(): array
     {
-       $schema = [
-           'type' => $this->schemaType
-       ];
+        // By default, schemas are objects
+        // The schema type becomes an array if the first and only property is an array
+        if (count($this->properties) === 1) {
+            $property = reset($this->properties);
+            if ($property instanceof ArrayProperty && $property->isAnArray()) {
+                $this->schemaType = SchemaType::ARRAY;
+            }
+        }
 
-       // By default, schemas are objects
-       // The schema type becomes an array if the first and only property is an array
-       if (count($this->properties) === 0) {
-           $property = reset($this->properties);
-           if ($property instanceof ArrayProperty && $property->isAnArray()) {
-               $this->schemaType = SchemaType::ARRAY;
-           }
-       }
+        $schema = [
+            'type' => $this->schemaType
+        ];
 
         if ($this->schemaType === SchemaType::ARRAY) {
             $schema += json_decode(json_encode(reset($this->properties)), true);

@@ -37,7 +37,7 @@ class PropertyItems implements PropertyInterface, JsonSerializable
         return $this->type;
     }
 
-    public function getRef(): string
+    public function getRef(): ?string
     {
         return $this->ref;
     }
@@ -50,7 +50,7 @@ class PropertyItems implements PropertyInterface, JsonSerializable
     public function jsonSerialize(): array
     {
         $array = [
-            'items' => []
+            'type' => 'array'
         ];
 
         if ($this->type === ItemsType::REF && $this->getRef()) {

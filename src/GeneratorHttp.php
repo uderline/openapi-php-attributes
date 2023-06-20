@@ -68,7 +68,6 @@ class GeneratorHttp
                 );
                 $requestBody = reset($requestBody);
                 $requestBody = $requestBody ? $requestBody->newInstance() : new RequestBody();
-                $requestBody->setSchema(new Schema());
 
                 $method->setRequestBody($requestBody);
             }

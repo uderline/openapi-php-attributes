@@ -12,9 +12,9 @@ use OpenApiGenerator\Attributes\MediaProperty;
 use OpenApiGenerator\Attributes\Parameter;
 use OpenApiGenerator\Attributes\POST;
 use OpenApiGenerator\Attributes\Property;
+use OpenApiGenerator\Attributes\PropertyItems;
 use OpenApiGenerator\Attributes\PUT;
 use OpenApiGenerator\Attributes\Response;
-use OpenApiGenerator\Attributes\Route;
 use OpenApiGenerator\Type;
 use OpenApiGenerator\Types\MediaType;
 use OpenApiGenerator\Types\SchemaType;
@@ -69,6 +69,8 @@ class DummyController
         Property(Type::STRING, "prop1"),
         Property(Type::STRING, "prop2", "Prop2 description"),
         Property(Type::STRING, "prop3", "Prop3 description", "Value 3 example"),
+        Property(Type::ARRAY, "prop4", "Prop4 description"),
+        PropertyItems(Type::STRING),
         Response(201, schemaType: SchemaType::STRING)
     ]
     public function post(): void

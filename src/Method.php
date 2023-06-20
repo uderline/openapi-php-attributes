@@ -27,6 +27,7 @@ class Method implements JsonSerializable
     private ?Response $response = null;
     private ?RequestBody $requestBody = null;
     private ?DynamicMethodResolverInterface $dynamicBuilder = null;
+    private PropertyInterface $lastProperty;
 
     public function getPath(): string
     {
@@ -84,15 +85,17 @@ class Method implements JsonSerializable
         } elseif ($this->requestBody) {
             $this->requestBody->addProperty($property);
         } else {
-            echo "No response or requestBody found for property {$property->getType()}\n";
+            echo "No response or requestBody found for property\n";
         }
+
+        $this->lastProperty = $property;
 
         return $this;
     }
 
     public function addPropertyItemsToLastProperty(PropertyItems $propertyItems): self
     {
-        $this->properties[count($this->properties) - 1]?->setPropertyItems($propertyItems);
+        $this->lastProperty->setPropertyItems($propertyItems);
 
         return $this;
     }

@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace OpenApiGenerator\Attributes;
 
 use Attribute;
+use OpenApiGenerator\Type;
 use OpenApiGenerator\Types\ItemsType;
-use OpenApiGenerator\Types\PropertyType;
-use OpenApiGenerator\Types\ResponseType;
 use OpenApiGenerator\Types\SchemaType;
 use JsonSerializable;
 
@@ -19,7 +18,7 @@ use JsonSerializable;
 #[Attribute(Attribute::TARGET_ALL | Attribute::IS_REPEATABLE)]
 class Response implements JsonSerializable
 {
-    private Schema $schema;
+    private ?Schema $schema = null;
 
     public function __construct(
         private readonly int $code = 200,
@@ -29,19 +28,26 @@ class Response implements JsonSerializable
         private readonly ?string $ref = null,
         private readonly array $extra = [],
     ) {
-        $this->schema = new Schema();
-
         if ($this->ref) {
+            $this->schema = new Schema();
+
             if ($this->schemaType === SchemaType::OBJECT) {
                 $this->schema->addProperty(new RefProperty($this->ref));
             } elseif ($this->schemaType === SchemaType::ARRAY) {
-                $this->schema->addProperty(new PropertyItems(ItemsType::REF, $this->ref));
+                $property = new Property(Type::ARRAY, "");
+                $property->setPropertyItems(new PropertyItems(ItemsType::REF, $this->ref));
+
+                $this->schema->addProperty($property);
             }
         }
     }
 
     public function addProperty(PropertyInterface $property): void
     {
+        if (!$this->schema) {
+            $this->schema = new Schema();
+        }
+
         $this->schema->addProperty($property);
     }
 
@@ -59,7 +65,7 @@ class Response implements JsonSerializable
     {
         $array = [
             $this->code => [
-                'description' => $this->description
+                'description' => $this->description,
             ]
         ];
 

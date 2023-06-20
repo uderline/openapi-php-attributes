@@ -29,6 +29,10 @@ class RequestBody implements JsonSerializable
 
     public function addProperty(PropertyInterface $property): void
     {
+        if (!$this->schema) {
+            $this->schema = new Schema();
+        }
+
         $this->schema->addProperty($property);
     }
 
