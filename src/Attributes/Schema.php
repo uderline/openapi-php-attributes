@@ -15,7 +15,6 @@ use JsonSerializable;
 class Schema implements JsonSerializable
 {
     private array $properties = [];
-    private bool $noMedia = false;
     private string $schemaType = SchemaType::OBJECT;
 
     public function __construct(
@@ -90,11 +89,6 @@ class Schema implements JsonSerializable
             }
         }
 
-        // This is especially used for parameters which don't have media
-        if ($this->noMedia) {
-            return $schema;
-        }
-
         return [
             $this->getMediaType() => [
                 'schema' => $schema
@@ -110,10 +104,5 @@ class Schema implements JsonSerializable
     public function setName(string $name): void
     {
         $this->name = $name;
-    }
-
-    public function setNoMedia(bool $noMedia): void
-    {
-        $this->noMedia = $noMedia;
     }
 }

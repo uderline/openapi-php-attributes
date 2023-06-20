@@ -13,10 +13,6 @@ class SchemaBuilder
     private ?Schema $currentSchema = null;
     private ?PropertyInterface $currentProperty = null;
 
-    public function __construct(private $noMedia = true)
-    {
-    }
-
     public function addSchema(Schema $schema, string $className): bool
     {
         if (!$schema->getName()) {
@@ -59,7 +55,6 @@ class SchemaBuilder
     public function getComponent(): ?Schema
     {
         $this->saveProperty();
-        $this->currentSchema->setNoMedia($this->noMedia);
 
         return $this->currentSchema;
     }
