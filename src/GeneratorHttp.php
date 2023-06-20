@@ -139,7 +139,7 @@ class GeneratorHttp
 
         // Build the schema
         $schema = $schemaAttribute->newInstance();
-        $builder = new SchemaBuilder();
+        $builder = new SchemaBuilder(false);
         $builder->addSchema($schema, $requestClass->getType()->getName());
         $builder->addProperty(new RefProperty($schema->getName()));
 
