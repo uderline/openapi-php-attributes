@@ -29,6 +29,7 @@ class Property implements PropertyInterface, ArrayProperty, JsonSerializable
         private ?string $ref = null,
         private bool $isObjectId = false,
         private array $extra = [],
+        private bool $nullable = false,
     ) {
         if ($this->ref) {
             $ref = explode('\\', $this->ref);
@@ -74,7 +75,12 @@ class Property implements PropertyInterface, ArrayProperty, JsonSerializable
         }
 
         if ($this->type === PropertyType::REF) {
-            return ['$ref' => "#/components/schemas/$this->ref"];
+            $refType = ['$ref' => "#/components/schemas/$this->ref"];
+            if ($this->nullable) {
+                $refType = ['anyOf' => [['type' => 'null'], $refType]];
+            }
+
+            return $refType;
         }
 
         if ($this->type === PropertyType::ID) {
@@ -83,9 +89,14 @@ class Property implements PropertyInterface, ArrayProperty, JsonSerializable
         }
 
         $array = [
-            'type' => $type,
             'description' => $this->description
         ];
+
+        if ($this->nullable) {
+            $array['anyOf'] = [['type' => 'null'], ['type' => $type]];
+        } else {
+            $array['type'] = $type;
+        }
 
         if ($this->format) {
             $array['format'] = $this->format;

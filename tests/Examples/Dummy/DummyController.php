@@ -67,7 +67,7 @@ class DummyController
     #[
         POST("/path", ["Dummy"], "Dummy post"),
         Property(Type::STRING, "prop1"),
-        Property(Type::STRING, "prop2", "Prop2 description"),
+        Property(Type::STRING, "prop2", "Prop2 description", nullable: true),
         Property(Type::STRING, "prop3", "Prop3 description", "Value 3 example"),
         Property(Type::ARRAY, "prop4", "Prop4 description"),
         PropertyItems(Type::STRING),

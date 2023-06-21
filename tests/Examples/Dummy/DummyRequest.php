@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
     Property(Type::INT, "Property 2"),
     Property(Type::ARRAY, "Property 3"),
     PropertyItems(Type::STRING),
-    Property(Type::REF, "Property 4", ref: DummyRefComponent::class),
+    Property(Type::REF, "Property 4", ref: DummyRefComponent::class, nullable: true),
 ]
 class DummyRequest extends Request
 {
