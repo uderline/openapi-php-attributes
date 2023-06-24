@@ -6,6 +6,8 @@ namespace OpenApiGenerator\Attributes;
 
 use Attribute;
 use BackedEnum;
+use OpenApiGenerator\EnumInterface;
+use OpenApiGenerator\IllegalFieldException;
 use OpenApiGenerator\Types\PropertyType;
 use JsonSerializable;
 
@@ -25,6 +27,7 @@ class Property implements PropertyInterface, ArrayProperty, JsonSerializable
         private string $description = '',
         private mixed $example = null,
         private ?string $format = null,
+        // $enum can be an array (direct enum) or a string (class name of an enum: MyEnum::class)
         private null|array|string $enum = null,
         private ?string $ref = null,
         private bool $isObjectId = false,
@@ -63,15 +66,20 @@ class Property implements PropertyInterface, ArrayProperty, JsonSerializable
         return $this->example;
     }
 
+    /**
+     * @throws IllegalFieldException
+     */
     public function jsonSerialize(): array
     {
         $type = $this->type;
         $minimum = null;
 
         if ($this->type === PropertyType::ARRAY) {
-            if ($this->propertyItems) {
-                return $this->propertyItems->jsonSerialize();
+            if (!$this->propertyItems) {
+                throw IllegalFieldException::missingArrayProperty();
             }
+
+            return $this->propertyItems->jsonSerialize();
         }
 
         if ($this->type === PropertyType::REF) {
@@ -123,7 +131,7 @@ class Property implements PropertyInterface, ArrayProperty, JsonSerializable
 
     private function enum(): ?array
     {
-        if (!is_string($this->enum)) {
+        if (is_array($this->enum)) {
             return $this->enum;
         }
 

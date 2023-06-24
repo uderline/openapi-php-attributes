@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace OpenApiGenerator\Attributes;
 
 use Attribute;
+use Countable;
 use OpenApiGenerator\Type;
 use OpenApiGenerator\Types\ItemsType;
 use OpenApiGenerator\Types\SchemaType;
@@ -16,7 +17,7 @@ use JsonSerializable;
  * Consider the ref parameter like a shortcut
  */
 #[Attribute(Attribute::TARGET_ALL | Attribute::IS_REPEATABLE)]
-class Response implements JsonSerializable
+class Response implements JsonSerializable, Countable
 {
     private ?Schema $schema = null;
 
@@ -83,5 +84,10 @@ class Response implements JsonSerializable
     public function setSchema(Schema $schema): void
     {
         $this->schema = $schema;
+    }
+
+    public function count(): int
+    {
+        return count($this->schema);
     }
 }

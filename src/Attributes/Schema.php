@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace OpenApiGenerator\Attributes;
 
 use Attribute;
+use Countable;
 use OpenApiGenerator\Types\SchemaType;
 use JsonSerializable;
 
@@ -12,11 +13,11 @@ use JsonSerializable;
  * A schema represents a list of properties
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-class Schema implements JsonSerializable
+class Schema implements JsonSerializable, Countable
 {
+    /** @var Property[] */
     private array $properties = [];
-    private bool $noMedia = false;
-    private string $schemaType = SchemaType::OBJECT;
+    private ?string $schemaType = SchemaType::OBJECT;
 
     public function __construct(
         private ?array $required = null,
@@ -51,20 +52,23 @@ class Schema implements JsonSerializable
         return 'application/json';
     }
 
+    public function setSchemaType(?string $type): self
+    {
+        $this->schemaType = $type;
+
+        return $this;
+    }
+
     public function jsonSerialize(): array
     {
         // By default, schemas are objects
         // The schema type becomes an array if the first and only property is an array
         if (count($this->properties) === 1) {
             $property = reset($this->properties);
-            if ($property instanceof ArrayProperty && $property->isAnArray()) {
-                $this->schemaType = SchemaType::ARRAY;
-            }
+            $this->schemaType = $property instanceof PropertyItems ? SchemaType::ARRAY : $this->schemaType;
         }
 
-        $schema = [
-            'type' => $this->schemaType
-        ];
+        $schema = [];
 
         if ($this->schemaType === SchemaType::ARRAY) {
             $schema += json_decode(json_encode(reset($this->properties)), true);
@@ -75,10 +79,6 @@ class Schema implements JsonSerializable
                 $schema = $firstProperty->jsonSerialize();
             } else {
                 $array = [];
-
-                if ($this->required) {
-                    $array['required'] = $this->required;
-                }
 
                 foreach ($this->properties as $property) {
                     if ($property instanceof Property) {
@@ -91,9 +91,11 @@ class Schema implements JsonSerializable
         }
 
         // This is especially used for parameters which don't have media
-        if ($this->noMedia) {
-            return $schema;
+        if (!$this->schemaType) {
+            return reset($this->properties)->jsonSerialize();
         }
+
+        $schema['type'] = $this->schemaType;
 
         return [
             $this->getMediaType() => [
@@ -112,8 +114,8 @@ class Schema implements JsonSerializable
         $this->name = $name;
     }
 
-    public function setNoMedia(bool $noMedia): void
+    public function count(): int
     {
-        $this->noMedia = $noMedia;
+        return count($this->properties);
     }
 }

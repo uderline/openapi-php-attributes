@@ -42,7 +42,7 @@ class GeneratorHttp
         return $paths;
     }
 
-    public function append(ReflectionClass $reflectionClass)
+    public function append(ReflectionClass $reflectionClass): void
     {
         foreach ($reflectionClass->getMethods() as $reflectionMethod) {
             $methodAttributes = $reflectionMethod->getAttributes();

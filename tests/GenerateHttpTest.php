@@ -13,6 +13,8 @@ use OpenApiGenerator\Attributes\Response;
 use OpenApiGenerator\Attributes\Route;
 use OpenApiGenerator\Attributes\Schema;
 use OpenApiGenerator\GeneratorHttp;
+use OpenApiGenerator\Method;
+use OpenApiGenerator\Path;
 use OpenApiGenerator\Tests\Examples\Controller\ManyResponsesController;
 use OpenApiGenerator\Tests\Examples\Controller\SimpleController;
 use PHPUnit\Framework\TestCase;
@@ -32,24 +34,70 @@ class GenerateHttpTest extends TestCase
         $pathsProperty->setAccessible(true);
         $actual = $pathsProperty->getValue($generateHttp);
 
-        $expectedParameter = new Parameter(example: '2');
-        $expectedParameter->setName('id');
-        $expectedParameter->setParamType('float');
+        $expectedMethod = (new Method())
+            ->setRoute(new GET('/path/{id}/{otherParameter}', ['Dummy'], 'Dummy path'))
+            ->setRequestBody(new RequestBody())
+            ->addProperty(new Property('string', 'prop1'))
+            ->setResponse(new Response());
+        $expectedPath = new Path($expectedMethod);
 
-        $expectedPathParameter = new PathParameter('otherParameter', description: 'Parameter which is not used as an argument in this method');
+        $expectedJson = <<<JSON
+[
+    {
+        "get": {
+            "tags": [
+                "Dummy"
+            ],
+            "summary": "Dummy path",
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "schema": {
+                        "type": "number",
+                        "format": "float",
+                        "example": "2"
+                    },
+                    "required": true
+                },
+                {
+                    "name": "otherParameter",
+                    "in": "path",
+                    "schema": {
+                        "type": "string"
+                    },
+                    "required": true,
+                    "description": "Parameter which is not used as an argument in this method"
+                }
+            ],
+            "requestBody": {
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "prop1": {
+                                    "description": "",
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "responses": {
+                "200": {
+                    "description": ""
+                }
+            }
+        }
+    }
+]
+JSON;
 
-        $schema = new Schema();
-        $schema->addProperty(new Property('string', 'prop1'));
-        $requestBody = new RequestBody();
-        $requestBody->setSchema($schema);
+        $actualJson = json_encode($actual, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
 
-        $expectedRoute = new GET('/path/{id}/{otherParameter}', ['Dummy'], 'Dummy path');
-        $expectedRoute->addParam($expectedParameter);
-        $expectedRoute->addParam($expectedPathParameter);
-        $expectedRoute->setRequestBody($requestBody);
-        $expectedRoute->addResponse(new Response());
-
-        self::assertEquals([$expectedRoute], $actual);
+        $this->assertEquals($expectedJson, $actualJson);
     }
 
     public function testManyResponses(): void

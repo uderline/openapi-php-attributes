@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace OpenApiGenerator\Attributes;
 
 use Attribute;
-use JetBrains\PhpStorm\ArrayShape;
-use JetBrains\PhpStorm\Pure;
 use JsonSerializable;
 
 /**
@@ -18,8 +16,8 @@ use JsonSerializable;
 class MediaProperty implements PropertyInterface, JsonSerializable
 {
     public function __construct(
-        private string $contentMediaType,
-        private string $contentEncoding,
+        private readonly string $contentMediaType,
+        private readonly string $contentEncoding,
     ) {
     }
 
@@ -28,10 +26,6 @@ class MediaProperty implements PropertyInterface, JsonSerializable
         return $this->contentMediaType;
     }
 
-    #[ArrayShape([
-        'type' => 'string',
-        'format' => 'string'
-    ])]
     public function jsonSerialize(): array
     {
         return [
@@ -43,7 +37,6 @@ class MediaProperty implements PropertyInterface, JsonSerializable
         ];
     }
 
-    #[Pure]
     public function getType(): string
     {
         return $this->getContentMediaType();

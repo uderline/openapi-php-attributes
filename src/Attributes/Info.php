@@ -12,10 +12,9 @@ use JsonSerializable;
 class Info implements JsonSerializable
 {
     public function __construct(
-        private string $title,
-        private string $version = '1.0.0',
-        private string $summary = '',
-        private string $description = '',
+        private readonly string $title,
+        private readonly string $version = '1.0.0',
+        private readonly string $description = '',
     ) {
         //
     }
@@ -23,11 +22,6 @@ class Info implements JsonSerializable
     /**
      * @inheritDoc
      */
-    #[ArrayShape([
-        'title' => 'string',
-        'version' => 'string',
-        'description' => 'string'
-    ])]
     public function jsonSerialize(): array
     {
         return [

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace OpenApiGenerator\Attributes;
 
 use Attribute;
-use JetBrains\PhpStorm\ArrayShape;
 use JsonSerializable;
+use OpenApiGenerator\IllegalFieldException;
 
 /**
  * Represents a parameter (e.g. /route/{id} where id is the parameter)
@@ -16,13 +16,13 @@ use JsonSerializable;
 #[Attribute]
 class Parameter implements JsonSerializable
 {
-    protected string $name;
+    protected ?string $name = null;
     protected array $schema;
 
     public function __construct(
         protected ?string $description = null,
         protected string $in = 'path',
-        protected ?bool $required = null,
+        protected bool $required = false,
         protected mixed $example = '',
         protected mixed $format = ''
     ) {
@@ -36,12 +36,14 @@ class Parameter implements JsonSerializable
         return $this->name;
     }
 
-    public function setName(string $name): void
+    public function setName(string $name): self
     {
         $this->name = $name;
+
+        return $this;
     }
 
-    public function setParamType(string $paramType): void
+    public function setParamType(string $paramType): self
     {
         $this->schema = match ($paramType) {
             'int' => ['type' => 'integer'],
@@ -50,17 +52,20 @@ class Parameter implements JsonSerializable
             'mixed' => [],
             default => ['type' => $paramType],
         };
+
+        return $this;
     }
 
-    #[ArrayShape([
-        'name' => 'string',
-        'in' => 'string',
-        'schema' => 'array',
-        'description' => 'null|string',
-        'required' => 'bool|null'
-    ])]
+    /**
+     * @throws IllegalFieldException
+     */
     public function jsonSerialize(): array
     {
+        $this->schema ??= [];
+        if (!$this->name) {
+            throw IllegalFieldException::missingNameParameterValue();
+        }
+
         $param = [
             'name' => $this->name,
             'in' => $this->in,
@@ -68,7 +73,7 @@ class Parameter implements JsonSerializable
         ];
 
         if ($this->required) {
-            $param['required'] = $this->required;
+            $param['required'] = true;
         }
 
         if ($this->description) {
@@ -78,11 +83,6 @@ class Parameter implements JsonSerializable
         return $param;
     }
 
-    /**
-     * Format schema for serialize to json.
-     *
-     * @return array
-     */
     private function formatSchema(): array
     {
         $schema = $this->schema;

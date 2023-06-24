@@ -59,7 +59,9 @@ class SchemaBuilder
     public function getComponent(): ?Schema
     {
         $this->saveProperty();
-        $this->currentSchema->setNoMedia($this->noMedia);
+        if ($this->noMedia) {
+            $this->currentSchema->setSchemaType(null);
+        }
 
         return $this->currentSchema;
     }

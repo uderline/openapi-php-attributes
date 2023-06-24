@@ -7,6 +7,7 @@ namespace OpenApiGenerator;
 use JsonSerializable;
 use OpenApiGenerator\Attributes\DynamicBuilder;
 use OpenApiGenerator\Attributes\Parameter;
+use OpenApiGenerator\Attributes\Property;
 use OpenApiGenerator\Attributes\PropertyInterface;
 use OpenApiGenerator\Attributes\PropertyItems;
 use OpenApiGenerator\Attributes\RequestBody;
@@ -22,12 +23,10 @@ class Method implements JsonSerializable
     private Route $route;
     /** @var Parameter[] */
     private array $parameters = [];
-    /** @var PropertyInterface[] */
-    private array $properties = [];
     private ?Response $response = null;
     private ?RequestBody $requestBody = null;
     private ?DynamicMethodResolverInterface $dynamicBuilder = null;
-    private PropertyInterface $lastProperty;
+    private ?PropertyInterface $lastProperty = null;
 
     public function getPath(): string
     {
@@ -59,9 +58,12 @@ class Method implements JsonSerializable
         return $this->requestBody;
     }
 
-    public function setRequestBody(RequestBody $requestBody): void
+    public function setRequestBody(RequestBody $requestBody): self
     {
         $this->requestBody = $requestBody;
+        $this->lastProperty = null;
+
+        return $this;
     }
 
     public function setRoute(Route $route): self
@@ -78,6 +80,9 @@ class Method implements JsonSerializable
         return $this;
     }
 
+    /**
+     * @throws DefinitionCheckerException
+     */
     public function addProperty(PropertyInterface $property): self
     {
         if ($this->response) {
@@ -85,7 +90,7 @@ class Method implements JsonSerializable
         } elseif ($this->requestBody) {
             $this->requestBody->addProperty($property);
         } else {
-            echo "No response or requestBody found for property\n";
+            throw DefinitionCheckerException::missingField("response or body");
         }
 
         $this->lastProperty = $property;
@@ -93,9 +98,32 @@ class Method implements JsonSerializable
         return $this;
     }
 
+    /**
+     * @throws IllegalFieldException
+     */
     public function addPropertyItemsToLastProperty(PropertyItems $propertyItems): self
     {
-        $this->lastProperty->setPropertyItems($propertyItems);
+        if ($this->lastProperty && $this->lastProperty?->getType() !== Type::ARRAY) {
+            throw IllegalFieldException::missingArrayProperty();
+        }
+
+        if ($this->response) {
+            $this->response->addProperty($propertyItems);
+        } elseif ($this->requestBody) {
+            $this->requestBody->addProperty($propertyItems);
+        } else {
+            throw DefinitionCheckerException::missingField("response or body");
+        }
+
+        if ($this->lastProperty) {
+            if (!$this->lastProperty instanceof Property) {
+                throw IllegalFieldException::missingArrayProperty();
+            }
+
+            $this->lastProperty->setPropertyItems($propertyItems);
+        } else {
+            $this->lastProperty = $propertyItems;
+        }
 
         return $this;
     }
@@ -103,6 +131,7 @@ class Method implements JsonSerializable
     public function setResponse(Response $response): self
     {
         $this->response = $response;
+        $this->lastProperty = null;
 
         return $this;
     }

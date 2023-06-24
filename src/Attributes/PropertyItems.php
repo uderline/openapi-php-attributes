@@ -58,8 +58,11 @@ class PropertyItems implements PropertyInterface, JsonSerializable
         } else {
             $array['items'] = [
                 'type' => $this->type,
-                'example' => $this->example
             ];
+
+            if ($this->example) {
+                $array['items']['example'] = $this->example;
+            }
         }
 
         if ($this->extra) {
