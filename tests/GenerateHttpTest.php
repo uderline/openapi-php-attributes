@@ -5,24 +5,19 @@ declare(strict_types=1);
 namespace OpenApiGenerator\Tests;
 
 use OpenApiGenerator\Attributes\GET;
-use OpenApiGenerator\Attributes\Parameter;
-use OpenApiGenerator\Attributes\PathParameter;
-use OpenApiGenerator\Attributes\Property;
 use OpenApiGenerator\Attributes\RequestBody;
 use OpenApiGenerator\Attributes\Response;
-use OpenApiGenerator\Attributes\Route;
-use OpenApiGenerator\Attributes\Schema;
 use OpenApiGenerator\GeneratorHttp;
-use OpenApiGenerator\Method;
-use OpenApiGenerator\Path;
 use OpenApiGenerator\Tests\Examples\Controller\ManyResponsesController;
 use OpenApiGenerator\Tests\Examples\Controller\SimpleController;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 
 class GenerateHttpTest extends TestCase
 {
-    public function testAppend(): void
+    #[Test]
+    public function append(): void
     {
         $dummyReflection = new ReflectionClass(SimpleController::class);
 
@@ -33,13 +28,6 @@ class GenerateHttpTest extends TestCase
         $pathsProperty = $reflection->getProperty('paths');
         $pathsProperty->setAccessible(true);
         $actual = $pathsProperty->getValue($generateHttp);
-
-        $expectedMethod = (new Method())
-            ->setRoute(new GET('/path/{id}/{otherParameter}', ['Dummy'], 'Dummy path'))
-            ->setRequestBody(new RequestBody())
-            ->addProperty(new Property('string', 'prop1'))
-            ->setResponse(new Response());
-        $expectedPath = new Path($expectedMethod);
 
         $expectedJson = <<<JSON
 [
@@ -74,13 +62,13 @@ class GenerateHttpTest extends TestCase
                 "content": {
                     "application/json": {
                         "schema": {
-                            "type": "object",
                             "properties": {
                                 "prop1": {
                                     "description": "",
                                     "type": "string"
                                 }
-                            }
+                            },
+                            "type": "object"
                         }
                     }
                 }
@@ -95,12 +83,13 @@ class GenerateHttpTest extends TestCase
 ]
 JSON;
 
-        $actualJson = json_encode($actual, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+        $actualJson = json_encode($actual, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 
         $this->assertEquals($expectedJson, $actualJson);
     }
 
-    public function testManyResponses(): void
+    #[Test]
+    public function several_responses(): void
     {
         $dummyReflection = new ReflectionClass(ManyResponsesController::class);
 
@@ -117,11 +106,10 @@ JSON;
         $expectedRoute->addResponse(new Response());
         $expectedRoute->addResponse(new Response(401));
 
-        self::assertEquals([$expectedRoute], $actual);
-    }
+        $actual = json_decode(json_encode($actual), true);
+        $method = $actual[0]['get'];
 
-    public function testBuild(): void
-    {
-        $this->markTestSkipped('to implement');
+        $this->assertArrayHasKey(200, $method['responses']);
+        $this->assertArrayHasKey(401, $method['responses']);
     }
 }

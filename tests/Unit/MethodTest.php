@@ -28,7 +28,7 @@ class MethodTest extends TestCase
     {
         $method = (new Method())
             ->setRoute(new Route('GET', '/path'))
-            ->setResponse(new Response())
+            ->addResponse(new Response())
             ->addProperty(new Property(Type::STRING, 'prop'))
             ->setRequestBody(new RequestBody());
 
@@ -63,7 +63,7 @@ class MethodTest extends TestCase
             ->setRoute(new Route('GET', '/path'))
             ->setRequestBody(new RequestBody())
             ->addProperty(new Property(Type::STRING, 'prop'))
-            ->setResponse(new Response());
+            ->addResponse(new Response());
 
         $expected = [
             "requestBody" => [
@@ -102,13 +102,13 @@ class MethodTest extends TestCase
     }
 
     #[Test]
-    public function add_property_items_updates_last_property(): void
+    public function add_property_items_sets_request_content_to_return_an_array(): void
     {
         $method = (new Method())
             ->setRoute(new Route('GET', '/path'))
             ->setRequestBody(new RequestBody())
-            ->addPropertyItemsToLastProperty(new PropertyItems('string'))
-            ->setResponse(new Response());
+            ->addPropertyItems(new PropertyItems('string'))
+            ->addResponse(new Response());
 
         $expected = [
             "requestBody" => [
@@ -118,7 +118,6 @@ class MethodTest extends TestCase
                             "type" => "array",
                             "items" => [
                                 "type" => "string",
-                                "example" => ""
                             ],
                         ]
                     ]
@@ -127,6 +126,110 @@ class MethodTest extends TestCase
             'responses' => [
                 '200' => [
                     'description' => '',
+                ]
+            ],
+        ];
+
+        $this->assertEquals($expected, json_decode(json_encode($method->jsonSerialize()), true));
+    }
+
+    #[Test]
+    public function add_property_items_sets_response_content_to_return_an_array(): void
+    {
+        $method = (new Method())
+            ->setRoute(new Route('GET', '/path'))
+            ->setRequestBody(new RequestBody())
+            ->addResponse(new Response())
+            ->addPropertyItems(new PropertyItems('string'));
+
+        $expected = [
+            'responses' => [
+                '200' => [
+                    'description' => '',
+                    'content' => [
+                        'application/json' => [
+                            'schema' => [
+                                'type' => 'array',
+                                'items' => [
+                                    'type' => 'string',
+                                ],
+                            ]
+                        ]
+                    ]
+                ]
+            ],
+        ];
+
+        $this->assertEquals($expected, json_decode(json_encode($method->jsonSerialize()), true));
+    }
+
+    #[Test]
+    public function add_property_items_updates_last_request_property(): void
+    {
+        $method = (new Method())
+            ->setRoute(new Route('GET', '/path'))
+            ->setRequestBody(new RequestBody())
+            ->addProperty(new Property(Type::ARRAY, 'prop'))
+            ->addPropertyItems(new PropertyItems('string'))
+            ->addResponse(new Response());
+
+        $expected = [
+            "requestBody" => [
+                "content" => [
+                    "application/json" => [
+                        "schema" => [
+                            "type" => "object",
+                            "properties" => [
+                                "prop" => [
+                                    "type" => "array",
+                                    "items" => [
+                                        "type" => "string",
+                                    ],
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ],
+            'responses' => [
+                '200' => [
+                    'description' => '',
+                ]
+            ],
+        ];
+
+        $this->assertEquals($expected, json_decode(json_encode($method->jsonSerialize()), true));
+    }
+
+    #[Test]
+    public function add_property_items_updates_last_response_property(): void
+    {
+        $method = (new Method())
+            ->setRoute(new Route('GET', '/path'))
+            ->setRequestBody(new RequestBody())
+            ->addResponse(new Response())
+            ->addProperty(new Property(Type::ARRAY, 'prop'))
+            ->addPropertyItems(new PropertyItems('string'));
+
+        $expected = [
+            'responses' => [
+                '200' => [
+                    'description' => '',
+                    'content' => [
+                        'application/json' => [
+                            'schema' => [
+                                'type' => 'object',
+                                'properties' => [
+                                    'prop' => [
+                                        'type' => 'array',
+                                        'items' => [
+                                            'type' => 'string',
+                                        ],
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
                 ]
             ],
         ];
