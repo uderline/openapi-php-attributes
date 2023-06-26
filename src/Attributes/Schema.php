@@ -18,6 +18,7 @@ class Schema implements JsonSerializable, Countable
     /** @var Property[] */
     private array $properties = [];
     private ?string $schemaType = SchemaType::OBJECT;
+    private bool $noMedia = false;
 
     public function __construct(private ?array $required = null, private ?string $name = null)
     {
@@ -43,11 +44,6 @@ class Schema implements JsonSerializable, Countable
         if (count($this->properties) === 1) {
             $property = reset($this->properties);
             $this->schemaType = $property instanceof PropertyItems ? SchemaType::ARRAY : $this->schemaType;
-        }
-
-        // This is especially used for parameters which don't have media
-        if (!$this->schemaType && count($this->properties)) {
-            return reset($this->properties)->jsonSerialize();
         }
 
         $schema = [];
@@ -81,6 +77,10 @@ class Schema implements JsonSerializable, Countable
 
         if ($this->required) {
             $schema['required'] = $this->required;
+        }
+
+        if ($this->noMedia) {
+            return ['schema' => $schema];
         }
 
         return [
@@ -124,5 +124,12 @@ class Schema implements JsonSerializable, Countable
     public function count(): int
     {
         return count($this->properties);
+    }
+
+    public function setNoMedia($noMedia): self
+    {
+        $this->noMedia = $noMedia;
+
+        return $this;
     }
 }

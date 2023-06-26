@@ -117,16 +117,11 @@ class SchemaTest extends TestCase
         $this->assertInstanceOf(PropertyInterface::class, $schema['properties']['prop_string']);
     }
 
-    /**
-     * Careful, this is not completely true
-     *
-     * @see json_with_only_one_property_items_will_always_override_the_schema_type_to_array
-     */
     #[Test]
-    public function json_will_not_return_media_type_if_the_schema_type_is_null(): void
+    public function json_will_not_return_media_type_if_no_media_is_true(): void
     {
         $schema = new Schema();
-        $schema->setSchemaType(null);
+        $schema->setNoMedia(true);
         $schema->addProperty(new Property(Type::INT, "prop"));
         $json = json_decode(json_encode($schema), true);
 

@@ -21,9 +21,9 @@ class SchemaBuilderTest extends TestCase
         $schemaBuilder = new SchemaBuilder(true);
         $schemaBuilder->addSchema(new Schema(), stdClass::class);
         $schemaBuilder->addProperty(new Property("string", "prop1"));
-        $component = $schemaBuilder->getComponent();
+        $json = json_decode(json_encode($schemaBuilder->getComponent()), true);
 
-        $this->assertEquals(["description" => "", "type" => "string"], $component->jsonSerialize());
+        $this->assertArrayHasKey("schema", $json);
     }
 
     #[Test]

@@ -21,7 +21,7 @@ abstract class ComponentFactory
      */
     public static function build(ReflectionClass $reflectionClass): Schema
     {
-        $builder = new SchemaBuilder();
+        $builder = new SchemaBuilder(true);
 
         foreach ($reflectionClass->getAttributes() as $attribute) {
             $name = $attribute->getName();
