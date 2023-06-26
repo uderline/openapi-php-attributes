@@ -45,7 +45,13 @@ class Schema implements JsonSerializable, Countable
             $this->schemaType = $property instanceof PropertyItems ? SchemaType::ARRAY : $this->schemaType;
         }
 
+        // This is especially used for parameters which don't have media
+        if (!$this->schemaType && count($this->properties)) {
+            return reset($this->properties)->jsonSerialize();
+        }
+
         $schema = [];
+        $type = $this->schemaType;
 
         if ($this->schemaType === SchemaType::ARRAY) {
             $schema += json_decode(json_encode(reset($this->properties)), true);
@@ -53,6 +59,8 @@ class Schema implements JsonSerializable, Countable
             $firstProperty = reset($this->properties);
 
             if ($firstProperty instanceof RefProperty || $firstProperty instanceof MediaProperty) {
+                // We don't want to specify a type if the first property is a reference
+                $type = null;
                 $schema = $firstProperty->jsonSerialize();
             } else {
                 $array = [];
@@ -67,12 +75,9 @@ class Schema implements JsonSerializable, Countable
             }
         }
 
-        // This is especially used for parameters which don't have media
-        if (!$this->schemaType && count($this->properties)) {
-            return reset($this->properties)->jsonSerialize();
+        if ($type) {
+            $schema['type'] = $type;
         }
-
-        $schema['type'] = $this->schemaType;
 
         if ($this->required) {
             $schema['required'] = $this->required;

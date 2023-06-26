@@ -84,7 +84,7 @@ class SchemaTest extends TestCase
     }
 
     #[Test]
-    public function json_contains_a_ref_property_must_its_own_value(): void
+    public function json_contains_a_ref_property_without_a_type(): void
     {
         $schema = new Schema();
         $schema->addProperty(new RefProperty(StdClass::class));
@@ -92,6 +92,7 @@ class SchemaTest extends TestCase
         $schema = reset($json)['schema'];
 
         $this->assertIsArray($schema);
+        $this->assertArrayNotHasKey("type", $schema);
     }
 
     #[Test]
