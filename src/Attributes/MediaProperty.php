@@ -21,11 +21,6 @@ class MediaProperty implements PropertyInterface, JsonSerializable
     ) {
     }
 
-    public function getContentMediaType(): string
-    {
-        return $this->contentMediaType;
-    }
-
     public function jsonSerialize(): array
     {
         return [
@@ -40,6 +35,11 @@ class MediaProperty implements PropertyInterface, JsonSerializable
     public function getType(): string
     {
         return $this->getContentMediaType();
+    }
+
+    public function getContentMediaType(): string
+    {
+        return $this->contentMediaType;
     }
 
     /**

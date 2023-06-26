@@ -2,7 +2,9 @@
 
 namespace OpenApiGenerator;
 
+use InvalidArgumentException;
 use OpenApiGenerator\Attributes\Server;
+use stdClass;
 
 class ApiDescriptionChecker
 {
@@ -81,28 +83,28 @@ class ApiDescriptionChecker
                             ['query', 'header', 'cookie'],
                             true
                         )) {
-                        throw new \InvalidArgumentException("SecurityScheme: apiKey must have name and in");
+                        throw new InvalidArgumentException("SecurityScheme: apiKey must have name and in");
                     }
                     break;
                 case "http":
                     if (empty($securityScheme["scheme"])) {
-                        throw new \InvalidArgumentException("SecurityScheme: http must have scheme");
+                        throw new InvalidArgumentException("SecurityScheme: http must have scheme");
                     }
                     break;
                 case "mutualTLS":
                     break;
                 case "oauth2":
                     if (empty($securityScheme["flows"])) {
-                        throw new \InvalidArgumentException("SecurityScheme: oauth2 must have flows");
+                        throw new InvalidArgumentException("SecurityScheme: oauth2 must have flows");
                     }
                     break;
                 case "openIdConnect":
                     if (empty($securityScheme["openIdConnectUrl"])) {
-                        throw new \InvalidArgumentException("SecurityScheme: openIdConnect must have openIdConnectUrl");
+                        throw new InvalidArgumentException("SecurityScheme: openIdConnect must have openIdConnectUrl");
                     }
                     break;
                 default:
-                    throw new \InvalidArgumentException(
+                    throw new InvalidArgumentException(
                         'Invalid security scheme type: should be one of "apiKey", "http", "oauth2", "openIdConnect"'
                     );
             }
@@ -116,7 +118,7 @@ class ApiDescriptionChecker
         }
 
         foreach ($this->definition['security'] as $security) {
-            if ($security instanceof \stdClass) {
+            if ($security instanceof stdClass) {
                 continue;
             }
 
@@ -124,7 +126,7 @@ class ApiDescriptionChecker
             $securityName = array_keys($security)[0];
 
             if (!in_array($securityName, $availableValues, true)) {
-                throw new \InvalidArgumentException(
+                throw new InvalidArgumentException(
                     "Security: security scheme not found. Please choose one of the followings: " .
                     implode(', ', $availableValues)
                 );

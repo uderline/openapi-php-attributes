@@ -9,11 +9,17 @@ use OpenApiGenerator\Attributes\PropertyItems;
 use OpenApiGenerator\Attributes\Schema;
 use ReflectionClass;
 
-class SchemasBuilder
+abstract class ComponentFactory
 {
-    private array $components = [];
+    private function __construct()
+    {
+        //
+    }
 
-    public function append(ReflectionClass $reflectionClass)
+    /**
+     * @throws IllegalFieldException
+     */
+    public static function build(ReflectionClass $reflectionClass): Schema
     {
         $builder = new SchemaBuilder();
 
@@ -33,21 +39,11 @@ class SchemasBuilder
                     $builder->addPropertyItems($instance);
                     break;
                 default:
+                    // Ignore other attributes
                     break;
             }
         }
 
-        $this->components[] = $builder->getComponent();
-    }
-
-    public function build(): array
-    {
-        $array = [];
-
-        foreach ($this->components as $component) {
-            $array[$component->getName()] = $component;
-        }
-
-        return $array;
+        return $builder->getComponent();
     }
 }

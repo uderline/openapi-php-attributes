@@ -6,7 +6,7 @@ namespace OpenApiGenerator\Attributes;
 
 use Attribute;
 use JsonSerializable;
-use Symfony\Component\String\UnicodeString;
+use stdClass;
 
 #[Attribute(Attribute::TARGET_CLASS)]
 class Security implements JsonSerializable
@@ -26,9 +26,9 @@ class Security implements JsonSerializable
     public function jsonSerialize(): array
     {
         if (empty($this->securitySchemeKeys)) {
-            return [new \stdClass()];
+            return [new stdClass()];
         }
 
-        return array_map(fn (string $key) => [$key => []], $this->securitySchemeKeys);
+        return array_map(fn(string $key) => [$key => []], $this->securitySchemeKeys);
     }
 }

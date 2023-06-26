@@ -6,10 +6,10 @@ namespace OpenApiGenerator\Attributes;
 
 use Attribute;
 use Countable;
+use JsonSerializable;
 use OpenApiGenerator\Type;
 use OpenApiGenerator\Types\ItemsType;
 use OpenApiGenerator\Types\SchemaType;
-use JsonSerializable;
 
 /**
  * A response is composed of a code, a description and a response type
@@ -24,7 +24,6 @@ class Response implements JsonSerializable, Countable
     public function __construct(
         private readonly int $code = 200,
         private readonly string $description = '',
-        private ?string $responseType = null,
         private readonly ?string $schemaType = SchemaType::OBJECT,
         private readonly ?string $ref = null,
         private readonly array $extra = [],
@@ -35,10 +34,7 @@ class Response implements JsonSerializable, Countable
             if ($this->schemaType === SchemaType::OBJECT) {
                 $this->schema->addProperty(new RefProperty($this->ref));
             } elseif ($this->schemaType === SchemaType::ARRAY) {
-                $property = new Property(Type::ARRAY, "");
-                $property->setPropertyItems(new PropertyItems(ItemsType::REF, $this->ref));
-
-                $this->schema->addProperty($property);
+                $this->schema->addProperty(new PropertyItems(ItemsType::REF, $this->ref));
             }
         }
     }
@@ -50,16 +46,6 @@ class Response implements JsonSerializable, Countable
         }
 
         $this->schema->addProperty($property);
-    }
-
-    public function getResponseType(): ?string
-    {
-        return $this->responseType;
-    }
-
-    public function setResponseType(?string $responseType): void
-    {
-        $this->responseType = $responseType;
     }
 
     public function jsonSerialize(): array
@@ -79,11 +65,6 @@ class Response implements JsonSerializable, Countable
         }
 
         return $array;
-    }
-
-    public function setSchema(Schema $schema): void
-    {
-        $this->schema = $schema;
     }
 
     public function count(): int

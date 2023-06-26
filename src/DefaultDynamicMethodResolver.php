@@ -4,23 +4,23 @@ declare(strict_types=1);
 
 namespace OpenApiGenerator;
 
-use OpenApiGenerator\Attributes\RequestBody;
-use OpenApiGenerator\Attributes\Schema;
+use ReflectionClass;
+use ReflectionMethod;
 
 final class DefaultDynamicMethodResolver implements DynamicMethodResolverInterface
 {
-    private \ReflectionClass $reflectionClass;
-    private \ReflectionMethod $reflectionMethod;
+    private ReflectionClass $reflectionClass;
+    private ReflectionMethod $reflectionMethod;
     private Method $method;
 
-    public function setReflectionClass(\ReflectionClass $reflectionClass): self
+    public function setReflectionClass(ReflectionClass $reflectionClass): self
     {
         $this->reflectionClass = $reflectionClass;
 
         return $this;
     }
 
-    public function setReflectionMethod(\ReflectionMethod $reflectionMethod): self
+    public function setReflectionMethod(ReflectionMethod $reflectionMethod): self
     {
         $this->reflectionMethod = $reflectionMethod;
 
@@ -43,9 +43,11 @@ final class DefaultDynamicMethodResolver implements DynamicMethodResolverInterfa
     public function build(): array
     {
         $route = clone $this->method->getRoute();
-        $route->setGetParams($this->method->getParameters());
+        $route->setParameters($this->method->getParameters());
         $route->setRequestBody($this->method->getRequestBody());
-        $route->addResponse($this->method->getResponse());
+
+        $responses = $this->method->getResponses();
+        array_walk($responses, $route->addResponse(...));
 
         return $route->jsonSerialize();
     }

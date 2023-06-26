@@ -131,4 +131,14 @@ class SchemaTest extends TestCase
 
         $this->assertArrayNotHasKey("application/json", $json);
     }
+
+    #[Test]
+    public function json_will_contain_a_required_field_if_specified(): void
+    {
+        $schema = new Schema(['prop']);
+        $schema->addProperty(new Property(Type::INT, "prop"));
+        $json = json_decode(json_encode($schema), true);
+
+        $this->assertEquals(['prop'], $json['application/json']['schema']['required']);
+    }
 }

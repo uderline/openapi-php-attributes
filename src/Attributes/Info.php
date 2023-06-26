@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace OpenApiGenerator\Attributes;
 
 use Attribute;
-use JetBrains\PhpStorm\ArrayShape;
 use JsonSerializable;
 
 #[Attribute(Attribute::TARGET_CLASS)]
@@ -27,7 +26,7 @@ class Info implements JsonSerializable
         return [
             'title' => $this->title,
             'version' => $this->version,
-            'description' =>  $this->description,
+            'description' => $this->description,
         ];
     }
 }
