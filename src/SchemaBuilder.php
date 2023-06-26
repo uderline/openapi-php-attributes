@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace OpenApiGenerator;
 
+use OpenApiGenerator\Attributes\Property;
 use OpenApiGenerator\Attributes\PropertyInterface;
 use OpenApiGenerator\Attributes\PropertyItems;
 use OpenApiGenerator\Attributes\Schema;
@@ -15,6 +16,7 @@ class SchemaBuilder
 
     public function __construct(private $noMedia = true)
     {
+        //
     }
 
     public function addSchema(Schema $schema, string $className): bool
@@ -30,37 +32,39 @@ class SchemaBuilder
         return true;
     }
 
+    /**
+     * @throws IllegalFieldException
+     */
     public function addProperty(PropertyInterface $property): bool
     {
-        $this->saveProperty();
+        if (!$this->currentSchema) {
+            throw IllegalFieldException::missingSchema();
+        }
+
+        $this->currentSchema->addProperty($property);
         $this->currentProperty = $property;
 
         return true;
     }
 
-    private function saveProperty(): void
-    {
-        if (!$this->currentProperty) {
-            return;
-        }
-
-        $this->currentSchema->addProperty($this->currentProperty);
-        $this->currentProperty = null;
-    }
-
+    /**
+     * @throws IllegalFieldException
+     */
     public function addPropertyItems(PropertyItems $items): bool
     {
+        if (!$this->currentProperty instanceof Property) {
+            throw IllegalFieldException::missingArrayProperty();
+        }
+
         $this->currentProperty->setPropertyItems($items);
-        $this->saveProperty();
 
         return true;
     }
 
     public function getComponent(): ?Schema
     {
-        $this->saveProperty();
         if ($this->noMedia) {
-            $this->currentSchema->setSchemaType(null);
+            $this->currentSchema?->setSchemaType(null);
         }
 
         return $this->currentSchema;

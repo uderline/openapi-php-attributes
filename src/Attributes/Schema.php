@@ -6,8 +6,8 @@ namespace OpenApiGenerator\Attributes;
 
 use Attribute;
 use Countable;
-use OpenApiGenerator\Types\SchemaType;
 use JsonSerializable;
+use OpenApiGenerator\Types\SchemaType;
 
 /**
  * A schema represents a list of properties
@@ -19,37 +19,14 @@ class Schema implements JsonSerializable, Countable
     private array $properties = [];
     private ?string $schemaType = SchemaType::OBJECT;
 
-    public function __construct(
-        private ?array $required = null,
-        private ?string $name = null
-    ) {
+    public function __construct(private ?string $name = null)
+    {
         //
     }
 
     public function getName(): ?string
     {
         return $this->name;
-    }
-
-    private function getMediaType(): string
-    {
-        $hasMediaProp = array_filter(
-            $this->properties,
-            fn(?PropertyInterface $property): bool => $property instanceof MediaProperty
-        );
-
-        // Has a MediaProperty object, get the first - normally only one - property
-        if (count($hasMediaProp) > 0) {
-            $property = reset($this->properties);
-            return $property->getContentMediaType();
-        }
-
-        if ($this->schemaType === SchemaType::STRING) {
-            return 'text/plain';
-        }
-
-        // By default, return json type
-        return 'application/json';
     }
 
     public function setSchemaType(?string $type): self
@@ -91,7 +68,7 @@ class Schema implements JsonSerializable, Countable
         }
 
         // This is especially used for parameters which don't have media
-        if (!$this->schemaType) {
+        if (!$this->schemaType && count($this->properties)) {
             return reset($this->properties)->jsonSerialize();
         }
 
@@ -102,6 +79,27 @@ class Schema implements JsonSerializable, Countable
                 'schema' => $schema
             ]
         ];
+    }
+
+    private function getMediaType(): string
+    {
+        $hasMediaProp = array_filter(
+            $this->properties,
+            fn(?PropertyInterface $property): bool => $property instanceof MediaProperty
+        );
+
+        // Has a MediaProperty object, get the first - normally only one - property
+        if (count($hasMediaProp) > 0) {
+            $property = reset($this->properties);
+            return $property->getContentMediaType();
+        }
+
+        if ($this->schemaType === SchemaType::STRING) {
+            return 'text/plain';
+        }
+
+        // By default, return json type
+        return 'application/json';
     }
 
     public function addProperty(PropertyInterface $property): void

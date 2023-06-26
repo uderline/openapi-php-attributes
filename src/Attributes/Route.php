@@ -22,22 +22,21 @@ class Route implements JsonSerializable
     public const DELETE = 'delete';
     public const PATCH = 'patch';
 
-    private array $getParams = [];
+    /** @var Parameter[] */
+    private array $parameters = [];
+    /** @var Response[] */
     private array $responses = [];
     private ?RequestBody $requestBody = null;
+    private string $route;
 
     public function __construct(
-        private string $method,
-        private string $route,
-        private array $tags = [],
-        private string $summary = ''
+        private readonly string $method,
+        string $route,
+        private readonly array $tags = [],
+        private readonly string $summary = ''
     ) {
-        //
-    }
-
-    public function addParam(Parameter $params): void
-    {
-        $this->getParams[] = $params;
+        // all routes must start with /.
+        $this->route = !str_starts_with($route, '/') ? "/$route" : $route;
     }
 
     public function addResponse(Response $response): void
@@ -50,44 +49,41 @@ class Route implements JsonSerializable
         return $this->method;
     }
 
-    public function getPath(): string
+    public function getRoute(): string
     {
-        // all routes must start with /.
-        if (substr($this->route, 0, 1) !== '/') {
-            return '/' . $this->route;
-        }
-
         return $this->route;
     }
 
-    public function getGetParams(): array
-    {
-        return $this->getParams;
-    }
-
     /**
-     * @param Parameter[] $getParams
-     * @return void
+     * Parameters which are not explicitly declared will be automatically added
+     *
+     * @param Parameter[] $parameters
      */
-    public function setGetParams(array $getParams): void
+    public function setParameters(array $parameters): void
     {
-        // Just check if it's an array of GetParam and add it
-        array_walk($getParams, fn(Parameter $param) => $this->getParams[] = $param);
+        // Just check if it's an array of parameters
+        array_walk($parameters, fn(Parameter $param) => $this->parameters[] = $param);
 
+        // Generate missing parameters that are not explicitly declared
         if (preg_match_all('#{([^}]+)}#', $this->route, $matches)) {
             $pathParams = $matches[1];
-            $declaredParamsName = array_map(static fn(Parameter $parameter): string => $parameter->getName(), $getParams);
+            $declaredParamsName = array_map(
+                static fn(Parameter $parameter): string => $parameter->getName(), $this->parameters
+            );
             foreach (array_diff($pathParams, $declaredParamsName) as $pathParam) {
                 $param = new Parameter();
                 $param->setName($pathParam);
                 $param->setParamType(Type::STRING);
-                $this->getParams[] = $param;
+                $this->parameters[] = $param;
             }
         }
     }
 
     public function jsonSerialize(): array
     {
+        // Auto
+        $this->setParameters([]);
+
         $methodBody = [];
 
         if ($this->tags) {
@@ -98,8 +94,8 @@ class Route implements JsonSerializable
             $methodBody['summary'] = $this->summary;
         }
 
-        if (count($this->getParams) > 0) {
-            $methodBody['parameters'] = $this->getParams;
+        if (count($this->parameters) > 0) {
+            $methodBody['parameters'] = $this->parameters;
         }
 
         if ($this->requestBody && !$this->requestBody->isEmpty()) {
@@ -117,7 +113,7 @@ class Route implements JsonSerializable
         return $methodBody;
     }
 
-    public function setRequestBody(RequestBody $requestBody)
+    public function setRequestBody(RequestBody $requestBody): void
     {
         $this->requestBody = $requestBody;
     }

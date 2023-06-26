@@ -23,10 +23,15 @@ use OpenApiGenerator\Attributes\Route;
 use OpenApiGenerator\Attributes\Schema;
 use ReflectionAttribute;
 use ReflectionClass;
+use ReflectionException;
 use ReflectionMethod;
 use ReflectionParameter;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * This is the class that will generate the OpenAPI paths (e.g. /users/{id})
+ * and its methods (e.g. GET, POST, PUT, PATCH, DELETE)
+ */
 class GeneratorHttp
 {
     /** @var Path[] $paths */
@@ -72,7 +77,7 @@ class GeneratorHttp
                 $method->setRequestBody($requestBody);
             }
 
-            $parameters = $this->getReflectionParameters($reflectionMethod->getParameters());
+            $parameters = $this->getParametersFromReflectionParameter($reflectionMethod->getParameters());
             array_walk($parameters, $method->addParameter(...));
 
             // Add method Attributes to the builder
@@ -90,8 +95,8 @@ class GeneratorHttp
                     PATCH::class => $method->setRoute($instance),
                     PathParameter::class => $method->addParameter($instance),
                     Property::class, MediaProperty::class => $method->addProperty($instance),
-                    PropertyItems::class => $method->addPropertyItemsToLastProperty($instance),
-                    Response::class => $method->setResponse($instance),
+                    PropertyItems::class => $method->addPropertyItems($instance),
+                    Response::class => $method->addResponse($instance),
                     DynamicBuilder::class => $method->setDynamicBuilder($instance, $reflectionClass, $reflectionMethod),
                     default => null
                 };
@@ -106,12 +111,11 @@ class GeneratorHttp
         }
     }
 
-    private function getPathFromMethod(Method $method): Path|false
-    {
-        $existingPath = array_filter($this->paths, static fn(Path $path) => $path->hasSamePath($method));
-        return reset($existingPath);
-    }
-
+    /**
+     * OPAG supports Symfony Request class. This method will build the RequestBody from the Symfony Request class
+     *
+     * @throws ReflectionException|IllegalFieldException
+     */
     private function buildRequestBodyFromSymfonyRequest(ReflectionMethod $method): ?RequestBody
     {
         $requestBody = new RequestBody();
@@ -153,7 +157,7 @@ class GeneratorHttp
      * @param ReflectionParameter[] $methodParameters
      * @return Parameter[]
      */
-    private function getReflectionParameters(array $methodParameters): array
+    private function getParametersFromReflectionParameter(array $methodParameters): array
     {
         $methodParameters = array_map(
             static function (ReflectionParameter $param) {
@@ -170,5 +174,15 @@ class GeneratorHttp
         );
 
         return array_filter($methodParameters);
+    }
+
+    /**
+     * Return the Path object that represents an endpoint containing methods (GET, POST, PUT, DELETE, PATCH)
+     */
+    private function getPathFromMethod(Method $method): Path|false
+    {
+        $existingPath = array_filter($this->paths, static fn(Path $path) => $path->hasSamePath($method));
+
+        return reset($existingPath);
     }
 }

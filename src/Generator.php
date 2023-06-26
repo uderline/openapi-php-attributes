@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace OpenApiGenerator;
 
-use JetBrains\PhpStorm\Pure;
 use OpenApiGenerator\Attributes\Controller;
 use OpenApiGenerator\Attributes\Info;
 use OpenApiGenerator\Attributes\Schema;
@@ -26,10 +25,9 @@ class Generator
      */
     private array $description = [];
 
-    public function __construct(
-        private readonly GeneratorHttp $generatorHttp,
-        private readonly SchemasBuilder $generatorSchemas,
-    ) {
+    public function __construct(private readonly GeneratorHttp $generatorHttp)
+    {
+        //
     }
 
     /**
@@ -37,17 +35,15 @@ class Generator
      *
      * @return Generator
      */
-    #[Pure]
     public static function create(): Generator
     {
-        return new self(new GeneratorHttp(), new SchemasBuilder());
+        return new self(new GeneratorHttp());
     }
 
     /**
-     * Start point of the Open Api generator
+     * Starting point of the Open Api generator
      *
-     * Execution plan: get classes from directory, find controllers, schemas, get Attributes,
-     * add each attribute to some sort of tree then transform it to a json file
+     * Execution plan: get classes, find controllers containing paths, find schemas (open api components) and build them
      *
      * Et voilà !
      */
@@ -73,10 +69,77 @@ class Generator
         }
 
         $this->description['paths'] = $this->generatorHttp->build();
-        $this->description['components']['schemas'] = $this->generatorSchemas->build();
 
-        // Final array that will be transformed
+        // Final array returned to be written in a file
         return $this->makeFinalArray();
+    }
+
+    /**
+     * Info OA which is the head of the file.
+     */
+    private function loadInfo(ReflectionClass $reflectionClass): void
+    {
+        if ($infos = $reflectionClass->getAttributes(Info::class, ReflectionAttribute::IS_INSTANCEOF)) {
+            $this->description["info"] = $infos[0]->newInstance();
+        }
+    }
+
+    /**
+     * A controller is a class containing paths itself containing methods.
+     */
+    private function loadController(ReflectionClass $reflectionClass): void
+    {
+        if (count($reflectionClass->getAttributes(Controller::class))) {
+            $this->generatorHttp->append($reflectionClass);
+        }
+    }
+
+    /**
+     * A schema is a component of the Open Api description.
+     * It may be a model used in a request or a response.
+     *
+     * @throws IllegalFieldException
+     */
+    private function loadSchema(ReflectionClass $reflectionClass): void
+    {
+        if (count($reflectionClass->getAttributes(Schema::class))) {
+            $component = ComponentFactory::build($reflectionClass);
+            $this->description['components']['schemas'][$component->getName()] = $component;
+        }
+    }
+
+    private function loadServer(ReflectionClass $reflectionClass): void
+    {
+        if (count($reflectionClass->getAttributes(Server::class))) {
+            $serverAttributes = $reflectionClass->getAttributes(Server::class);
+
+            foreach ($serverAttributes as $item) {
+                $this->description['servers'][] = $item->newInstance();
+            }
+        }
+    }
+
+    private function loadSecurityScheme(ReflectionClass $reflectionClass): void
+    {
+        if (count($reflectionClass->getAttributes(SecurityScheme::class))) {
+            $securitySchemes = $reflectionClass->getAttributes(SecurityScheme::class);
+
+            foreach ($securitySchemes as $item) {
+                $data = $item->newInstance()->jsonSerialize();
+                $key = array_keys($data)[0];
+                $this->description['components']['securitySchemes'][$key] = $data[$key];
+            }
+        }
+    }
+
+    private function loadSecurity(ReflectionClass $reflectionClass): void
+    {
+        if (count($reflectionClass->getAttributes(Security::class))) {
+            $securityAttributes = $reflectionClass->getAttributes(Security::class);
+            $security = reset($securityAttributes);
+
+            $this->description['security'] = $security->newInstance()->jsonSerialize();
+        }
     }
 
     /**
@@ -96,90 +159,5 @@ class Generator
         ApiDescriptionChecker::check($definition);
 
         return $definition;
-    }
-
-    /**
-     * Info OA which is the head of the file.
-     *
-     * @param ReflectionClass $reflectionClass
-     * @return void
-     */
-    private function loadInfo(ReflectionClass $reflectionClass): void
-    {
-        if ($infos = $reflectionClass->getAttributes(Info::class, ReflectionAttribute::IS_INSTANCEOF)) {
-            $this->description["info"] = $infos[0]->newInstance();
-        }
-    }
-
-
-    /**
-     * A controller with routes, call the HTTP Generator.
-     *
-     * @param ReflectionClass $reflectionClass
-     * @return void
-     */
-    private function loadController(ReflectionClass $reflectionClass): void
-    {
-        if (count($reflectionClass->getAttributes(Controller::class))) {
-            $this->generatorHttp->append($reflectionClass);
-        }
-    }
-
-    /**
-     * A schema (often a model), call the Schema Generator.
-     *
-     * @param ReflectionClass $reflectionClass
-     * @return void
-     */
-    private function loadSchema(ReflectionClass $reflectionClass): void
-    {
-        if (count($reflectionClass->getAttributes(Schema::class))) {
-            $this->generatorSchemas->append($reflectionClass);
-        }
-    }
-
-    /**
-     * @param ReflectionClass $reflectionClass
-     * @return void
-     */
-    private function loadServer(ReflectionClass $reflectionClass): void
-    {
-        if (count($reflectionClass->getAttributes(Server::class))) {
-            $serverAttributes = $reflectionClass->getAttributes(Server::class);
-
-            foreach ($serverAttributes as $item) {
-                $this->description['servers'][] = $item->newInstance();
-            }
-        }
-    }
-
-    /**
-     * @param ReflectionClass $reflectionClass
-     * @return void
-     */
-    private function loadSecurityScheme(ReflectionClass $reflectionClass): void
-    {
-        if (count($reflectionClass->getAttributes(SecurityScheme::class))) {
-            $securitySchemes = $reflectionClass->getAttributes(SecurityScheme::class);
-
-            foreach ($securitySchemes as $item) {
-                $data = $item->newInstance()->jsonSerialize();
-                $key = array_keys($data)[0];
-                $this->description['components']['securitySchemes'][$key] = $data[$key];
-            }
-        }
-    }
-    /**
-     * @param ReflectionClass $reflectionClass
-     * @return void
-     */
-    private function loadSecurity(ReflectionClass $reflectionClass): void
-    {
-        if (count($reflectionClass->getAttributes(Security::class))) {
-            $securityAttributes = $reflectionClass->getAttributes(Security::class);
-            $security = reset($securityAttributes);
-
-            $this->description['security'] = $security->newInstance()->jsonSerialize();
-        }
     }
 }

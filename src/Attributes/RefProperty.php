@@ -5,10 +5,8 @@ declare(strict_types=1);
 namespace OpenApiGenerator\Attributes;
 
 use Attribute;
-use OpenApiGenerator\Types\MediaType;
-use OpenApiGenerator\Types\PropertyType;
 use JsonSerializable;
-use OpenApiGenerator\Types\SchemaType;
+use OpenApiGenerator\Types\PropertyType;
 
 /**
  * This represents an open api property.

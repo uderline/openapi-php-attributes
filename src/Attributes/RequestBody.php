@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace OpenApiGenerator\Attributes;
 
 use Attribute;
-use OpenApiGenerator\Types\RequestBodyType;
 use JsonSerializable;
+use OpenApiGenerator\Types\RequestBodyType;
 
 /**
  * The entire request body where you can specify the return type and a schema

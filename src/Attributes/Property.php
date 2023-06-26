@@ -6,10 +6,10 @@ namespace OpenApiGenerator\Attributes;
 
 use Attribute;
 use BackedEnum;
+use JsonSerializable;
 use OpenApiGenerator\EnumInterface;
 use OpenApiGenerator\IllegalFieldException;
 use OpenApiGenerator\Types\PropertyType;
-use JsonSerializable;
 
 /**
  * This represents an open api property.
@@ -135,7 +135,7 @@ class Property implements PropertyInterface, ArrayProperty, JsonSerializable
             return $this->enum;
         }
 
-        if(!enum_exists($this->enum)) {
+        if (!enum_exists($this->enum)) {
             return null;
         }
 
