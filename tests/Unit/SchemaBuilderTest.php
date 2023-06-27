@@ -23,7 +23,7 @@ class SchemaBuilderTest extends TestCase
         $schemaBuilder->addProperty(new Property("string", "prop1"));
         $json = json_decode(json_encode($schemaBuilder->getComponent()), true);
 
-        $this->assertArrayHasKey("schema", $json);
+        $this->assertArrayHasKey("properties", $json);
     }
 
     #[Test]

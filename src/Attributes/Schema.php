@@ -80,7 +80,7 @@ class Schema implements JsonSerializable, Countable
         }
 
         if ($this->noMedia) {
-            return ['schema' => $schema];
+            return $schema;
         }
 
         return [
