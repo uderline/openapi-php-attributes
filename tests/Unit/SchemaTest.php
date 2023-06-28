@@ -8,8 +8,8 @@ use OpenApiGenerator\Attributes\MediaProperty;
 use OpenApiGenerator\Attributes\Property;
 use OpenApiGenerator\Attributes\PropertyInterface;
 use OpenApiGenerator\Attributes\PropertyItems;
-use OpenApiGenerator\Attributes\RefProperty;
 use OpenApiGenerator\Attributes\Schema;
+use OpenApiGenerator\RefProperty;
 use OpenApiGenerator\Type;
 use OpenApiGenerator\Types\MediaType;
 use OpenApiGenerator\Types\SchemaType;
@@ -26,7 +26,7 @@ class SchemaTest extends TestCase
         $jsonKeys = array_keys($schema->jsonSerialize());
         $mediaType = reset($jsonKeys);
 
-        $this->assertEquals("application/json", $mediaType);
+        $this->assertEquals("content", $mediaType);
     }
 
     #[Test]
@@ -34,7 +34,7 @@ class SchemaTest extends TestCase
     {
         $schema = new Schema();
         $schema->setSchemaType(SchemaType::STRING);
-        $jsonKeys = array_keys($schema->jsonSerialize());
+        $jsonKeys = array_keys($schema->jsonSerialize()['content']);
         $mediaType = reset($jsonKeys);
 
         $this->assertEquals("text/plain", $mediaType);
@@ -45,7 +45,7 @@ class SchemaTest extends TestCase
     {
         $schema = new Schema();
         $schema->addProperty(new MediaProperty(MediaType::MEDIA_IMAGE_PNG, MediaType::ENCODING_BASE64));
-        $jsonKeys = array_keys($schema->jsonSerialize());
+        $jsonKeys = array_keys($schema->jsonSerialize()['content']);
         $mediaType = reset($jsonKeys);
 
         $this->assertEquals("image/png", $mediaType);
@@ -56,10 +56,9 @@ class SchemaTest extends TestCase
     {
         $schema = new Schema();
         $schema->addProperty(new PropertyItems(Type::STRING));
-        $json = $schema->jsonSerialize();
-        $schema = reset($json)['schema'];
+        $json = $schema->jsonSerialize()['content']['application/json']['schema'];
 
-        $this->assertEquals("array", $schema['type']);
+        $this->assertEquals("array", $json['type']);
     }
 
     #[Test]
@@ -70,7 +69,7 @@ class SchemaTest extends TestCase
         $schema->addProperty(new PropertyItems(Type::STRING));
         $json = $schema->jsonSerialize();
 
-        $this->assertEquals("array", $json['application/json']['schema']['type']);
+        $this->assertEquals("array", $json['content']['application/json']['schema']['type']);
     }
 
     #[Test]
@@ -80,7 +79,7 @@ class SchemaTest extends TestCase
         $schema->addProperty(new PropertyItems(Type::STRING));
         $json = $schema->jsonSerialize();
 
-        $this->assertArrayNotHasKey("properties", $json['application/json']['schema']);
+        $this->assertArrayNotHasKey("properties", $json['content']['application/json']['schema']);
     }
 
     #[Test]
@@ -89,7 +88,7 @@ class SchemaTest extends TestCase
         $schema = new Schema();
         $schema->addProperty(new RefProperty(StdClass::class));
         $json = $schema->jsonSerialize();
-        $schema = reset($json)['schema'];
+        $schema = $json['content']['application/json']['schema'];
 
         $this->assertIsArray($schema);
         $this->assertArrayNotHasKey("type", $schema);
@@ -101,7 +100,7 @@ class SchemaTest extends TestCase
         $schema = new Schema();
         $schema->addProperty(new Property(Type::STRING, "prop_string"));
         $json = $schema->jsonSerialize();
-        $schema = reset($json)['schema'];
+        $schema = $json['content']['application/json']['schema'];
 
         $this->assertArrayHasKey("properties", $schema);
     }
@@ -112,7 +111,7 @@ class SchemaTest extends TestCase
         $schema = new Schema();
         $schema->addProperty(new Property(Type::STRING, "prop_string"));
         $json = $schema->jsonSerialize();
-        $schema = reset($json)['schema'];
+        $schema = $json['content']['application/json']['schema'];
 
         $this->assertInstanceOf(PropertyInterface::class, $schema['properties']['prop_string']);
     }
@@ -135,6 +134,6 @@ class SchemaTest extends TestCase
         $schema->addProperty(new Property(Type::INT, "prop"));
         $json = json_decode(json_encode($schema), true);
 
-        $this->assertEquals(['prop'], $json['application/json']['schema']['required']);
+        $this->assertEquals(['prop'], $json['content']['application/json']['schema']['required']);
     }
 }

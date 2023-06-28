@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Unit;
 
-use OpenApiGenerator\Attributes\Info;
 use OpenApiGenerator\Attributes\Property;
 use OpenApiGenerator\Attributes\PropertyItems;
 use OpenApiGenerator\IllegalFieldException;
+use OpenApiGenerator\RefProperty;
 use OpenApiGenerator\Tests\Examples\Dummy\DummyBackedEnum;
 use OpenApiGenerator\Tests\Examples\Dummy\DummyRefComponent;
 use PHPUnit\Framework\Attributes\Test;
@@ -62,7 +62,18 @@ class PropertyTest extends TestCase
             '$ref' => '#/components/schemas/DummyRefComponent'
         ], $property->jsonSerialize());
     }
-    
+
+    #[Test]
+    public function json_contains_a_ref_property_with_a_different_prefix(): void
+    {
+        $property = new RefProperty(StdClass::class);
+        $property->setComponentRoutePrefix("#/components/requestBodies/");
+
+        $this->assertEqualsCanonicalizing([
+            '$ref' => '#/components/requestBodies/StdClass'
+        ], $property->jsonSerialize());
+    }
+
     #[Test]
     public function json_must_return_the_property_with_a_nullable_ref(): void
     {

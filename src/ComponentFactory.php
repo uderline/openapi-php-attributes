@@ -46,4 +46,16 @@ abstract class ComponentFactory
 
         return $builder->getComponent();
     }
+
+    public static function buildRequest(string $refComponentName): Schema
+    {
+        $builder = new SchemaBuilder(false);
+
+        $schema = new Schema();
+        $schema->addProperty(new RefProperty($refComponentName));
+
+        $builder->addSchema($schema, $refComponentName);
+
+        return $builder->getComponent();
+    }
 }

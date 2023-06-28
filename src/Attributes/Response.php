@@ -7,7 +7,7 @@ namespace OpenApiGenerator\Attributes;
 use Attribute;
 use Countable;
 use JsonSerializable;
-use OpenApiGenerator\Type;
+use OpenApiGenerator\RefProperty;
 use OpenApiGenerator\Types\ItemsType;
 use OpenApiGenerator\Types\SchemaType;
 
@@ -57,7 +57,7 @@ class Response implements JsonSerializable, Countable
         ];
 
         if ($this->schema) {
-            $array[$this->code]['content'] = $this->schema;
+            $array[$this->code] = array_merge($array[$this->code], $this->schema->jsonSerialize());
         }
 
         if ($this->extra) {

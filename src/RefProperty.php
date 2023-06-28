@@ -2,18 +2,17 @@
 
 declare(strict_types=1);
 
-namespace OpenApiGenerator\Attributes;
+namespace OpenApiGenerator;
 
 use Attribute;
 use JsonSerializable;
+use OpenApiGenerator\Attributes\PropertyInterface;
 use OpenApiGenerator\Types\PropertyType;
 
-/**
- * This represents an open api property.
- */
-#[Attribute(Attribute::IS_REPEATABLE | Attribute::TARGET_ALL)]
 class RefProperty implements PropertyInterface, JsonSerializable
 {
+    private string $route = "#/components/schemas/";
+
     public function __construct(
         private string $ref,
     ) {
@@ -21,9 +20,14 @@ class RefProperty implements PropertyInterface, JsonSerializable
         $this->ref = end($ref);
     }
 
+    public function setComponentRoutePrefix(string $route): void
+    {
+        $this->route = $route;
+    }
+
     public function jsonSerialize(): array
     {
-        return ['$ref' => "#/components/schemas/$this->ref"];
+        return ['$ref' => "{$this->route}{$this->ref}"];
     }
 
     public function getType(): string

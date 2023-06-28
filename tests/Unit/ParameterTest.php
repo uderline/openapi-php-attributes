@@ -4,21 +4,11 @@ declare(strict_types=1);
 
 namespace Unit;
 
-use OpenApiGenerator\Attributes\MediaProperty;
 use OpenApiGenerator\Attributes\Parameter;
-use OpenApiGenerator\Attributes\Property;
-use OpenApiGenerator\Attributes\PropertyInterface;
-use OpenApiGenerator\Attributes\PropertyItems;
-use OpenApiGenerator\Attributes\RefProperty;
-use OpenApiGenerator\Attributes\Schema;
 use OpenApiGenerator\IllegalFieldException;
-use OpenApiGenerator\Type;
-use OpenApiGenerator\Types\MediaType;
-use OpenApiGenerator\Types\SchemaType;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
-use stdClass;
 
 class ParameterTest extends TestCase
 {

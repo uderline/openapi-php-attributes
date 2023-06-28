@@ -40,7 +40,7 @@ class RequestBodyTest extends TestCase
     }
 
     #[Test]
-    public function json_will_return_an_emoty_array_if_the_body_is_empty(): void
+    public function json_will_return_an_empty_array_if_the_body_is_empty(): void
     {
         $requestBody = new RequestBody();
 

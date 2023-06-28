@@ -13,6 +13,7 @@ use OpenApiGenerator\Attributes\Server;
 use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionException;
+use Symfony\Component\HttpFoundation\Request;
 
 class Generator
 {
@@ -105,6 +106,11 @@ class Generator
         if (count($reflectionClass->getAttributes(Schema::class))) {
             $component = ComponentFactory::build($reflectionClass);
             $this->description['components']['schemas'][$component->getName()] = $component;
+
+            if ($reflectionClass->isSubclassOf(Request::class)) {
+                $component = ComponentFactory::buildRequest($component->getName());
+                $this->description['components']['requestBodies'][$component->getName()] = $component;
+            }
         }
     }
 

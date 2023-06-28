@@ -16,7 +16,6 @@ use OpenApiGenerator\Attributes\Property;
 use OpenApiGenerator\Attributes\PropertyInterface;
 use OpenApiGenerator\Attributes\PropertyItems;
 use OpenApiGenerator\Attributes\PUT;
-use OpenApiGenerator\Attributes\RefProperty;
 use OpenApiGenerator\Attributes\RequestBody;
 use OpenApiGenerator\Attributes\Response;
 use OpenApiGenerator\Attributes\Route;
@@ -113,42 +112,32 @@ class GeneratorHttp
 
     /**
      * OPAG supports Symfony Request class. This method will build the RequestBody from the Symfony Request class
-     *
-     * @throws ReflectionException|IllegalFieldException
+     * The request object will be added as a reference to the RequestBody
      */
     private function buildRequestBodyFromSymfonyRequest(ReflectionMethod $method): ?RequestBody
     {
         $requestBody = new RequestBody();
 
         // Get the first parameter that is a subclass of Symfony Request
-        $requestClass = array_filter(
+        $symfonyRequests = array_filter(
             $method->getParameters(),
-            static fn(ReflectionParameter $parameter): bool => is_subclass_of(
-                $parameter->getType()->getName(),
-                Request::class
-            )
+            fn(ReflectionParameter $parameter): bool => is_subclass_of($parameter->getType()->getName(), Request::class)
         );
-        $requestClass = reset($requestClass);
-        if (!$requestClass) {
+        if (!count($symfonyRequests)) {
             return null;
         }
 
-        // Get the Schema attribute from the Symfony Request class
-        $requestReflection = new ReflectionClass($requestClass->getType()->getName());
-        $schemaAttributes = $requestReflection->getAttributes(Schema::class);
-        $schemaAttribute = reset($schemaAttributes);
-        if (!$schemaAttribute) {
+        $symfonyRequest = reset($symfonyRequests);
+        if (empty((new ReflectionClass($symfonyRequest->getType()->getName()))->getAttributes(Schema::class))) {
             return null;
         }
 
-        // Build the schema
-        $schema = $schemaAttribute->newInstance();
-        $builder = new SchemaBuilder(false);
-        $builder->addSchema($schema, $requestClass->getType()->getName());
-        $builder->addProperty(new RefProperty($schema->getName()));
-
-        // Set the schema to the RequestBody and return it
-        $requestBody->setSchema($builder->getComponent());
+        $schema = new Schema();
+        $schema->setNoMedia(true);
+        $requestBody->setSchema($schema);
+        $property = new RefProperty($symfonyRequest->getType()->getName());
+        $property->setComponentRoutePrefix("#/components/requestBodies/");
+        $requestBody->addProperty($property);
 
         return $requestBody;
     }

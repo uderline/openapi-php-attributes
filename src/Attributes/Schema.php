@@ -7,6 +7,7 @@ namespace OpenApiGenerator\Attributes;
 use Attribute;
 use Countable;
 use JsonSerializable;
+use OpenApiGenerator\RefProperty;
 use OpenApiGenerator\Types\SchemaType;
 
 /**
@@ -84,8 +85,10 @@ class Schema implements JsonSerializable, Countable
         }
 
         return [
-            $this->getMediaType() => [
-                'schema' => $schema
+            "content" => [
+                $this->getMediaType() => [
+                    'schema' => $schema
+                ]
             ]
         ];
     }

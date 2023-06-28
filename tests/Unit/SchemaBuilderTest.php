@@ -34,7 +34,7 @@ class SchemaBuilderTest extends TestCase
         $schemaBuilder->addProperty(new Property("string", "prop1"));
         $component = $schemaBuilder->getComponent();
 
-        $this->assertArrayHasKey("application/json", $component->jsonSerialize());
+        $this->assertArrayHasKey("content", $component->jsonSerialize());
     }
 
     #[Test]
