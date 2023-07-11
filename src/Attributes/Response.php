@@ -37,6 +37,11 @@ class Response implements JsonSerializable, Countable
                 $this->schema->addProperty(new PropertyItems(ItemsType::REF, $this->ref));
             }
         }
+
+        if ($this->schemaType === SchemaType::STRING) {
+            $this->schema = new Schema();
+            $this->schema->setSchemaType($this->schemaType);
+        }
     }
 
     public function addProperty(PropertyInterface $property): void
