@@ -16,8 +16,8 @@ use JsonSerializable;
 class MediaProperty implements PropertyInterface, JsonSerializable
 {
     public function __construct(
-        private readonly string $contentMediaType,
-        private readonly string $contentEncoding,
+        private readonly string $contentMediaType = 'application/octet-stream',
+        private readonly ?string $contentEncoding = null,
     ) {
     }
 
@@ -42,10 +42,7 @@ class MediaProperty implements PropertyInterface, JsonSerializable
         return $this->contentMediaType;
     }
 
-    /**
-     * @return string
-     */
-    public function getContentEncoding(): string
+    public function getContentEncoding(): ?string
     {
         return $this->contentEncoding;
     }

@@ -52,6 +52,17 @@ class SchemaTest extends TestCase
     }
 
     #[Test]
+    public function get_media_type_returns_default_media_property_type(): void
+    {
+        $schema = new Schema();
+        $schema->addProperty(new MediaProperty());
+        $jsonKeys = array_keys($schema->jsonSerialize()['content']);
+        $mediaType = reset($jsonKeys);
+
+        $this->assertEquals("application/octet-stream", $mediaType);
+    }
+
+    #[Test]
     public function json_should_be_an_array_type_when_it_contains_a_property_items(): void
     {
         $schema = new Schema();

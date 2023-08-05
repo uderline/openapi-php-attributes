@@ -103,7 +103,10 @@ class Schema implements JsonSerializable, Countable
         // Has a MediaProperty object, get the first - normally only one - property
         if (count($hasMediaProp) > 0) {
             $property = reset($this->properties);
-            return $property->getContentMediaType();
+
+            if ($property instanceof MediaProperty) {
+                return $property->getContentMediaType();
+            }
         }
 
         if ($this->schemaType === SchemaType::STRING) {
